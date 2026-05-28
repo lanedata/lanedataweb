@@ -62,7 +62,7 @@ export default async function AdminDashboard() {
                 >
                   <td className="px-5 py-4">
                     <Link
-                      href={`/admin/editar/${article.id}`}
+                      href={`/admin/editar?id=${article.id}`}
                       className="font-medium text-ink hover:text-ink/70 transition-colors line-clamp-2"
                     >
                       {article.title}
@@ -93,7 +93,7 @@ export default async function AdminDashboard() {
                         Ver
                       </Link>
                       <Link
-                        href={`/admin/editar/${article.id}`}
+                        href={`/admin/editar?id=${article.id}`}
                         className="label-mono text-ink/35 hover:text-ink/60 transition-colors"
                       >
                         Editar
