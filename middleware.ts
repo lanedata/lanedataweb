@@ -1,3 +1,7 @@
+// GitHub Pages serves static files only — this middleware never runs in production.
+// Auth protection for /admin is handled client-side in app/admin/layout.tsx.
+// Kept here so `next dev` still redirects unauthenticated users during local development.
+
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -9,9 +13,7 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
+        getAll() { return request.cookies.getAll() },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           response = NextResponse.next({ request })
@@ -23,9 +25,7 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh session tokens on every request
   const { data: { user } } = await supabase.auth.getUser()
-
   const { pathname } = request.nextUrl
 
   if (pathname.startsWith('/admin') && !user) {

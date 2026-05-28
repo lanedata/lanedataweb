@@ -104,6 +104,7 @@ export function ArticleForm({ article }: Props) {
     if (!form.html_content.trim()) { setError('El contenido HTML es obligatorio.'); return }
 
     setSaving(true)
+    const supabase = createClient()
 
     const payload = {
       title: form.title.trim(),
@@ -116,21 +117,22 @@ export function ArticleForm({ article }: Props) {
       status: form.status,
     }
 
-    // Route through the API so the server sanitizes HTML before storing
-    const url = isEdit ? '/api/articles' : '/api/articles'
-    const method = isEdit ? 'PATCH' : 'POST'
-    const body = isEdit ? { id: article.id, ...payload } : payload
+    let opError
+    if (isEdit) {
+      const { error } = await supabase
+        .from('articles')
+        .update({ ...payload, updated_at: new Date().toISOString() })
+        .eq('id', article.id)
+      opError = error
+    } else {
+      const { error } = await supabase.from('articles').insert(payload)
+      opError = error
+    }
 
-    const res = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-
-    if (!res.ok) {
-      const json = await res.json().catch(() => ({}))
-      const msg: string = json.error ?? 'Error desconocido'
-      setError(msg.includes('unique') ? 'Este slug ya existe. Elige otro.' : `Error: ${msg}`)
+    if (opError) {
+      setError(opError.message.includes('unique')
+        ? 'Este slug ya existe. Elige otro.'
+        : `Error: ${opError.message}`)
       setSaving(false)
       return
     }

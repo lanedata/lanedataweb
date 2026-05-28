@@ -3,18 +3,16 @@ import { Footer } from '@/components/Footer'
 import { HeroArticle } from '@/components/HeroArticle'
 import { ArticleCard } from '@/components/ArticleCard'
 import { SearchBar } from '@/components/SearchBar'
-import { createClient } from '@/lib/supabase/server'
+import { createStaticClient } from '@/lib/supabase/static'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-
-export const revalidate = 60
 
 export const metadata: Metadata = {
   title: 'lanedata — El atletismo español con datos',
 }
 
 export default async function HomePage() {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   const { data: articles } = await supabase
     .from('articles')
@@ -50,7 +48,6 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* Rule */}
           <div className="mt-8 h-px bg-ink/[0.1]" />
         </section>
 

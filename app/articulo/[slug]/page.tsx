@@ -4,22 +4,35 @@ import { ArticleContent } from '@/components/ArticleContent'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { TableOfContents } from '@/components/TableOfContents'
 import { ShareButton } from '@/components/ShareButton'
-import { createClient } from '@/lib/supabase/server'
-import { formatDateEs, isoDate, readingTime, stripHtml, truncate } from '@/lib/utils'
+import { createStaticClient } from '@/lib/supabase/static'
+import { formatDateEs, isoDate, readingTime, truncate } from '@/lib/utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lanedata.es'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mateogsilvaa.github.io/lanedata'
 
 interface Props {
   params: Promise<{ slug: string }>
 }
 
+// Pre-generate a page for every published article at build time
+export async function generateStaticParams() {
+  const supabase = createStaticClient()
+  const { data } = await supabase
+    .from('articles')
+    .select('slug')
+    .eq('status', 'published')
+  return (data ?? []).map((a) => ({ slug: a.slug }))
+}
+
+// 404 for any slug not listed in generateStaticParams
+export const dynamicParams = false
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   const { data: article } = await supabase
     .from('articles')
@@ -56,7 +69,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   const { data: article } = await supabase
     .from('articles')
@@ -77,32 +90,27 @@ export default async function ArticlePage({ params }: Props) {
       <main>
         {/* ── Article header ── */}
         <header className="mx-auto max-w-wide px-4 pt-10 pb-8 sm:px-6 sm:pt-14">
-          {/* Breadcrumb */}
           <nav aria-label="Ruta" className="mb-6 flex items-center gap-2 label-mono text-ink/35">
             <Link href="/" className="hover:text-ink/60 transition-colors">lanedata</Link>
             <span>·</span>
-            <span className="text-ink/60">{article.title}</span>
+            <span className="text-ink/60 truncate max-w-xs">{article.title}</span>
           </nav>
 
-          {/* Category + reading time */}
           <div className="flex flex-wrap items-center gap-3 mb-5">
             <CategoryBadge category={article.category} />
             <span className="label-mono text-ink/35">{minutes} min de lectura</span>
           </div>
 
-          {/* Title */}
           <h1 className="font-brand text-3xl font-extrabold tracking-brand text-ink leading-[1.1] sm:text-4xl md:text-5xl">
             {article.title}
           </h1>
 
-          {/* Excerpt */}
           {article.excerpt && (
             <p className="mt-4 max-w-2xl text-lg text-ink/65 leading-relaxed">
               {article.excerpt}
             </p>
           )}
 
-          {/* Meta row */}
           <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-ink/[0.1] pt-5">
             {article.published_at && (
               <time dateTime={isoDate(article.published_at)} className="label-mono text-ink/45">
@@ -125,28 +133,26 @@ export default async function ArticlePage({ params }: Props) {
                 fill
                 className="object-cover"
                 priority
+                unoptimized
                 sizes="(max-width: 1200px) 100vw, 1200px"
               />
             </div>
           </div>
         )}
 
-        {/* ── Article body with optional TOC ── */}
+        {/* ── Article body ── */}
         <div className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
           <div className="relative flex gap-16">
-            {/* Main content */}
             <div className="min-w-0 flex-1">
               <ArticleContent html={article.html_content} />
             </div>
-
-            {/* Table of contents — sticky, desktop only */}
             <aside className="hidden w-56 shrink-0 xl:block">
               <TableOfContents html={article.html_content} />
             </aside>
           </div>
         </div>
 
-        {/* ── Footer navigation ── */}
+        {/* ── Footer nav ── */}
         <div className="border-t border-ink/[0.1] bg-cream/40">
           <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 flex items-center justify-between">
             <Link
@@ -167,5 +173,3 @@ export default async function ArticlePage({ params }: Props) {
     </>
   )
 }
-
-export const revalidate = 3600
