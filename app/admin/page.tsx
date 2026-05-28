@@ -1,18 +1,40 @@
-import { createClient } from '@/lib/supabase/server'
+'use client'
+
+import { createClient } from '@/lib/supabase/client'
 import { formatDateEs, categoryLabel } from '@/lib/utils'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { DeleteButton } from '@/components/admin/DeleteButton'
 
-export default async function AdminDashboard() {
-  const supabase = await createClient()
+interface ArticleRow {
+  id: string
+  title: string
+  slug: string
+  category: string | null
+  status: string
+  published_at: string | null
+  created_at: string
+}
 
-  const { data: articles } = await supabase
-    .from('articles')
-    .select('id, title, slug, category, status, published_at, created_at')
-    .order('created_at', { ascending: false })
+export default function AdminDashboard() {
+  const [articles, setArticles] = useState<ArticleRow[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const published = articles?.filter((a) => a.status === 'published').length ?? 0
-  const drafts = articles?.filter((a) => a.status === 'draft').length ?? 0
+  function load() {
+    createClient()
+      .from('articles')
+      .select('id, title, slug, category, status, published_at, created_at')
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        setArticles(data ?? [])
+        setLoading(false)
+      })
+  }
+
+  useEffect(() => { load() }, [])
+
+  const published = articles.filter((a) => a.status === 'published').length
+  const drafts = articles.filter((a) => a.status === 'draft').length
 
   return (
     <div>
@@ -21,7 +43,7 @@ export default async function AdminDashboard() {
         <div>
           <h1 className="font-brand text-2xl font-bold tracking-tight text-ink">Artículos</h1>
           <p className="mt-1 label-mono text-ink/40">
-            {published} publicado{published !== 1 ? 's' : ''} · {drafts} borrador{drafts !== 1 ? 'es' : ''}
+            {loading ? '…' : `${published} publicado${published !== 1 ? 's' : ''} · ${drafts} borrador${drafts !== 1 ? 'es' : ''}`}
           </p>
         </div>
         <Link
@@ -32,15 +54,22 @@ export default async function AdminDashboard() {
         </Link>
       </div>
 
-      {/* Articles table */}
-      {!articles || articles.length === 0 ? (
+      {loading && (
+        <div className="flex justify-center py-16">
+          <span className="label-mono text-ink/30">Cargando…</span>
+        </div>
+      )}
+
+      {!loading && articles.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-ink/[0.1] bg-cream/40 py-20 text-center">
           <p className="font-brand text-xl font-bold text-ink/30">Sin artículos todavía</p>
           <p className="mt-2 text-sm text-ink/25">
             Pulsa &ldquo;Nuevo artículo&rdquo; para empezar.
           </p>
         </div>
-      ) : (
+      )}
+
+      {!loading && articles.length > 0 && (
         <div className="overflow-hidden rounded-2xl border border-ink/[0.1]">
           <table className="w-full text-sm">
             <thead>
@@ -88,7 +117,6 @@ export default async function AdminDashboard() {
                         href={`/articulo/${article.slug}`}
                         target="_blank"
                         className="label-mono text-ink/35 hover:text-ink/60 transition-colors"
-                        title="Ver publicado"
                       >
                         Ver
                       </Link>
@@ -98,7 +126,7 @@ export default async function AdminDashboard() {
                       >
                         Editar
                       </Link>
-                      <DeleteButton id={article.id} title={article.title} />
+                      <DeleteButton id={article.id} title={article.title} onDeleted={load} />
                     </div>
                   </td>
                 </tr>
@@ -112,10 +140,9 @@ export default async function AdminDashboard() {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const styles =
-    status === 'published'
-      ? 'bg-mint/30 text-ink'
-      : 'bg-ink/[0.08] text-ink/50'
+  const styles = status === 'published'
+    ? 'bg-mint/30 text-ink'
+    : 'bg-ink/[0.08] text-ink/50'
   return (
     <span className={`inline-block rounded-full px-2.5 py-0.5 label-mono text-[0.6rem] ${styles}`}>
       {status === 'published' ? 'Publicado' : 'Borrador'}

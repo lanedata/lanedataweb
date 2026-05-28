@@ -1,24 +1,22 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 interface Props {
   id: string
   title: string
+  onDeleted?: () => void
 }
 
-export function DeleteButton({ id, title }: Props) {
-  const router = useRouter()
+export function DeleteButton({ id, title, onDeleted }: Props) {
   const [loading, setLoading] = useState(false)
 
   async function handleDelete() {
     if (!window.confirm(`¿Eliminar "${title}"? Esta acción no se puede deshacer.`)) return
     setLoading(true)
-    const supabase = createClient()
-    await supabase.from('articles').delete().eq('id', id)
-    router.refresh()
+    await createClient().from('articles').delete().eq('id', id)
+    onDeleted?.()
   }
 
   return (
