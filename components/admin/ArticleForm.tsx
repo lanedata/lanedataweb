@@ -20,6 +20,7 @@ const empty: ArticleFormData = {
   slug: '',
   excerpt: '',
   html_content: '',
+  html_url: '',
   cover_image_url: '',
   category: 'general',
   published_at: new Date().toISOString().slice(0, 16),
@@ -30,6 +31,7 @@ export function ArticleForm({ article }: Props) {
   const router = useRouter()
   const isEdit = !!article
   const fileRef = useRef<HTMLInputElement>(null)
+  const htmlFileRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState<ArticleFormData>(
     article
@@ -38,6 +40,7 @@ export function ArticleForm({ article }: Props) {
           slug: article.slug,
           excerpt: article.excerpt ?? '',
           html_content: article.html_content,
+          html_url: article.html_url ?? '',
           cover_image_url: article.cover_image_url ?? '',
           category: article.category ?? 'general',
           published_at: article.published_at
@@ -49,6 +52,7 @@ export function ArticleForm({ article }: Props) {
   )
 
   const [uploading, setUploading] = useState(false)
+  const [uploadingHtml, setUploadingHtml] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
@@ -94,6 +98,37 @@ export function ArticleForm({ article }: Props) {
     setUploading(false)
   }
 
+  async function handleHtmlUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.name.endsWith('.html') && !file.name.endsWith('.htm')) {
+      setError('Solo se permiten archivos .html')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError('El archivo HTML no puede superar los 10 MB.')
+      return
+    }
+
+    setUploadingHtml(true)
+    const supabase = createClient()
+    const path = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('articles')
+      .upload(path, file, { upsert: false, contentType: 'text/html' })
+
+    if (uploadError) {
+      setError(`Error al subir HTML: ${uploadError.message}`)
+      setUploadingHtml(false)
+      return
+    }
+
+    const { data } = supabase.storage.from('articles').getPublicUrl(path)
+    set('html_url', data.publicUrl)
+    setUploadingHtml(false)
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -101,7 +136,11 @@ export function ArticleForm({ article }: Props) {
 
     if (!form.title.trim()) { setError('El título es obligatorio.'); return }
     if (!form.slug.trim()) { setError('El slug es obligatorio.'); return }
-    if (!form.html_content.trim()) { setError('El contenido HTML es obligatorio.'); return }
+    // Either an uploaded HTML file OR inline HTML content is required
+    if (!form.html_url.trim() && !form.html_content.trim()) {
+      setError('Sube un archivo HTML o pega el contenido HTML.')
+      return
+    }
 
     setSaving(true)
     const supabase = createClient()
@@ -111,6 +150,7 @@ export function ArticleForm({ article }: Props) {
       slug: form.slug.trim(),
       excerpt: form.excerpt.trim() || null,
       html_content: form.html_content,
+      html_url: form.html_url.trim() || null,
       cover_image_url: form.cover_image_url.trim() || null,
       category: form.category || null,
       published_at: form.published_at ? new Date(form.published_at).toISOString() : null,
@@ -175,7 +215,7 @@ export function ArticleForm({ article }: Props) {
               value={form.title}
               onChange={(e) => set('title', e.target.value)}
               required
-              placeholder="Ej: El mejor 1500m de la historia española"
+              placeholder="Ej: Las marcas mínimas se disparan"
               className={inputCls}
             />
           </Field>
@@ -189,7 +229,7 @@ export function ArticleForm({ article }: Props) {
               value={form.slug}
               onChange={(e) => set('slug', e.target.value.toLowerCase().replace(/\s+/g, '-'))}
               required
-              placeholder="mejor-1500m-historia"
+              placeholder="marcas-minimas-mundiales"
               className={inputCls + ' font-mono text-xs'}
             />
           </Field>
@@ -315,26 +355,90 @@ export function ArticleForm({ article }: Props) {
         )}
       </section>
 
-      {/* ─── HTML content ─── */}
+      {/* ─── HTML FILE UPLOAD (primary) ─── */}
+      <section className="rounded-2xl border-2 border-mint/40 bg-mint/5 p-6 space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="font-brand text-base font-bold text-ink">Archivo HTML completo</h2>
+            <p className="mt-1 text-sm text-ink/55">
+              Sube tu HTML con estilos, gráficos y scripts. Se mostrará en pantalla completa
+              exactamente como lo diseñaste — sin que lanedata toque nada.
+            </p>
+          </div>
+          {/* Upload button */}
+          <div className="flex flex-col items-end gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => htmlFileRef.current?.click()}
+              disabled={uploadingHtml}
+              className="rounded-xl bg-ink px-4 py-2.5 text-sm font-semibold text-cream hover:opacity-85 transition-opacity disabled:opacity-50 whitespace-nowrap"
+            >
+              {uploadingHtml ? 'Subiendo…' : form.html_url ? 'Reemplazar HTML' : 'Subir HTML'}
+            </button>
+            <input
+              ref={htmlFileRef}
+              type="file"
+              accept=".html,.htm"
+              onChange={handleHtmlUpload}
+              className="hidden"
+            />
+          </div>
+        </div>
+
+        {form.html_url ? (
+          <div className="flex items-center gap-3 rounded-xl border border-mint/40 bg-mint/10 px-4 py-3">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-ink shrink-0">
+              <path d="M13.5 4.5l-7 7L3 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-ink">HTML subido correctamente</p>
+              <a
+                href={form.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-ink/50 hover:text-ink truncate block transition-colors"
+              >
+                {form.html_url}
+              </a>
+            </div>
+            <button
+              type="button"
+              onClick={() => set('html_url', '')}
+              className="text-ink/40 hover:text-ink transition-colors shrink-0"
+              aria-label="Eliminar HTML subido"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-ink/20 px-4 py-6 text-center">
+            <p className="text-sm text-ink/35">Sin archivo subido todavía</p>
+          </div>
+        )}
+      </section>
+
+      {/* ─── HTML content (fallback) ─── */}
       <section className="rounded-2xl border border-ink/[0.1] bg-cream/30 p-6 space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="label-mono text-ink/40">Contenido HTML</h2>
+          <div>
+            <h2 className="label-mono text-ink/40">Contenido HTML inline</h2>
+            <p className="mt-1 text-xs text-ink/35">
+              Alternativa al archivo — solo si no subes un HTML completo arriba.
+            </p>
+          </div>
           <span className="label-mono text-ink/25">{form.html_content.length.toLocaleString('es')} chars</span>
         </div>
 
         <textarea
           value={form.html_content}
           onChange={(e) => set('html_content', e.target.value)}
-          required
-          rows={24}
-          placeholder={`<h2>Introducción</h2>\n<p>Pega aquí el HTML completo de tu análisis.</p>\n\n<table>\n  <thead><tr><th>Atleta</th><th>Marca</th></tr></thead>\n  <tbody>\n    <tr><td>Nombre</td><td>3:32.00</td></tr>\n  </tbody>\n</table>`}
+          rows={16}
+          placeholder={`<h2>Introducción</h2>\n<p>Pega aquí el HTML del artículo (sin <html>, <head> ni <body>).</p>`}
           className="w-full rounded-xl border border-ink/[0.15] bg-paper px-4 py-3 font-mono text-xs leading-relaxed text-ink placeholder:text-ink/25 focus:border-ink/30 focus:outline-none focus:ring-2 focus:ring-mint/40 resize-y transition-colors"
           spellCheck={false}
         />
-
-        <p className="label-mono text-ink/30 text-[0.625rem]">
-          El HTML se sanea automáticamente al guardar (se eliminan scripts y event handlers, se conserva todo el estilo y layout).
-        </p>
       </section>
 
       {/* ─── Actions ─── */}
@@ -344,7 +448,7 @@ export function ArticleForm({ article }: Props) {
           disabled={saving}
           className="rounded-xl bg-ink px-6 py-3 text-sm font-semibold text-cream transition-opacity hover:opacity-85 disabled:opacity-50"
         >
-          {saving ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Publicar artículo'}
+          {saving ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Crear artículo'}
         </button>
 
         <button

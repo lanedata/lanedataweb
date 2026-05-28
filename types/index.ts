@@ -4,6 +4,7 @@ export interface Article {
   slug: string
   excerpt: string | null
   html_content: string
+  html_url: string | null        // URL to a standalone HTML file in Supabase Storage
   cover_image_url: string | null
   category: string | null
   published_at: string | null
@@ -24,6 +25,7 @@ export interface ArticleFormData {
   slug: string
   excerpt: string
   html_content: string
+  html_url: string               // URL of uploaded standalone HTML file (takes priority over html_content)
   cover_image_url: string
   category: string
   published_at: string

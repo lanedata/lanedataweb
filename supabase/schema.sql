@@ -71,6 +71,13 @@ CREATE POLICY "auth_full_access"
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
+-- Migration: add html_url column for standalone HTML articles
+-- Run this if the table already exists (idempotent)
+-- ─────────────────────────────────────────────────────────────────────────────
+ALTER TABLE articles ADD COLUMN IF NOT EXISTS html_url TEXT;
+
+
+-- ─────────────────────────────────────────────────────────────────────────────
 -- Storage bucket for cover images
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Run this in Storage > New bucket, or via the SQL below.
@@ -94,3 +101,25 @@ CREATE POLICY "auth_delete_covers"
 CREATE POLICY "public_read_covers"
   ON storage.objects FOR SELECT
   USING (bucket_id = 'covers');
+
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Storage bucket for standalone HTML articles
+-- ─────────────────────────────────────────────────────────────────────────────
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('articles', 'articles', true)
+ON CONFLICT (id) DO NOTHING;
+
+CREATE POLICY "auth_upload_articles"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (bucket_id = 'articles');
+
+CREATE POLICY "auth_delete_articles"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (bucket_id = 'articles');
+
+CREATE POLICY "public_read_articles"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'articles');

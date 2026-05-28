@@ -17,11 +17,6 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
-// Pre-generate a page for every published article at build time.
-// IMPORTANT: Next.js 15 with output:'export' treats an empty array the same
-// as a missing function and errors. We always return at least [{ slug: '__empty' }]
-// so the build succeeds even when the DB has no articles yet.
-// The page component turns '__empty' into a 404.
 export async function generateStaticParams() {
   try {
     const supabase = createStaticClient()
@@ -88,6 +83,26 @@ export default async function ArticlePage({ params }: Props) {
 
   if (!article) notFound()
 
+  // ── Standalone HTML file → fullscreen iframe, sin plantilla ──────────────
+  if (article.html_url) {
+    return (
+      <iframe
+        src={article.html_url}
+        title={article.title}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          border: 'none',
+          display: 'block',
+        }}
+        allowFullScreen
+      />
+    )
+  }
+
+  // ── Inline HTML content → plantilla lanedata normal ───────────────────────
   const minutes = readingTime(article.html_content)
   const articleUrl = `${siteUrl}/articulo/${slug}`
 
