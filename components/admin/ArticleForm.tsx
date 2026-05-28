@@ -137,7 +137,11 @@ export function ArticleForm({ article }: Props) {
       return
     }
 
-    setSuccess(isEdit ? 'Artículo actualizado.' : 'Artículo publicado.')
+    setSuccess(
+      isEdit
+        ? 'Guardado en base de datos. Pulsa "Publicar web" en la barra superior para que aparezca en lanedata.es.'
+        : 'Artículo creado. Pulsa "Publicar web" en la barra superior para que aparezca en lanedata.es.'
+    )
     setSaving(false)
 
     if (!isEdit) {
@@ -353,12 +357,13 @@ export function ArticleForm({ article }: Props) {
 
         {isEdit && (
           <a
-            href={`/articulo/${article.slug}`}
+            href={`https://lanedata.es/articulo/${article.slug}/`}
             target="_blank"
             rel="noopener noreferrer"
             className="ml-auto label-mono text-ink/35 hover:text-ink/60 transition-colors"
+            title="Solo disponible tras reconstruir el sitio"
           >
-            Ver publicado →
+            Ver en lanedata.es →
           </a>
         )}
       </div>

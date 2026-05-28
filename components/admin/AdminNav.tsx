@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
+const REBUILD_URL =
+  'https://github.com/mateogsilvaa/lanedata/actions/workflows/deploy.yml'
+
 export function AdminNav() {
   const pathname = usePathname()
   const router = useRouter()
@@ -28,7 +31,7 @@ export function AdminNav() {
             lanedata
           </Link>
 
-          <span className="label-mono text-cream/20">Admin</span>
+          <span className="hidden label-mono text-cream/20 sm:inline">Admin</span>
 
           <nav className="hidden items-center gap-4 sm:flex">
             <AdminNavLink href="/admin" active={pathname === '/admin'}>
@@ -40,12 +43,29 @@ export function AdminNav() {
           </nav>
         </div>
 
-        <button
-          onClick={logout}
-          className="label-mono text-cream/35 hover:text-cream/60 transition-colors"
-        >
-          Cerrar sesión
-        </button>
+        <div className="flex items-center gap-4">
+          {/* Rebuild button — opens GitHub Actions Run workflow page */}
+          <a
+            href={REBUILD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-mint/20 px-3 py-1.5 label-mono text-mint hover:bg-mint/30 transition-colors"
+            title="Abre GitHub Actions para lanzar un rebuild del sitio"
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+              <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+            </svg>
+            Publicar web
+          </a>
+
+          <button
+            onClick={logout}
+            className="label-mono text-cream/35 hover:text-cream/60 transition-colors"
+          >
+            Cerrar sesión
+          </button>
+        </div>
       </div>
     </header>
   )
