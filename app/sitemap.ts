@@ -3,7 +3,7 @@ export const dynamic = 'force-static'
 import { createStaticClient } from '@/lib/supabase/static'
 import type { MetadataRoute } from 'next'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mateogsilvaa.github.io/lanedata'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lanedata.es'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let articles: { slug: string; updated_at: string }[] = []

@@ -11,7 +11,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mateogsilvaa.github.io/lanedata'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lanedata.es'
 
 interface Props {
   params: Promise<{ slug: string }>
