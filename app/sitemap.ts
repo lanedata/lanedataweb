@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import { createStaticClient } from '@/lib/supabase/static'
 import type { MetadataRoute } from 'next'
 
