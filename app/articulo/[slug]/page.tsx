@@ -18,8 +18,10 @@ interface Props {
 }
 
 // Pre-generate a page for every published article at build time.
-// Returns [] on any error (DB not set up yet, network issue, etc.)
-// so the build never fails because of a missing/empty table.
+// IMPORTANT: Next.js 15 with output:'export' treats an empty array the same
+// as a missing function and errors. We always return at least [{ slug: '__empty' }]
+// so the build succeeds even when the DB has no articles yet.
+// The page component turns '__empty' into a 404.
 export async function generateStaticParams() {
   try {
     const supabase = createStaticClient()
@@ -27,15 +29,16 @@ export async function generateStaticParams() {
       .from('articles')
       .select('slug')
       .eq('status', 'published')
-    if (error) return []
-    return (data ?? []).map((a) => ({ slug: a.slug }))
+    if (error || !data || data.length === 0) return [{ slug: '__empty' }]
+    return data.map((a) => ({ slug: a.slug }))
   } catch {
-    return []
+    return [{ slug: '__empty' }]
   }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
+  if (slug === '__empty') return { title: 'lanedata' }
   const supabase = createStaticClient()
 
   const { data: article } = await supabase
@@ -73,6 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ArticlePage({ params }: Props) {
   const { slug } = await params
+  if (slug === '__empty') notFound()
   const supabase = createStaticClient()
 
   const { data: article } = await supabase
