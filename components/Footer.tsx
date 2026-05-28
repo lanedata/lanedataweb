@@ -8,10 +8,25 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="font-brand text-2xl font-extrabold tracking-brand text-cream">
-              lanedata
-            </p>
-            <p className="mt-1 label-mono text-cream/40">
+            <div className="flex items-center gap-3 mb-1">
+              <svg
+                viewBox="0 0 200 200"
+                width="44"
+                height="44"
+                aria-hidden="true"
+                className="shrink-0"
+              >
+                <circle cx="100" cy="100" r="100" fill="#9FE88D" />
+                <ellipse cx="74" cy="100" rx="14" ry="22" fill="#0D2A14" />
+                <ellipse cx="126" cy="100" rx="14" ry="22" fill="#0D2A14" />
+                <circle cx="78" cy="92" r="4" fill="#9FE88D" />
+                <circle cx="130" cy="92" r="4" fill="#9FE88D" />
+              </svg>
+              <p className="font-brand text-2xl font-extrabold tracking-brand text-cream">
+                lanedata
+              </p>
+            </div>
+            <p className="label-mono text-cream/40">
               El atletismo español con datos
             </p>
           </div>
