@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Fonts ─────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+
+/* ─── CSS custom properties ─────────────────────────────────────────────── */
+:root {
+  --ink:   #0D2A14;
+  --mint:  #9FE88D;
+  --cream: #F4F1EA;
+  --paper: #FBFAF6;
+  --rule:  rgba(13, 42, 20, 0.12);
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100dvh;
+}
+
+/* ─── Reusable label style ───────────────────────────────────────────────── */
+.label-mono {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(13, 42, 20, 0.55);
+}
+
+/* ─── Article content ────────────────────────────────────────────────────── */
+.article-body {
+  font-size: 1.0625rem;
+  line-height: 1.78;
+  color: var(--ink);
+}
+
+.article-body h2,
+.article-body h3,
+.article-body h4,
+.article-body h5,
+.article-body h6 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-top: 2.5rem;
+  margin-bottom: 0.875rem;
+  color: var(--ink);
+  scroll-margin-top: 5rem;
+}
+
+.article-body h2 { font-size: 1.5rem; }
+.article-body h3 { font-size: 1.25rem; }
+.article-body h4 { font-size: 1.0625rem; font-weight: 600; }
+
+.article-body p { margin-bottom: 1.5rem; }
+
+.article-body a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(13, 42, 20, 0.35);
+  transition: text-decoration-color 0.15s;
+}
+.article-body a:hover { text-decoration-color: var(--mint); }
+
+.article-body strong, .article-body b { font-weight: 600; }
+.article-body em, .article-body i { font-style: italic; }
+
+.article-body ul, .article-body ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.article-body li { margin-bottom: 0.4rem; }
+
+.article-body blockquote {
+  border-left: 3px solid var(--mint);
+  margin-left: 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  color: rgba(13, 42, 20, 0.72);
+  font-style: italic;
+  margin-bottom: 1.5rem;
+}
+
+.article-body code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.875em;
+  background: rgba(13, 42, 20, 0.07);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+.article-body pre {
+  background: var(--ink);
+  color: var(--mint);
+  padding: 1.25rem 1.5rem;
+  border-radius: 12px;
+  overflow-x: auto;
+  margin-bottom: 1.75rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.article-body pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+.article-body figure { margin: 2rem 0; }
+.article-body figcaption {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: rgba(13, 42, 20, 0.5);
+  text-align: center;
+  margin-top: 0.625rem;
+}
+
+.article-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+  font-size: 0.9375rem;
+}
+.article-body th {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(13, 42, 20, 0.5);
+  font-weight: 500;
+  padding: 0.5rem 0.875rem;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+}
+.article-body td {
+  padding: 0.6rem 0.875rem;
+  border-bottom: 1px solid var(--rule);
+}
+.article-body tr:hover td { background: rgba(13, 42, 20, 0.02); }
+
+.article-body hr {
+  border: none;
+  border-top: 1px solid var(--rule);
+  margin: 2.5rem 0;
+}
+
+.article-body mark {
+  background: var(--mint);
+  color: var(--ink);
+  padding: 0 0.15em;
+  border-radius: 2px;
+}
+
+.article-body details {
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 0.875rem 1.125rem;
+  margin-bottom: 1.5rem;
+}
+.article-body summary {
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9375rem;
+}
