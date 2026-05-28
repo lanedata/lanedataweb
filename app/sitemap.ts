@@ -6,15 +6,20 @@ import type { MetadataRoute } from 'next'
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mateogsilvaa.github.io/lanedata'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = createStaticClient()
+  let articles: { slug: string; updated_at: string }[] = []
+  try {
+    const supabase = createStaticClient()
+    const { data } = await supabase
+      .from('articles')
+      .select('slug, updated_at')
+      .eq('status', 'published')
+      .order('updated_at', { ascending: false })
+    articles = data ?? []
+  } catch {
+    // DB not ready yet — return minimal sitemap
+  }
 
-  const { data: articles } = await supabase
-    .from('articles')
-    .select('slug, updated_at')
-    .eq('status', 'published')
-    .order('updated_at', { ascending: false })
-
-  const articleUrls: MetadataRoute.Sitemap = (articles ?? []).map((a) => ({
+  const articleUrls: MetadataRoute.Sitemap = articles.map((a) => ({
     url: `${siteUrl}/articulo/${a.slug}/`,
     lastModified: new Date(a.updated_at),
     changeFrequency: 'monthly',

@@ -17,18 +17,22 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
-// Pre-generate a page for every published article at build time
+// Pre-generate a page for every published article at build time.
+// Returns [] on any error (DB not set up yet, network issue, etc.)
+// so the build never fails because of a missing/empty table.
 export async function generateStaticParams() {
-  const supabase = createStaticClient()
-  const { data } = await supabase
-    .from('articles')
-    .select('slug')
-    .eq('status', 'published')
-  return (data ?? []).map((a) => ({ slug: a.slug }))
+  try {
+    const supabase = createStaticClient()
+    const { data, error } = await supabase
+      .from('articles')
+      .select('slug')
+      .eq('status', 'published')
+    if (error) return []
+    return (data ?? []).map((a) => ({ slug: a.slug }))
+  } catch {
+    return []
+  }
 }
-
-// 404 for any slug not listed in generateStaticParams
-export const dynamicParams = false
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
