@@ -31,7 +31,7 @@ export function AdminNav() {
           <span className="label-mono text-cream/20">Admin</span>
 
           <nav className="hidden items-center gap-4 sm:flex">
-            <AdminNavLink href="/admin" exact active={pathname === '/admin'}>
+            <AdminNavLink href="/admin" active={pathname === '/admin'}>
               Artículos
             </AdminNavLink>
             <AdminNavLink href="/admin/nuevo" active={pathname === '/admin/nuevo'}>
@@ -54,12 +54,10 @@ export function AdminNav() {
 function AdminNavLink({
   href,
   active,
-  exact: _exact,
   children,
 }: {
   href: string
   active: boolean
-  exact?: boolean
   children: React.ReactNode
 }) {
   return (
