@@ -17,6 +17,12 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
+// A standalone HTML document starts with <!DOCTYPE or <html
+function isStandaloneHtml(content: string) {
+  const s = content.trimStart().toLowerCase()
+  return s.startsWith('<!doctype') || s.startsWith('<html')
+}
+
 export async function generateStaticParams() {
   try {
     const supabase = createStaticClient()
@@ -83,11 +89,13 @@ export default async function ArticlePage({ params }: Props) {
 
   if (!article) notFound()
 
-  // ── Standalone HTML file → fullscreen iframe, sin plantilla ──────────────
-  if (article.html_url) {
+  // ── Standalone HTML document → fullscreen iframe via srcdoc ──────────────
+  // srcdoc embeds the HTML directly — no cross-origin issues, no content-type
+  // problems (unlike Supabase Storage which forces text/plain for .html files).
+  if (isStandaloneHtml(article.html_content)) {
     return (
       <iframe
-        src={article.html_url}
+        srcDoc={article.html_content}
         title={article.title}
         style={{
           position: 'fixed',
@@ -102,7 +110,7 @@ export default async function ArticlePage({ params }: Props) {
     )
   }
 
-  // ── Inline HTML content → plantilla lanedata normal ───────────────────────
+  // ── Inline HTML fragment → plantilla lanedata normal ──────────────────────
   const minutes = readingTime(article.html_content)
   const articleUrl = `${siteUrl}/articulo/${slug}`
 
@@ -111,7 +119,6 @@ export default async function ArticlePage({ params }: Props) {
       <NavBar />
 
       <main>
-        {/* ── Article header ── */}
         <header className="mx-auto max-w-wide px-4 pt-10 pb-8 sm:px-6 sm:pt-14">
           <nav aria-label="Ruta" className="mb-6 flex items-center gap-2 label-mono text-ink/35">
             <Link href="/" className="hover:text-ink/60 transition-colors">lanedata</Link>
@@ -146,24 +153,16 @@ export default async function ArticlePage({ params }: Props) {
           </div>
         </header>
 
-        {/* ── Cover image ── */}
         {article.cover_image_url && (
           <div className="mx-auto max-w-6xl px-4 sm:px-6 mb-10">
             <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl bg-cream">
-              <Image
-                src={article.cover_image_url}
-                alt={article.title}
-                fill
-                className="object-cover"
-                priority
-                unoptimized
-                sizes="(max-width: 1200px) 100vw, 1200px"
-              />
+              <Image src={article.cover_image_url} alt={article.title} fill
+                className="object-cover" priority unoptimized
+                sizes="(max-width: 1200px) 100vw, 1200px" />
             </div>
           </div>
         )}
 
-        {/* ── Article body ── */}
         <div className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
           <div className="relative flex gap-16">
             <div className="min-w-0 flex-1">
@@ -175,13 +174,10 @@ export default async function ArticlePage({ params }: Props) {
           </div>
         </div>
 
-        {/* ── Footer nav ── */}
         <div className="border-t border-ink/[0.1] bg-cream/40">
           <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 flex items-center justify-between">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 label-mono text-ink/50 hover:text-ink transition-colors"
-            >
+            <Link href="/"
+              className="inline-flex items-center gap-2 label-mono text-ink/50 hover:text-ink transition-colors">
               <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
                 <path d="M13 5H1M5 1L1 5l4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
