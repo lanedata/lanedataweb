@@ -1,5 +1,12 @@
 import Link from 'next/link'
 
+// Nota: no usamos la clase .label-mono en el footer porque esa clase
+// define color: rgba(13,42,20,0.55) que aplasta las clases text-* de Tailwind
+// (viene después de @tailwind utilities en globals.css).
+// Usamos las clases equivalentes de fuente + los colores directamente.
+
+const monoBase = 'font-mono text-[0.6875rem] tracking-[0.22em] uppercase'
+
 export function Footer() {
   const year = new Date().getFullYear()
 
@@ -26,24 +33,23 @@ export function Footer() {
                 lanedata
               </p>
             </div>
-            {/* Subtitle con mint para contrastar con el fondo oscuro */}
-            <p className="label-mono text-mint/80">
+            <p className={`${monoBase} text-mint`}>
               El atletismo español con datos
             </p>
           </div>
 
           <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Pie de página">
-            <Link href="/" className="label-mono text-cream/70 hover:text-cream transition-colors">
+            <Link href="/" className={`${monoBase} text-cream/70 hover:text-cream transition-colors`}>
               Inicio
             </Link>
-            <Link href="/buscar" className="label-mono text-cream/70 hover:text-cream transition-colors">
+            <Link href="/buscar" className={`${monoBase} text-cream/70 hover:text-cream transition-colors`}>
               Buscar
             </Link>
           </nav>
         </div>
 
         <div className="mt-10 border-t border-cream/[0.15] pt-6">
-          <p className="label-mono text-cream/50">
+          <p className={`${monoBase} text-cream/50`}>
             © {year} lanedata · Todos los derechos reservados
           </p>
         </div>
