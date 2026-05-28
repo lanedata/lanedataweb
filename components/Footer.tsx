@@ -8,7 +8,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="flex items-center gap-3 mb-1">
+            <div className="flex items-center gap-3 mb-2">
               <svg
                 viewBox="0 0 200 200"
                 width="44"
@@ -26,23 +26,24 @@ export function Footer() {
                 lanedata
               </p>
             </div>
-            <p className="label-mono text-cream/40">
+            {/* Subtitle con mint para contrastar con el fondo oscuro */}
+            <p className="label-mono text-mint/80">
               El atletismo español con datos
             </p>
           </div>
 
           <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Pie de página">
-            <Link href="/" className="label-mono text-cream/40 hover:text-cream/70 transition-colors">
+            <Link href="/" className="label-mono text-cream/70 hover:text-cream transition-colors">
               Inicio
             </Link>
-            <Link href="/buscar" className="label-mono text-cream/40 hover:text-cream/70 transition-colors">
+            <Link href="/buscar" className="label-mono text-cream/70 hover:text-cream transition-colors">
               Buscar
             </Link>
           </nav>
         </div>
 
-        <div className="mt-10 border-t border-cream/[0.1] pt-6">
-          <p className="label-mono text-cream/25">
+        <div className="mt-10 border-t border-cream/[0.15] pt-6">
+          <p className="label-mono text-cream/50">
             © {year} lanedata · Todos los derechos reservados
           </p>
         </div>

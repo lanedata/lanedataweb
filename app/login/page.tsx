@@ -26,7 +26,8 @@ function LoginForm() {
     })
 
     if (authError) {
-      setError('Credenciales incorrectas. Inténtalo de nuevo.')
+      // Show the real Supabase error so misconfiguration is visible
+      setError(authError.message || 'Credenciales incorrectas. Inténtalo de nuevo.')
       setLoading(false)
       return
     }
