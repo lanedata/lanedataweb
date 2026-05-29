@@ -6,7 +6,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lanedata.es'  // cu
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'lanedata — El atletismo español con datos',
+    default: 'lanedata',
     template: '%s · lanedata',
   },
   description: 'Análisis, estadísticas y contexto del atletismo español.',
@@ -24,8 +24,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: '/brand/avatar-256.png',
-    apple: '/brand/avatar-512.png',
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
   },
 }
 

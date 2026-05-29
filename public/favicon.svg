@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Rounded square background in mint -->
+  <rect width="32" height="32" rx="7" fill="#9FE88D"/>
+  <!-- Left eye -->
+  <ellipse cx="11.5" cy="17" rx="3.5" ry="4.5" fill="#0D2A14"/>
+  <!-- Right eye -->
+  <ellipse cx="20.5" cy="17" rx="3.5" ry="4.5" fill="#0D2A14"/>
+  <!-- Left highlight -->
+  <circle cx="10.5" cy="15.5" r="1" fill="#9FE88D"/>
+  <!-- Right highlight -->
+  <circle cx="19.5" cy="15.5" r="1" fill="#9FE88D"/>
+</svg>
