@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'lanedata — El atletismo español con datos',
+  title: 'lanedata',
 }
 
 export default async function HomePage() {
