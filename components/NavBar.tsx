@@ -24,36 +24,23 @@ export function NavBar() {
   return (
     <header className="sticky top-0 z-50 border-b border-ink/[0.1] bg-paper/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-        {/* Logo: mark + wordmark */}
-        <Link
-          href="/"
-          className="flex items-center gap-2.5"
-          aria-label="lanedata — inicio"
-        >
-          <svg
-            viewBox="0 0 200 200"
-            width="32"
-            height="32"
-            aria-hidden="true"
-            className="shrink-0"
-          >
+
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5" aria-label="lanedata — inicio">
+          <svg viewBox="0 0 200 200" width="32" height="32" aria-hidden="true" className="shrink-0">
             <circle cx="100" cy="100" r="100" fill="#9FE88D" />
             <ellipse cx="74" cy="100" rx="14" ry="22" fill="#0D2A14" />
             <ellipse cx="126" cy="100" rx="14" ry="22" fill="#0D2A14" />
             <circle cx="78" cy="92" r="4" fill="#9FE88D" />
             <circle cx="130" cy="92" r="4" fill="#9FE88D" />
           </svg>
-          <span className="font-brand text-xl font-extrabold tracking-brand text-ink">
-            lanedata
-          </span>
+          <span className="font-brand text-xl font-extrabold tracking-brand text-ink">lanedata</span>
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-6 sm:flex" aria-label="Navegación principal">
           <NavLink href="/" active={pathname === '/'}>Inicio</NavLink>
           <NavLink href="/buscar" active={pathname === '/buscar'}>Buscar</NavLink>
-
-          {/* Rankings — external link with subtle pill style */}
           <a
             href={RANKINGS_URL}
             target="_blank"
@@ -65,8 +52,6 @@ export function NavBar() {
               <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
-
-          {/* Instagram */}
           <a
             href={INSTAGRAM_URL}
             target="_blank"
@@ -78,7 +63,7 @@ export function NavBar() {
           </a>
         </nav>
 
-        {/* Mobile: Rankings visible directly + hamburger */}
+        {/* Mobile: Rankings pill + hamburger */}
         <div className="flex items-center gap-2 sm:hidden">
           <a
             href={RANKINGS_URL}
@@ -91,29 +76,29 @@ export function NavBar() {
               <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
-
-        <button
-          className="flex h-8 w-8 items-center justify-center rounded-md"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
-        >
-          <span className="sr-only">{menuOpen ? 'Cerrar' : 'Menú'}</span>
-          <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true">
-            {menuOpen ? (
-              <>
-                <line x1="1" y1="1" x2="17" y2="13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-                <line x1="17" y1="1" x2="1" y2="13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-              </>
-            ) : (
-              <>
-                <line x1="0" y1="2" x2="18" y2="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-                <line x1="0" y1="7" x2="18" y2="7" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-                <line x1="0" y1="12" x2="18" y2="12" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-              </>
-            )}
-          </svg>
-        </button>
-        </div>{/* end mobile group */}
+          <button
+            className="flex h-8 w-8 items-center justify-center rounded-md"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          >
+            <span className="sr-only">{menuOpen ? 'Cerrar' : 'Menú'}</span>
+            <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true">
+              {menuOpen ? (
+                <>
+                  <line x1="1" y1="1" x2="17" y2="13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+                  <line x1="17" y1="1" x2="1" y2="13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+                </>
+              ) : (
+                <>
+                  <line x1="0" y1="2" x2="18" y2="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+                  <line x1="0" y1="7" x2="18" y2="7" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+                  <line x1="0" y1="12" x2="18" y2="12" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+                </>
+              )}
+            </svg>
+          </button>
+        </div>
+      </div>
 
       {/* Mobile menu */}
       {menuOpen && (
@@ -121,18 +106,6 @@ export function NavBar() {
           <nav className="flex flex-col gap-3">
             <MobileNavLink href="/" onClick={() => setMenuOpen(false)}>Inicio</MobileNavLink>
             <MobileNavLink href="/buscar" onClick={() => setMenuOpen(false)}>Buscar</MobileNavLink>
-            <a
-              href={RANKINGS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setMenuOpen(false)}
-              className="inline-flex items-center gap-1.5 label-mono text-ink/60 hover:text-ink transition-colors"
-            >
-              Rankings
-              <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true" className="opacity-40">
-                <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </a>
             <a
               href={INSTAGRAM_URL}
               target="_blank"
@@ -154,9 +127,7 @@ function NavLink({ href, active, children }: { href: string; active: boolean; ch
   return (
     <Link
       href={href}
-      className={`label-mono transition-colors ${
-        active ? 'text-ink' : 'text-ink/50 hover:text-ink/80'
-      }`}
+      className={`label-mono transition-colors ${active ? 'text-ink' : 'text-ink/50 hover:text-ink/80'}`}
     >
       {children}
     </Link>
@@ -165,11 +136,7 @@ function NavLink({ href, active, children }: { href: string; active: boolean; ch
 
 function MobileNavLink({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) {
   return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className="label-mono text-ink/60 hover:text-ink"
-    >
+    <Link href={href} onClick={onClick} className="label-mono text-ink/60 hover:text-ink">
       {children}
     </Link>
   )
