@@ -1,11 +1,16 @@
 import Link from 'next/link'
 
-// Nota: no usamos la clase .label-mono en el footer porque esa clase
-// define color: rgba(13,42,20,0.55) que aplasta las clases text-* de Tailwind
-// (viene después de @tailwind utilities en globals.css).
-// Usamos las clases equivalentes de fuente + los colores directamente.
-
 const monoBase = 'font-mono text-[0.6875rem] tracking-[0.22em] uppercase'
+
+function InstagramIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <circle cx="12" cy="12" r="4"/>
+      <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none"/>
+    </svg>
+  )
+}
 
 export function Footer() {
   const year = new Date().getFullYear()
@@ -16,13 +21,7 @@ export function Footer() {
         <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <svg
-                viewBox="0 0 200 200"
-                width="44"
-                height="44"
-                aria-hidden="true"
-                className="shrink-0"
-              >
+              <svg viewBox="0 0 200 200" width="44" height="44" aria-hidden="true" className="shrink-0">
                 <circle cx="100" cy="100" r="100" fill="#9FE88D" />
                 <ellipse cx="74" cy="100" rx="14" ry="22" fill="#0D2A14" />
                 <ellipse cx="126" cy="100" rx="14" ry="22" fill="#0D2A14" />
@@ -38,13 +37,22 @@ export function Footer() {
             </p>
           </div>
 
-          <nav className="flex flex-wrap gap-x-6 gap-y-2" aria-label="Pie de página">
+          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2" aria-label="Pie de página">
             <Link href="/" className={`${monoBase} text-cream/70 hover:text-cream transition-colors`}>
               Inicio
             </Link>
             <Link href="/buscar" className={`${monoBase} text-cream/70 hover:text-cream transition-colors`}>
               Buscar
             </Link>
+            <a
+              href="https://www.instagram.com/lanedata/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram de lanedata"
+              className="text-cream/50 hover:text-cream transition-colors"
+            >
+              <InstagramIcon />
+            </a>
           </nav>
         </div>
 

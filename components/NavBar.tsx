@@ -5,6 +5,17 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
 const RANKINGS_URL = 'https://atletismo-espana.web.app/?skin=lane'
+const INSTAGRAM_URL = 'https://www.instagram.com/lanedata/'
+
+function InstagramIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <circle cx="12" cy="12" r="4"/>
+      <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none"/>
+    </svg>
+  )
+}
 
 export function NavBar() {
   const pathname = usePathname()
@@ -54,6 +65,17 @@ export function NavBar() {
               <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </a>
+
+          {/* Instagram */}
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram de lanedata"
+            className="text-ink/40 hover:text-ink transition-colors"
+          >
+            <InstagramIcon />
+          </a>
         </nav>
 
         {/* Mobile toggle */}
@@ -97,6 +119,16 @@ export function NavBar() {
               <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true" className="opacity-40">
                 <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
+            </a>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMenuOpen(false)}
+              className="inline-flex items-center gap-2 label-mono text-ink/60 hover:text-ink transition-colors"
+            >
+              <InstagramIcon />
+              Instagram
             </a>
           </nav>
         </div>
