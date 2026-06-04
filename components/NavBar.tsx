@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
+const RANKINGS_URL = 'https://atletismo-espana.web.app/?skin=lane'
+
 export function NavBar() {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -39,6 +41,19 @@ export function NavBar() {
         <nav className="hidden items-center gap-6 sm:flex" aria-label="Navegación principal">
           <NavLink href="/" active={pathname === '/'}>Inicio</NavLink>
           <NavLink href="/buscar" active={pathname === '/buscar'}>Buscar</NavLink>
+
+          {/* Rankings — external link with subtle pill style */}
+          <a
+            href={RANKINGS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-full border border-ink/[0.15] bg-mint/20 px-3 py-1 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
+          >
+            Rankings
+            <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true" className="opacity-50">
+              <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
         </nav>
 
         {/* Mobile toggle */}
@@ -71,6 +86,18 @@ export function NavBar() {
           <nav className="flex flex-col gap-3">
             <MobileNavLink href="/" onClick={() => setMenuOpen(false)}>Inicio</MobileNavLink>
             <MobileNavLink href="/buscar" onClick={() => setMenuOpen(false)}>Buscar</MobileNavLink>
+            <a
+              href={RANKINGS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMenuOpen(false)}
+              className="inline-flex items-center gap-1.5 label-mono text-ink/60 hover:text-ink transition-colors"
+            >
+              Rankings
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true" className="opacity-40">
+                <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </a>
           </nav>
         </div>
       )}
