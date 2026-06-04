@@ -37,7 +37,7 @@ export function SearchBar({ defaultValue = '', autoFocus = false }: Props) {
         type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Busca por título, atleta, campeonato…"
+        placeholder="Buscar análisis por…"
         autoFocus={autoFocus}
         className="w-full rounded-full border border-ink/[0.15] bg-cream/60 px-5 py-3 pr-12 text-sm text-ink placeholder:text-ink/40 focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40 transition-colors"
       />
