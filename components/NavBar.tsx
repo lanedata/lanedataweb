@@ -7,6 +7,18 @@ import { useState } from 'react'
 const RANKINGS_URL = 'https://mundoatletismo.es/?skin=lane#/'
 const INSTAGRAM_URL = 'https://www.instagram.com/lanedata/'
 
+function TrackIcon({ size = 14 }: { size?: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width={size} height={size} aria-hidden="true" style={{ flexShrink: 0 }}>
+      <g fill="none" strokeLinejoin="round">
+        <rect x="10" y="18" width="80" height="64" rx="32" stroke="#12331C" strokeWidth="3.4"/>
+        <rect x="20" y="28" width="60" height="44" rx="22" stroke="#12331C" strokeWidth="3.4"/>
+        <rect x="30" y="38" width="40" height="24" rx="12" stroke="#34804A" strokeWidth="3.8"/>
+      </g>
+    </svg>
+  )
+}
+
 function InstagramIcon() {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -28,11 +40,11 @@ export function NavBar() {
         {/* Logo — en móvil solo el mark, en desktop mark + texto */}
         <Link href="/" className="flex items-center gap-2.5" aria-label="lanedata — inicio">
           <svg viewBox="0 0 200 200" width="32" height="32" aria-hidden="true" className="shrink-0">
-            <rect width="200" height="200" rx="44" fill="#9FE88D" />
-            <ellipse cx="74" cy="108" rx="18" ry="26" fill="#0D2A14" />
-            <ellipse cx="126" cy="108" rx="18" ry="26" fill="#0D2A14" />
-            <circle cx="67" cy="96" r="5.5" fill="#9FE88D" />
-            <circle cx="119" cy="96" r="5.5" fill="#9FE88D" />
+            <circle cx="100" cy="100" r="100" fill="#9FE88D" />
+            <ellipse cx="74" cy="100" rx="14" ry="22" fill="#0D2A14" />
+            <ellipse cx="126" cy="100" rx="14" ry="22" fill="#0D2A14" />
+            <circle cx="78" cy="92" r="4" fill="#9FE88D" />
+            <circle cx="130" cy="92" r="4" fill="#9FE88D" />
           </svg>
           <span className="font-brand text-xl font-extrabold tracking-brand text-ink">
             lanedata
@@ -49,10 +61,8 @@ export function NavBar() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full border border-ink/[0.15] bg-mint/20 px-3 py-1 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
           >
+            <TrackIcon size={13} />
             Ranking: Mundo Atletismo
-            <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true" className="opacity-50">
-              <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
           </a>
           <a
             href={INSTAGRAM_URL}
@@ -71,12 +81,10 @@ export function NavBar() {
             href={RANKINGS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-full border border-ink/[0.15] bg-mint/20 px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-full border border-ink/[0.15] bg-mint/20 px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
           >
+            <TrackIcon size={12} />
             Mundo Atletismo
-            <svg width="8" height="8" viewBox="0 0 9 9" fill="none" aria-hidden="true" className="opacity-50">
-              <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
           </a>
           <button
             className="flex h-8 w-8 items-center justify-center rounded-md"
