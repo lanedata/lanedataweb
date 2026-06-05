@@ -1,12 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- Rounded square background in mint -->
-  <rect width="32" height="32" rx="7" fill="#9FE88D"/>
-  <!-- Left eye -->
-  <ellipse cx="11.5" cy="17" rx="3.5" ry="4.5" fill="#0D2A14"/>
-  <!-- Right eye -->
-  <ellipse cx="20.5" cy="17" rx="3.5" ry="4.5" fill="#0D2A14"/>
-  <!-- Left highlight -->
-  <circle cx="10.5" cy="15.5" r="1" fill="#9FE88D"/>
-  <!-- Right highlight -->
-  <circle cx="19.5" cy="15.5" r="1" fill="#9FE88D"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" rx="44" fill="#9FE88D"/>
+  <ellipse cx="74" cy="108" rx="18" ry="26" fill="#0D2A14"/>
+  <ellipse cx="126" cy="108" rx="18" ry="26" fill="#0D2A14"/>
+  <circle cx="67" cy="96" r="5.5" fill="#9FE88D"/>
+  <circle cx="119" cy="96" r="5.5" fill="#9FE88D"/>
 </svg>

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
-const RANKINGS_URL = 'https://mundoatletismo.es/'
+const RANKINGS_URL = 'https://mundoatletismo.es/?skin=lane#/'
 const INSTAGRAM_URL = 'https://www.instagram.com/lanedata/'
 
 function InstagramIcon() {
@@ -28,11 +28,11 @@ export function NavBar() {
         {/* Logo — en móvil solo el mark, en desktop mark + texto */}
         <Link href="/" className="flex items-center gap-2.5" aria-label="lanedata — inicio">
           <svg viewBox="0 0 200 200" width="32" height="32" aria-hidden="true" className="shrink-0">
-            <circle cx="100" cy="100" r="100" fill="#9FE88D" />
-            <ellipse cx="74" cy="100" rx="14" ry="22" fill="#0D2A14" />
-            <ellipse cx="126" cy="100" rx="14" ry="22" fill="#0D2A14" />
-            <circle cx="78" cy="92" r="4" fill="#9FE88D" />
-            <circle cx="130" cy="92" r="4" fill="#9FE88D" />
+            <rect width="200" height="200" rx="44" fill="#9FE88D" />
+            <ellipse cx="74" cy="108" rx="18" ry="26" fill="#0D2A14" />
+            <ellipse cx="126" cy="108" rx="18" ry="26" fill="#0D2A14" />
+            <circle cx="67" cy="96" r="5.5" fill="#9FE88D" />
+            <circle cx="119" cy="96" r="5.5" fill="#9FE88D" />
           </svg>
           <span className="font-brand text-xl font-extrabold tracking-brand text-ink">
             lanedata

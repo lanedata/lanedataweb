@@ -40,11 +40,11 @@ export default async function HomePage() {
                 aria-label="lanedata"
                 className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24"
               >
-                <circle cx="100" cy="100" r="100" fill="#9FE88D" />
-                <ellipse cx="74" cy="100" rx="14" ry="22" fill="#0D2A14" />
-                <ellipse cx="126" cy="100" rx="14" ry="22" fill="#0D2A14" />
-                <circle cx="78" cy="92" r="4" fill="#9FE88D" />
-                <circle cx="130" cy="92" r="4" fill="#9FE88D" />
+                <rect width="200" height="200" rx="44" fill="#9FE88D" />
+                <ellipse cx="74" cy="108" rx="18" ry="26" fill="#0D2A14" />
+                <ellipse cx="126" cy="108" rx="18" ry="26" fill="#0D2A14" />
+                <circle cx="67" cy="96" r="5.5" fill="#9FE88D" />
+                <circle cx="119" cy="96" r="5.5" fill="#9FE88D" />
               </svg>
               <div>
                 <h1 className="font-brand text-5xl font-extrabold tracking-brand text-ink sm:text-6xl md:text-7xl leading-none">
@@ -99,11 +99,11 @@ function EmptyState() {
   return (
     <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-ink/[0.1] bg-cream/40 text-center p-12">
       <svg viewBox="0 0 200 200" className="w-16 h-16 mb-6 opacity-20" aria-hidden="true">
-        <circle cx="100" cy="100" r="100" fill="#9FE88D" />
-        <ellipse cx="74" cy="100" rx="14" ry="22" fill="#0D2A14" />
-        <ellipse cx="126" cy="100" rx="14" ry="22" fill="#0D2A14" />
-        <circle cx="78" cy="92" r="4" fill="#9FE88D" />
-        <circle cx="130" cy="92" r="4" fill="#9FE88D" />
+        <rect width="200" height="200" rx="44" fill="#9FE88D" />
+        <ellipse cx="74" cy="108" rx="18" ry="26" fill="#0D2A14" />
+        <ellipse cx="126" cy="108" rx="18" ry="26" fill="#0D2A14" />
+        <circle cx="67" cy="96" r="5.5" fill="#9FE88D" />
+        <circle cx="119" cy="96" r="5.5" fill="#9FE88D" />
       </svg>
       <p className="font-brand text-xl font-bold text-ink/40">Aún no hay análisis publicados</p>
       <p className="mt-2 text-sm text-ink/30">
