@@ -24,9 +24,12 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-256.png', sizes: '256x256', type: 'image/png' },
+    ],
+    shortcut: '/favicon-256.png',
+    apple: '/favicon-512.png',
   },
 }
 
