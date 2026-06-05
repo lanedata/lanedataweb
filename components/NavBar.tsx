@@ -25,7 +25,7 @@ export function NavBar() {
     <header className="sticky top-0 z-50 border-b border-ink/[0.1] bg-paper/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
 
-        {/* Logo */}
+        {/* Logo — en móvil solo el mark, en desktop mark + texto */}
         <Link href="/" className="flex items-center gap-2.5" aria-label="lanedata — inicio">
           <svg viewBox="0 0 200 200" width="32" height="32" aria-hidden="true" className="shrink-0">
             <circle cx="100" cy="100" r="100" fill="#9FE88D" />
@@ -34,7 +34,9 @@ export function NavBar() {
             <circle cx="78" cy="92" r="4" fill="#9FE88D" />
             <circle cx="130" cy="92" r="4" fill="#9FE88D" />
           </svg>
-          <span className="font-brand text-xl font-extrabold tracking-brand text-ink">lanedata</span>
+          <span className="hidden sm:inline font-brand text-xl font-extrabold tracking-brand text-ink">
+            lanedata
+          </span>
         </Link>
 
         {/* Desktop nav */}
@@ -63,7 +65,7 @@ export function NavBar() {
           </a>
         </nav>
 
-        {/* Mobile: Rankings pill + hamburger */}
+        {/* Mobile: píldora corta "Ranking" + hamburger */}
         <div className="flex items-center gap-2 sm:hidden">
           <a
             href={RANKINGS_URL}
@@ -71,7 +73,7 @@ export function NavBar() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 rounded-full border border-ink/[0.15] bg-mint/20 px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
           >
-            Ranking: Mundo Atletismo
+            Ranking
             <svg width="8" height="8" viewBox="0 0 9 9" fill="none" aria-hidden="true" className="opacity-50">
               <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
