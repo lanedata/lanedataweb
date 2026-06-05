@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
-const RANKINGS_URL = 'https://atletismo-espana.web.app/?skin=lane'
+const RANKINGS_URL = 'https://mundoatletismo.es/'
 const INSTAGRAM_URL = 'https://www.instagram.com/lanedata/'
 
 function InstagramIcon() {
@@ -47,7 +47,7 @@ export function NavBar() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full border border-ink/[0.15] bg-mint/20 px-3 py-1 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
           >
-            Rankings
+            Ranking: Mundo Atletismo
             <svg width="9" height="9" viewBox="0 0 9 9" fill="none" aria-hidden="true" className="opacity-50">
               <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
@@ -71,7 +71,7 @@ export function NavBar() {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 rounded-full border border-ink/[0.15] bg-mint/20 px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
           >
-            Rankings
+            Ranking: Mundo Atletismo
             <svg width="8" height="8" viewBox="0 0 9 9" fill="none" aria-hidden="true" className="opacity-50">
               <path d="M1 8L8 1M8 1H3M8 1V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
