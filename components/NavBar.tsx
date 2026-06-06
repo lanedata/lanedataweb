@@ -112,7 +112,7 @@ export function NavBar() {
 
       {/* Mobile menu */}
       {menuOpen && (
-        <div className="border-t border-ink/[0.1] bg-paper px-4 py-4 sm:hidden">
+        <div className="mobile-menu-enter border-t border-ink/[0.1] bg-paper px-4 py-4 sm:hidden">
           <nav className="flex flex-col gap-3">
             <MobileNavLink href="/" onClick={() => setMenuOpen(false)}>Inicio</MobileNavLink>
             <MobileNavLink href="/buscar" onClick={() => setMenuOpen(false)}>Buscar</MobileNavLink>

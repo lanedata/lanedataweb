@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>lanedata — brand sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mint: #9FE88D;
+    --ink: #0D2A14;
+    --cream: #F4F1EA;
+    --paper: #FBFAF6;
+    --rule: rgba(13,42,20,0.12);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 80px 64px 120px;
+  }
+  .mono {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(13,42,20,0.55);
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 24px;
+    margin-bottom: 56px;
+  }
+  .header h1 {
+    font-size: 64px; font-weight: 800; letter-spacing: -0.04em;
+    margin: 0; line-height: 1;
+  }
+  section {
+    margin-bottom: 88px;
+  }
+  section > .label {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 28px;
+  }
+  section > .label::before {
+    content: ''; display: block; width: 24px; height: 1px; background: var(--ink);
+  }
+  h2 {
+    font-size: 14px; font-weight: 700; margin: 0;
+    letter-spacing: -0.01em;
+  }
+  /* ==== HERO mark ==== */
+  .hero {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    align-items: center;
+    background: var(--cream); border-radius: 32px; padding: 72px;
+  }
+  .hero .markwrap { display: flex; justify-content: center; }
+  .hero h3 {
+    font-size: 40px; font-weight: 800; letter-spacing: -0.03em;
+    margin: 0 0 16px;
+  }
+  .hero p {
+    font-size: 16px; line-height: 1.6; margin: 0;
+    color: rgba(13,42,20,0.7); max-width: 38ch;
+  }
+
+  /* ==== variants grid ==== */
+  .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  }
+  .tile {
+    border: 1px solid var(--rule); border-radius: 18px;
+    padding: 22px; aspect-ratio: 1;
+    display: flex; flex-direction: column; justify-content: space-between;
+    background: var(--paper);
+  }
+  .tile.dark { background: var(--ink); }
+  .tile.cream { background: var(--cream); }
+  .tile.mint { background: var(--mint); }
+  .tile .canvas {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+  }
+  .tile .canvas img, .tile .canvas svg { max-width: 60%; height: auto; }
+  .tile .meta {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .tile.dark .mono { color: rgba(244,241,234,0.55); }
+
+  /* ==== colors ==== */
+  .colors {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  .swatch {
+    border-radius: 18px; padding: 24px; aspect-ratio: 1.4;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .swatch h4 {
+    font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.02em;
+  }
+  .swatch .codes { display: flex; flex-direction: column; gap: 4px; }
+  .swatch .codes .mono { font-size: 11px; }
+
+  /* ==== typography ==== */
+  .type {
+    border: 1px solid var(--rule); border-radius: 18px; padding: 40px;
+    background: var(--paper);
+    display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: flex-end;
+  }
+  .type .spec { padding-bottom: 8px; }
+  .type .show {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800; font-size: 84px; letter-spacing: -0.04em; line-height: 0.95;
+  }
+
+  /* ==== usage ==== */
+  .usage { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .usage .demo {
+    border: 1px solid var(--rule); border-radius: 18px; padding: 28px;
+    background: var(--paper);
+  }
+  .ig-card {
+    background: linear-gradient(135deg, #fafafa, #f0f0f0); border-radius: 12px;
+    padding: 18px; display: flex; align-items: center; gap: 12px;
+  }
+  .ig-card .ring {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: conic-gradient(from 45deg, #fbb034, #ffdc80, #c13584, #833ab4, #fbb034);
+    padding: 2px;
+  }
+  .ig-card .ring > .inner {
+    width: 100%; height: 100%; border-radius: 50%; background: #fff; padding: 2px;
+  }
+  .ig-card .ring > .inner > .av {
+    width: 100%; height: 100%; border-radius: 50%; overflow: hidden;
+  }
+  .ig-card .handle {
+    font-weight: 700; font-size: 14px;
+  }
+  .ig-card .handle .small {
+    display: block; font-weight: 500; font-size: 12px;
+    color: rgba(0,0,0,0.55);
+  }
+  .ig-story {
+    aspect-ratio: 9/16; background: var(--ink); border-radius: 12px;
+    display: flex; align-items: flex-end; justify-content: flex-start;
+    padding: 18px; position: relative; overflow: hidden;
+  }
+  .ig-story::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(120% 80% at 50% 110%, rgba(159,232,141,0.25), transparent 60%),
+      radial-gradient(80% 60% at 0% 0%, rgba(159,232,141,0.15), transparent 70%);
+  }
+  .ig-story .sticker {
+    width: 56px; height: 56px; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.3); position: relative;
+  }
+  .ig-story .caption {
+    color: var(--cream); font-weight: 700; font-size: 14px;
+    margin-left: 12px; position: relative; line-height: 1.3;
+  }
+  .ig-story .caption small {
+    display: block; font-weight: 500; opacity: 0.65; font-size: 11px;
+    letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .watermark {
+    aspect-ratio: 1; background: var(--cream); border-radius: 12px;
+    position: relative; overflow: hidden;
+  }
+  .watermark::after {
+    content: 'POST · 1080×1080';
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.24em; color: rgba(13,42,20,0.25);
+  }
+  .watermark .wm {
+    position: absolute; right: 12px; bottom: 12px;
+    width: 44px; height: 44px; border-radius: 50%; overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+
+  /* ==== rules: do / don't ==== */
+  .rules { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .rule {
+    border: 1px solid var(--rule); border-radius: 18px; padding: 22px;
+    aspect-ratio: 1; display: flex; flex-direction: column; justify-content: space-between;
+    background: var(--paper);
+  }
+  .rule .canvas {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    background: var(--cream); border-radius: 12px; margin-bottom: 14px;
+  }
+  .rule .canvas img { max-width: 56%; height: auto; }
+  .rule.bad .canvas { background: #fbe9e6; }
+  .rule .verdict { font-weight: 700; font-size: 13px; }
+  .rule.bad .verdict { color: #c8302b; }
+  .rule.bad .verdict::before { content: '✕  '; }
+  .rule.ok .verdict::before  { content: '✓  '; color: #1f7a3a; }
+
+  /* squashed icon (for "don't") */
+  .squash img { transform: scaleX(1.6); }
+  .skew  img  { transform: skew(-12deg); }
+  .recolor img { filter: hue-rotate(220deg) saturate(0.7); }
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <h1>lanedata</h1>
+    <div class="mono">brand sheet · v1 · 2026</div>
+  </header>
+
+  <!-- HERO -->
+  <section>
+    <div class="label">
+      <h2 class="mono">01 · the mark</h2>
+    </div>
+    <div class="hero">
+      <div class="markwrap">
+        <img src="mark-circle.svg" alt="lanedata mark" style="width: 320px; height: 320px;" />
+      </div>
+      <div>
+        <h3>Friendly face. Steady look.</h3>
+        <p>A mint pill with two calm eyes — the logo is the mascot. Reads as a face at any size, from a 20px nav tile to a full-screen story sticker.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VARIANTS -->
+  <section>
+    <div class="label"><h2 class="mono">02 · variants</h2></div>
+    <div class="grid">
+      <div class="tile cream">
+        <div class="canvas"><img src="mark-circle.svg" alt="primary"/></div>
+        <div class="meta"><span class="mono">primary</span><span class="mono">circle</span></div>
+      </div>
+      <div class="tile cream">
+        <div class="canvas"><img src="mark-square.svg" alt="square"/></div>
+        <div class="meta"><span class="mono">primary</span><span class="mono">square</span></div>
+      </div>
+      <div class="tile cream">
+        <div class="canvas"><img src="mark-mono-dark.svg" alt="mono dark"/></div>
+        <div class="meta"><span class="mono">mono</span><span class="mono">ink</span></div>
+      </div>
+      <div class="tile dark">
+        <div class="canvas"><img src="mark-mono-light.svg" alt="mono light"/></div>
+        <div class="meta"><span class="mono">mono</span><span class="mono">cream</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCKUPS -->
+  <section>
+    <div class="label"><h2 class="mono">03 · lockups</h2></div>
+    <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap: 20px;">
+      <div class="tile cream" style="aspect-ratio:auto; padding: 56px;">
+        <div class="canvas" style="min-height:160px;">
+          <img src="lockup-horizontal.svg" alt="horizontal lockup" style="width: 100%; max-width: 580px;"/>
+        </div>
+        <div class="meta" style="margin-top: 24px;"><span class="mono">horizontal</span><span class="mono">primary use</span></div>
+      </div>
+      <div class="tile cream" style="aspect-ratio:auto; padding: 40px;">
+        <div class="canvas" style="min-height:280px;">
+          <img src="lockup-stacked.svg" alt="stacked lockup" style="width: 100%; max-width: 280px;"/>
+        </div>
+        <div class="meta" style="margin-top: 24px;"><span class="mono">stacked</span><span class="mono">posts · cards</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLORS -->
+  <section>
+    <div class="label"><h2 class="mono">04 · color</h2></div>
+    <div class="colors">
+      <div class="swatch" style="background:#9FE88D; color:#0D2A14;">
+        <h4>Mint</h4>
+        <div class="codes">
+          <div class="mono" style="color:rgba(13,42,20,0.7);">HEX · #9FE88D</div>
+          <div class="mono" style="color:rgba(13,42,20,0.7);">RGB · 159 232 141</div>
+          <div class="mono" style="color:rgba(13,42,20,0.7);">CMYK · 35/0/55/0</div>
+        </div>
+      </div>
+      <div class="swatch" style="background:#0D2A14; color:#9FE88D;">
+        <h4>Ink</h4>
+        <div class="codes">
+          <div class="mono" style="color:rgba(159,232,141,0.7);">HEX · #0D2A14</div>
+          <div class="mono" style="color:rgba(159,232,141,0.7);">RGB · 13 42 20</div>
+          <div class="mono" style="color:rgba(159,232,141,0.7);">CMYK · 80/0/85/85</div>
+        </div>
+      </div>
+      <div class="swatch" style="background:#F4F1EA; color:#0D2A14; border: 1px solid var(--rule);">
+        <h4>Cream</h4>
+        <div class="codes">
+          <div class="mono" style="color:rgba(13,42,20,0.6);">HEX · #F4F1EA</div>
+          <div class="mono" style="color:rgba(13,42,20,0.6);">RGB · 244 241 234</div>
+          <div class="mono" style="color:rgba(13,42,20,0.6);">CMYK · 2/2/6/0</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TYPOGRAPHY -->
+  <section>
+    <div class="label"><h2 class="mono">05 · typography</h2></div>
+    <div class="type">
+      <div class="spec">
+        <div class="mono" style="margin-bottom: 6px;">wordmark</div>
+        <div style="font-weight:700; font-size: 16px;">Bricolage Grotesque</div>
+        <div class="mono" style="margin-top: 6px;">800 · tracking -4%</div>
+      </div>
+      <div class="show">lanedata</div>
+    </div>
+  </section>
+
+  <!-- USAGE -->
+  <section>
+    <div class="label"><h2 class="mono">06 · in context</h2></div>
+    <div class="usage">
+      <div class="demo">
+        <div class="mono" style="margin-bottom: 14px;">ig profile</div>
+        <div class="ig-card">
+          <div class="ring"><div class="inner"><div class="av"><img src="mark-square.svg" alt="" style="width:100%;display:block;"/></div></div></div>
+          <div class="handle">lanedata<span class="small">track · field · numbers</span></div>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="mono" style="margin-bottom: 14px;">story sticker</div>
+        <div class="ig-story">
+          <div class="sticker"><img src="mark-square.svg" alt="" style="width:100%;display:block;"/></div>
+          <div class="caption"><small>SPLIT · 200M</small>19.84</div>
+        </div>
+      </div>
+      <div class="demo">
+        <div class="mono" style="margin-bottom: 14px;">post watermark</div>
+        <div class="watermark">
+          <div class="wm"><img src="mark-square.svg" alt="" style="width:100%;display:block;"/></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DO / DONT -->
+  <section>
+    <div class="label"><h2 class="mono">07 · don't</h2></div>
+    <div class="rules">
+      <div class="rule ok">
+        <div class="canvas"><img src="mark-circle.svg" alt=""/></div>
+        <div class="verdict">use as drawn</div>
+      </div>
+      <div class="rule bad squash">
+        <div class="canvas"><img src="mark-circle.svg" alt=""/></div>
+        <div class="verdict">stretch</div>
+      </div>
+      <div class="rule bad skew">
+        <div class="canvas"><img src="mark-circle.svg" alt=""/></div>
+        <div class="verdict">skew</div>
+      </div>
+      <div class="rule bad recolor">
+        <div class="canvas"><img src="mark-circle.svg" alt=""/></div>
+        <div class="verdict">re-color</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILES -->
+  <section>
+    <div class="label"><h2 class="mono">08 · files</h2></div>
+    <div style="border: 1px solid var(--rule); border-radius: 18px; padding: 32px; background: var(--paper);">
+      <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+        <tbody>
+          <tr><td style="padding: 8px 0; width: 36%;" class="mono">mark-square.svg</td><td style="opacity:0.7;">Vector · square avatar / full-bleed</td></tr>
+          <tr><td style="padding: 8px 0;" class="mono">mark-circle.svg</td><td style="opacity:0.7;">Vector · pre-cropped circle</td></tr>
+          <tr><td style="padding: 8px 0;" class="mono">mark-mono-dark.svg</td><td style="opacity:0.7;">Single-color · ink silhouette</td></tr>
+          <tr><td style="padding: 8px 0;" class="mono">mark-mono-light.svg</td><td style="opacity:0.7;">Single-color · cream silhouette</td></tr>
+          <tr><td style="padding: 8px 0;" class="mono">lockup-horizontal.svg</td><td style="opacity:0.7;">Mark + wordmark side-by-side</td></tr>
+          <tr><td style="padding: 8px 0;" class="mono">lockup-stacked.svg</td><td style="opacity:0.7;">Mark above wordmark</td></tr>
+          <tr><td style="padding: 8px 0;" class="mono">avatar-1080.png</td><td style="opacity:0.7;"><strong>For IG profile upload</strong> · 1080×1080</td></tr>
+          <tr><td style="padding: 8px 0;" class="mono">avatar-circle-1080.png</td><td style="opacity:0.7;">Pre-cropped circle · 1080×1080</td></tr>
+          <tr><td style="padding: 8px 0;" class="mono">avatar-512.png</td><td style="opacity:0.7;">Mid-size raster</td></tr>
+          <tr><td style="padding: 8px 0;" class="mono">avatar-256.png</td><td style="opacity:0.7;">Small raster · favicons</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

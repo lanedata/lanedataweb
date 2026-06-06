@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 380" width="1200" height="760">
+  <title>lanedata — stacked lockup</title>
+  <g transform="translate(200 0)">
+    <circle cx="100" cy="100" r="100" fill="#9FE88D"></circle>
+    <ellipse cx="74" cy="100" rx="14" ry="22" fill="#0D2A14"></ellipse>
+    <ellipse cx="126" cy="100" rx="14" ry="22" fill="#0D2A14"></ellipse>
+    <circle cx="78" cy="92" r="4" fill="#9FE88D"></circle>
+    <circle cx="130" cy="92" r="4" fill="#9FE88D"></circle>
+  </g>
+  <text x="300" y="330" text-anchor="middle" font-family="Bricolage Grotesque, Helvetica, Arial, sans-serif" font-weight="800" font-size="92" letter-spacing="-4" fill="#0D2A14">lanedata</text>
+</svg>

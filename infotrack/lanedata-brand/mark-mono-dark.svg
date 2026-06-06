@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="1080" height="1080">
+  <title>lanedata — mark (mono dark)</title>
+  <defs>
+    <mask id="eyes-knockout">
+      <rect width="200" height="200" fill="white"></rect>
+      <ellipse cx="74" cy="100" rx="14" ry="22" fill="black"></ellipse>
+      <ellipse cx="126" cy="100" rx="14" ry="22" fill="black"></ellipse>
+    </mask>
+  </defs>
+  <rect width="200" height="200" fill="#0D2A14" mask="url(#eyes-knockout)"></rect>
+</svg>

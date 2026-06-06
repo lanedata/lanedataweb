@@ -80,7 +80,7 @@ export default async function HomePage() {
               <div className="h-px flex-1 bg-ink/[0.1]" />
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="article-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {rest.map((article) => (
                 <ArticleCard key={article.id} article={article} />
               ))}

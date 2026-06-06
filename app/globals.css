@@ -7,11 +7,15 @@
 
 /* ─── CSS custom properties ─────────────────────────────────────────────── */
 :root {
-  --ink:   #0D2A14;
-  --mint:  #9FE88D;
-  --cream: #F4F1EA;
-  --paper: #FBFAF6;
-  --rule:  rgba(13, 42, 20, 0.12);
+  --ink:        #0D2A14;
+  --mint:       #9FE88D;
+  --cream:      #F4F1EA;
+  --paper:      #FBFAF6;
+  --rule:       rgba(13, 42, 20, 0.12);
+
+  /* Easing curves — Emil Kowalski / animations.dev */
+  --ease-out:     cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out:  cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 /* ─── Base ───────────────────────────────────────────────────────────────── */
@@ -37,6 +41,43 @@ body {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(13, 42, 20, 0.55);
+}
+
+/* ─── Mobile menu enter animation ───────────────────────────────────────── */
+.mobile-menu-enter {
+  animation: menuSlideDown 180ms var(--ease-out) both;
+}
+
+@keyframes menuSlideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Article card stagger ───────────────────────────────────────────────── */
+.article-grid > *:nth-child(1) { animation-delay:   0ms; }
+.article-grid > *:nth-child(2) { animation-delay:  50ms; }
+.article-grid > *:nth-child(3) { animation-delay: 100ms; }
+.article-grid > *:nth-child(4) { animation-delay: 150ms; }
+.article-grid > *:nth-child(5) { animation-delay: 200ms; }
+.article-grid > *:nth-child(6) { animation-delay: 250ms; }
+
+.article-grid > * {
+  animation: cardFadeIn 280ms var(--ease-out) both;
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── prefers-reduced-motion ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ─── Article content ────────────────────────────────────────────────────── */

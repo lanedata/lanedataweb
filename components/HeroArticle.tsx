@@ -70,7 +70,7 @@ export function HeroArticle({ article }: Props) {
 
           <Link
             href={href}
-            className="inline-flex items-center gap-2 rounded-full bg-mint px-5 py-2.5 font-brand text-sm font-bold tracking-tight text-ink transition-transform hover:-translate-y-px"
+            className="inline-flex items-center gap-2 rounded-full bg-mint px-5 py-2.5 font-brand text-sm font-bold tracking-tight text-ink transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.97]"
           >
             Leer análisis
             <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
