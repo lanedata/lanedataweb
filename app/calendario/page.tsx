@@ -38,18 +38,19 @@ export default async function CalendarioPage() {
                 Calendario 2026
               </h1>
               <p className="mt-3 text-sm text-ink/55 max-w-lg leading-relaxed">
-                Competiciones oficiales del atletismo español. Fuente: RFEA.
+                441 competiciones del atletismo español e internacional.
                 Las marcadas con{' '}
-                <span className="inline-flex items-center gap-1 rounded-full bg-mint px-2 py-0.5 font-brand text-[0.7rem] font-bold text-ink">
-                  Análisis
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-mint px-2.5 py-0.5 font-brand text-[0.68rem] font-bold text-ink">
+                  <span className="w-1.5 h-1.5 rounded-full bg-ink/40 inline-block" />
+                  Análisis lanedata
                 </span>{' '}
-                tienen cobertura propia de lanedata.
+                tienen cobertura propia con datos.
               </p>
             </div>
-            <div className="flex gap-4 shrink-0">
-              <Legend color="bg-[#9FE88D]/30 text-[#0D2A14]" label="WA" title="World Athletics" />
-              <Legend color="bg-sky-100 text-sky-800" label="EA" title="European Athletics" />
-              <Legend color="bg-ink/8 text-ink/70" label="RFEA" title="Real Federación Española" />
+            <div className="flex gap-3 shrink-0">
+              <Legend color="bg-[#9FE88D]/30 text-[#0D2A14] font-semibold" label="WA" title="World Athletics" />
+              <Legend color="bg-sky-100 text-sky-800 font-semibold" label="EA" title="European Athletics" />
+              <Legend color="bg-ink/[0.07] text-ink/50" label="RFEA" title="Real Federación Española" />
             </div>
           </div>
           <div className="mt-8 h-px bg-ink/[0.1]" />
