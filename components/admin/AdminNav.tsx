@@ -40,6 +40,9 @@ export function AdminNav() {
             <AdminNavLink href="/admin/nuevo" active={pathname === '/admin/nuevo'}>
               + Nuevo
             </AdminNavLink>
+            <AdminNavLink href="/admin/calendario" active={pathname === '/admin/calendario'}>
+              Calendario
+            </AdminNavLink>
           </nav>
         </div>
 

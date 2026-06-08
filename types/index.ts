@@ -19,6 +19,18 @@ export type ArticlePreview = Pick<
   'id' | 'title' | 'slug' | 'excerpt' | 'cover_image_url' | 'category' | 'published_at'
 >
 
+export interface Competition {
+  id: string
+  fecha_inicio: string
+  fecha_fin: string | null
+  disciplina: string | null
+  nombre: string
+  area: string | null       // RFEA | WA | EA
+  ciudad: string | null
+  article_id: string | null
+  article?: { slug: string; title: string } | null
+}
+
 // Form state in the admin
 export interface ArticleFormData {
   title: string
