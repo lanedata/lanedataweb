@@ -4,17 +4,6 @@ import { useEffect, useState, useMemo, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Competition, ArticlePreview } from '@/types'
 
-type CompRow = {
-  id: string
-  fecha_inicio: string
-  fecha_fin: string | null
-  disciplina: string | null
-  nombre: string
-  area: string | null
-  ciudad: string | null
-  article_id: string | null
-  article: { slug: string; title: string } | { slug: string; title: string }[] | null
-}
 
 const MESES = [
   'Enero','Febrero','Marzo','Abril','Mayo','Junio',
@@ -58,13 +47,13 @@ export default function AdminCalendarioPage() {
           .eq('status', 'published')
           .order('published_at', { ascending: false }),
       ])
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setCompetitions(
-        (compRes.data ?? [] as any[]).map((c: any) => ({
-          ...c,
-          article: Array.isArray(c.article) ? (c.article[0] ?? null) : (c.article ?? null),
-        }))
-      )
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      const rawComps = (compRes.data ?? []) as any[]
+      setCompetitions(rawComps.map((c: any) => ({
+        ...c,
+        article: Array.isArray(c.article) ? (c.article[0] ?? null) : (c.article ?? null),
+      })))
+      /* eslint-enable @typescript-eslint/no-explicit-any */
       setArticles(artRes.data ?? [])
       setLoading(false)
     }
