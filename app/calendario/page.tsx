@@ -1,35 +1,19 @@
 import { NavBar } from '@/components/NavBar'
 import { Footer } from '@/components/Footer'
 import { CalendarView } from '@/components/CalendarView'
-import { createStaticClient } from '@/lib/supabase/static'
 import type { Metadata } from 'next'
-import type { Competition } from '@/types'
 
 export const metadata: Metadata = {
   title: 'Calendario 2026',
   description: 'Todas las competiciones de atletismo español 2026. Fuente: RFEA.',
 }
 
-export default async function CalendarioPage() {
-  const supabase = createStaticClient()
-
-  const { data } = await supabase
-    .from('competitions')
-    .select('id, fecha_inicio, fecha_fin, disciplina, nombre, area, ciudad, article_id, article:articles(slug, title)')
-    .order('fecha_inicio', { ascending: true })
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const competitions: Competition[] = (data ?? [] as any[]).map((c: any) => ({
-    ...c,
-    article: Array.isArray(c.article) ? (c.article[0] ?? null) : (c.article ?? null),
-  }))
-
+export default function CalendarioPage() {
   return (
     <>
       <NavBar />
       <main className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
 
-        {/* ── Header ─────────────────────────────────────────────────── */}
         <section className="mb-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
@@ -56,12 +40,7 @@ export default async function CalendarioPage() {
           <div className="mt-8 h-px bg-ink/[0.1]" />
         </section>
 
-        {/* ── Calendario ─────────────────────────────────────────────── */}
-        {competitions.length > 0 ? (
-          <CalendarView competitions={competitions} />
-        ) : (
-          <EmptyState />
-        )}
+        <CalendarView />
 
       </main>
       <Footer />
@@ -76,17 +55,6 @@ function Legend({ color, label, title }: { color: string; label: string; title: 
         {label}
       </span>
       <span className="font-mono text-[0.6rem] text-ink/40 hidden sm:block">{title}</span>
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-ink/[0.1] bg-cream/40 text-center p-12">
-      <p className="font-brand text-xl font-bold text-ink/40">Calendario no disponible</p>
-      <p className="mt-2 text-sm text-ink/30">
-        Ejecuta el seed SQL en Supabase para cargar las competiciones.
-      </p>
     </div>
   )
 }
