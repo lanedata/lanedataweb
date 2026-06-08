@@ -1,8 +1,20 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Competition, ArticlePreview } from '@/types'
+
+type CompRow = {
+  id: string
+  fecha_inicio: string
+  fecha_fin: string | null
+  disciplina: string | null
+  nombre: string
+  area: string | null
+  ciudad: string | null
+  article_id: string | null
+  article: { slug: string; title: string } | { slug: string; title: string }[] | null
+}
 
 const MESES = [
   'Enero','Febrero','Marzo','Abril','Mayo','Junio',
@@ -22,7 +34,8 @@ function formatFecha(inicio: string, fin: string | null): string {
 }
 
 export default function AdminCalendarioPage() {
-  const supabase = createClient()
+  const supabaseRef = useRef(createClient())
+  const supabase = supabaseRef.current
 
   const [competitions, setCompetitions] = useState<Competition[]>([])
   const [articles, setArticles] = useState<ArticlePreview[]>([])
@@ -45,17 +58,18 @@ export default function AdminCalendarioPage() {
           .eq('status', 'published')
           .order('published_at', { ascending: false }),
       ])
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setCompetitions(
-        (compRes.data ?? []).map((c: any) => ({
+        (compRes.data ?? [] as any[]).map((c: any) => ({
           ...c,
-          article: Array.isArray(c.article) ? c.article[0] ?? null : c.article ?? null,
+          article: Array.isArray(c.article) ? (c.article[0] ?? null) : (c.article ?? null),
         }))
       )
       setArticles(artRes.data ?? [])
       setLoading(false)
     }
     load()
-  }, [])
+  }, [supabase])
 
   async function handleLink(competitionId: string, articleId: string | null) {
     setSaving(competitionId)
@@ -163,7 +177,7 @@ export default function AdminCalendarioPage() {
         <div className="divide-y divide-ink/[0.07]">
           {filtered.length === 0 && (
             <div className="px-4 py-8 text-center text-sm text-ink/40 font-mono">
-              Sin resultados para "{search}"
+              Sin resultados para &ldquo;{search}&rdquo;
             </div>
           )}
           {filtered.map((c, i) => (

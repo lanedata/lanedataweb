@@ -18,9 +18,10 @@ export default async function CalendarioPage() {
     .select('id, fecha_inicio, fecha_fin, disciplina, nombre, area, ciudad, article_id, article:articles(slug, title)')
     .order('fecha_inicio', { ascending: true })
 
-  const competitions: Competition[] = (data ?? []).map((c: any) => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const competitions: Competition[] = (data ?? [] as any[]).map((c: any) => ({
     ...c,
-    article: Array.isArray(c.article) ? c.article[0] ?? null : c.article ?? null,
+    article: Array.isArray(c.article) ? (c.article[0] ?? null) : (c.article ?? null),
   }))
 
   return (
