@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
-const RANKINGS_URL = 'https://mundoatletismo.es/?skin=lane#/'
+const RANKINGS_URL = 'https://mundoatletismo.es/#/?skin=lane'
 const INSTAGRAM_URL = 'https://www.instagram.com/lanedata/'
 
 function TrackIcon({ size = 14 }: { size?: number }) {
