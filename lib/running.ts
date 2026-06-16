@@ -26,13 +26,6 @@ export function formatClock(totalSeconds: number): string {
   return `${m}:${String(s).padStart(2, '0')}`
 }
 
-/** Format a race time: sprints (<60 s) keep decimals, longer events use clock. */
-export function formatRaceTime(totalSeconds: number): string {
-  if (!Number.isFinite(totalSeconds) || totalSeconds <= 0) return '—'
-  if (totalSeconds < 60) return totalSeconds.toFixed(2)
-  return formatClock(totalSeconds)
-}
-
 /** Format a per-km/mile pace (seconds) → "m:ss". */
 export function formatPace(secPerUnit: number): string {
   if (!Number.isFinite(secPerUnit) || secPerUnit <= 0) return '—'

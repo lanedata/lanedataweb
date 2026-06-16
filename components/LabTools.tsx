@@ -4,7 +4,6 @@ import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { IaafCalculator } from './IaafCalculator'
 import { PaceCalculator } from './PaceCalculator'
-import { RacePredictor } from './RacePredictor'
 import { CombinedEventsCalculator } from './CombinedEventsCalculator'
 
 // ── Icons ──
@@ -16,11 +15,6 @@ const IconPoints = (
 const IconPace = (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="13" r="8" /><path d="M12 13V9M9 2h6" />
-  </svg>
-)
-const IconPredict = (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 17l5-5 4 4 8-9M21 7v5h-5" />
   </svg>
 )
 const IconCombined = (
@@ -57,15 +51,6 @@ const TOOLS: Tool[] = [
     long: 'Calcula tu ritmo por kilómetro y milla, la velocidad y los parciales acumulados a partir de tu tiempo objetivo (o al revés).',
     icon: IconPace,
     render: () => <PaceCalculator />,
-  },
-  {
-    id: 'predictor',
-    name: 'Predictor',
-    short: 'Estima tu tiempo en otra prueba',
-    long: 'Estima tu marca en otra distancia a partir de una reciente, con la fórmula de Riegel. Desde 60 m hasta maratón.',
-    badge: 'Riegel',
-    icon: IconPredict,
-    render: () => <RacePredictor />,
   },
   {
     id: 'combinadas',

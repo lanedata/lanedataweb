@@ -8,21 +8,18 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'
 export const metadata: Metadata = {
   title: 'LaneLab · Calculadoras de atletismo',
   description:
-    'Herramientas gratuitas de atletismo: conversor de puntos World Athletics (IAAF), calculadora de ritmo y parciales, predictor de marcas (de 60 m a maratón) y calculadora de puntos de decatlón y heptatlón. Tablas oficiales 2025.',
+    'Herramientas gratuitas de atletismo: conversor de puntos World Athletics (IAAF), calculadora de ritmo y parciales y calculadora de puntos de decatlón y heptatlón. Tablas oficiales 2025.',
   keywords: [
     'calculadora atletismo',
     'puntos IAAF',
     'puntos World Athletics',
     'calculadora de ritmo running',
     'calculadora de pace',
-    'predictor de marcas atletismo',
-    'predictor tiempo 5k 10k media maratón',
     'equivalencia marcas atletismo',
     'calculadora decatlón puntos',
     'calculadora heptatlón',
     'tablas de puntuación atletismo 2025',
     'convertir marca a puntos',
-    'fórmula de Riegel',
     'herramientas para corredores',
     'lanedata',
   ],
@@ -46,7 +43,6 @@ export const metadata: Metadata = {
 const FEATURES = [
   'Conversor de puntos World Athletics (IAAF)',
   'Calculadora de ritmo y parciales',
-  'Predictor de marcas (fórmula de Riegel)',
   'Puntos de decatlón y heptatlón',
 ]
 
@@ -87,11 +83,6 @@ const faqLd = {
     },
     {
       '@type': 'Question',
-      name: '¿Cómo predice mi marca la calculadora?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Usa la fórmula de Peter Riegel (T2 = T1 × (D2/D1)^1.06), el estándar para estimar el tiempo en una distancia a partir de tu marca en otra. Es más fiable entre distancias cercanas y de fondo.' },
-    },
-    {
-      '@type': 'Question',
       name: '¿Cómo calculo mi ritmo de carrera?',
       acceptedAnswer: { '@type': 'Answer', text: 'Introduce la distancia y tu tiempo objetivo (o tu ritmo) y la calculadora devuelve el ritmo por kilómetro y milla, la velocidad en km/h y los parciales acumulados.' },
     },
@@ -116,15 +107,15 @@ export default function LaneLabPage() {
           </h1>
           <p className="mt-3 text-sm text-ink/55 max-w-xl leading-relaxed">
             Calculadoras gratuitas para atletas, entrenadores y aficionados: puntos World Athletics,
-            ritmo de carrera, predicción de marcas y puntuación de pruebas combinadas. Elige una herramienta.
+            ritmo de carrera y puntuación de pruebas combinadas. Elige una herramienta.
           </p>
         </header>
 
         <LabTools />
 
         <p className="mt-12 text-xs text-ink/40 leading-relaxed">
-          Cálculos basados en las tablas y fórmulas oficiales de World Athletics (edición 2025) y en la
-          fórmula de Riegel para la predicción de marcas. Herramientas orientativas de uso libre.
+          Cálculos basados en las tablas y fórmulas oficiales de World Athletics (edición 2025).
+          Herramientas orientativas de uso libre.
         </p>
       </main>
       <Footer />
