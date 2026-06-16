@@ -10,7 +10,6 @@ const INSTAGRAM_URL = 'https://www.instagram.com/lanedata/'
 const NAV_LINKS = [
   { href: '/',           label: 'Inicio' },
   { href: '/archivo',    label: 'Archivo' },
-  { href: '/buscar',     label: 'Buscar' },
   { href: '/calendario', label: 'Calendario' },
   { href: '/lanelab',    label: 'LaneLab' },
 ]
@@ -83,6 +82,7 @@ export function NavBar() {
             className="inline-flex items-center gap-1.5 rounded-full border border-ink/[0.15] bg-mint/20 px-2.5 sm:px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
           >
             <TrackIcon size={13} />
+            <span className="sm:hidden">MA: Ranking</span>
             <span className="hidden sm:inline">Mundo Atletismo</span>
           </a>
 

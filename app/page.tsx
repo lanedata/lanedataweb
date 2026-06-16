@@ -2,7 +2,6 @@ import { NavBar } from '@/components/NavBar'
 import { Footer } from '@/components/Footer'
 import { HeroArticle } from '@/components/HeroArticle'
 import { ArticleCard } from '@/components/ArticleCard'
-import { SearchBar } from '@/components/SearchBar'
 import { createStaticClient } from '@/lib/supabase/static'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -29,40 +28,7 @@ export default async function HomePage() {
     <>
       <NavBar />
 
-      <main className="mx-auto max-w-6xl px-4 sm:px-6">
-
-        {/* ── Brand header ── */}
-        <section className="py-12 sm:py-16">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex items-center gap-5">
-              <svg
-                viewBox="0 0 200 200"
-                aria-label="lanedata"
-                className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24"
-              >
-                <rect width="200" height="200" rx="44" fill="#9FE88D" />
-                <ellipse cx="74" cy="108" rx="18" ry="26" fill="#0D2A14" />
-                <ellipse cx="126" cy="108" rx="18" ry="26" fill="#0D2A14" />
-                <circle cx="67" cy="96" r="5.5" fill="#9FE88D" />
-                <circle cx="119" cy="96" r="5.5" fill="#9FE88D" />
-              </svg>
-              <div>
-                <h1 className="font-brand text-5xl font-extrabold tracking-brand text-ink sm:text-6xl md:text-7xl leading-none">
-                  lanedata
-                </h1>
-                <p className="mt-2 label-mono text-ink/50">
-                  El atletismo español con datos
-                </p>
-              </div>
-            </div>
-
-            <div className="w-full max-w-sm">
-              <SearchBar />
-            </div>
-          </div>
-
-          <div className="mt-8 h-px bg-ink/[0.1]" />
-        </section>
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
 
         {/* ── Featured article ── */}
         {featured ? (

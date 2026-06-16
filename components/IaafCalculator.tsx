@@ -100,9 +100,11 @@ export function IaafCalculator() {
 
   const events = SCORING_EVENTS.filter(e => genderHasEvent(e, gender))
 
+  const hasEquiv = equivalences.length > 0
+
   return (
-    <div className="rounded-2xl border border-ink/[0.1] bg-paper overflow-hidden">
-      <div className="p-5 sm:p-7 flex flex-col gap-5">
+    <div className="rounded-2xl border border-ink/[0.1] bg-paper">
+      <div className="p-5 sm:p-7 flex flex-col gap-5 rounded-t-2xl">
 
         {/* Gender + direction */}
         <div className="flex flex-col sm:flex-row gap-3">
@@ -140,7 +142,7 @@ export function IaafCalculator() {
       </div>
 
       {/* Result */}
-      <div className="border-t border-ink/[0.08] bg-ink px-5 sm:px-7 py-6">
+      <div className={`border-t border-ink/[0.08] bg-ink px-5 sm:px-7 py-6 ${hasEquiv ? '' : 'rounded-b-2xl'}`}>
         {result ? (
           <div className="flex items-baseline gap-3">
             <span className="font-brand text-5xl sm:text-6xl font-extrabold tracking-brand text-mint leading-none tabular-nums">
@@ -160,8 +162,8 @@ export function IaafCalculator() {
       </div>
 
       {/* Equivalences */}
-      {equivalences.length > 0 && (
-        <div className="border-t border-ink/[0.08] px-5 sm:px-7 py-5">
+      {hasEquiv && (
+        <div className="border-t border-ink/[0.08] px-5 sm:px-7 py-5 rounded-b-2xl">
           <p className={`${MONO} text-ink/40 mb-3`}>
             Marcas equivalentes · {result && result.kind === 'points' ? result.value : 0} pts
           </p>
@@ -263,7 +265,7 @@ function EventSelect({
       {open && (
         <div
           role="listbox"
-          className="dropdown-enter absolute z-30 mt-2 w-full max-h-72 overflow-auto rounded-xl border border-ink/[0.12] bg-paper p-1.5 shadow-[0_12px_32px_rgba(13,42,20,0.14)]"
+          className="dropdown-enter absolute z-40 mt-2 w-full max-h-72 overflow-auto rounded-xl border border-ink/[0.12] bg-paper p-1.5 shadow-[0_12px_32px_rgba(13,42,20,0.14)]"
         >
           <Group label="Pista y ruta" items={track} value={value} onPick={pick} />
           <Group label="Concursos" items={field} value={value} onPick={pick} />

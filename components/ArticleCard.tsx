@@ -55,12 +55,13 @@ export function ArticleCard({ article }: Props) {
 
         <Link
           href={href}
-          className="mt-auto pt-4 inline-flex items-center gap-1.5 label-mono text-ink/50 hover:text-ink transition-[color,transform] duration-150 active:scale-[0.96]"
+          className="group/cta mt-auto flex items-center justify-between border-t border-ink/[0.07] pt-4 label-mono text-ink/50 hover:text-ink transition-colors duration-150"
           aria-label={`Leer: ${article.title}`}
         >
-          Leer
-          <svg width="12" height="9" viewBox="0 0 12 9" fill="none" aria-hidden="true">
-            <path d="M1 4.5h10M7.5 1l3.5 3.5L7.5 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+          Leer análisis
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true"
+            className="text-ink/30 transition-transform duration-150 group-hover/cta:translate-x-0.5 group-hover/cta:text-ink/60">
+            <path d="M1 5h12M9 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </Link>
       </div>
