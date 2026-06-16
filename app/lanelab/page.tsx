@@ -1,18 +1,14 @@
 import { NavBar } from '@/components/NavBar'
 import { Footer } from '@/components/Footer'
-import { IaafCalculator } from '@/components/IaafCalculator'
-import { PaceCalculator } from '@/components/PaceCalculator'
-import { RacePredictor } from '@/components/RacePredictor'
-import { CombinedEventsCalculator } from '@/components/CombinedEventsCalculator'
+import { LabTools } from '@/components/LabTools'
 import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'
 
 export const metadata: Metadata = {
   title: 'LaneLab · Calculadoras de atletismo',
   description:
-    'Herramientas gratuitas de atletismo: conversor de puntos World Athletics (IAAF), calculadora de ritmo y parciales, predictor de marcas y calculadora de puntos de decatlón y heptatlón. Tablas oficiales 2025.',
+    'Herramientas gratuitas de atletismo: conversor de puntos World Athletics (IAAF), calculadora de ritmo y parciales, predictor de marcas (de 60 m a maratón) y calculadora de puntos de decatlón y heptatlón. Tablas oficiales 2025.',
   keywords: [
     'calculadora atletismo',
     'puntos IAAF',
@@ -20,10 +16,13 @@ export const metadata: Metadata = {
     'calculadora de ritmo running',
     'calculadora de pace',
     'predictor de marcas atletismo',
+    'predictor tiempo 5k 10k media maratón',
+    'equivalencia marcas atletismo',
     'calculadora decatlón puntos',
     'calculadora heptatlón',
     'tablas de puntuación atletismo 2025',
     'convertir marca a puntos',
+    'fórmula de Riegel',
     'herramientas para corredores',
     'lanedata',
   ],
@@ -44,11 +43,11 @@ export const metadata: Metadata = {
   },
 }
 
-const TOOLS = [
-  { id: 'puntos-iaaf', n: 'Conversor de puntos IAAF', d: 'Marca ⇄ puntos World Athletics' },
-  { id: 'ritmo', n: 'Calculadora de ritmo', d: 'Pace, velocidad y parciales' },
-  { id: 'predictor', n: 'Predictor de marcas', d: 'Estima tu tiempo en otra distancia' },
-  { id: 'combinadas', n: 'Puntos de combinadas', d: 'Decatlón y heptatlón' },
+const FEATURES = [
+  'Conversor de puntos World Athletics (IAAF)',
+  'Calculadora de ritmo y parciales',
+  'Predictor de marcas (fórmula de Riegel)',
+  'Puntos de decatlón y heptatlón',
 ]
 
 const webAppLd = {
@@ -58,9 +57,11 @@ const webAppLd = {
   url: `${siteUrl}/lanelab/`,
   applicationCategory: 'SportsApplication',
   operatingSystem: 'Web',
+  browserRequirements: 'Requires JavaScript',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
   inLanguage: 'es',
-  featureList: TOOLS.map(t => t.n),
+  isAccessibleForFree: true,
+  featureList: FEATURES,
   description:
     'Suite gratuita de calculadoras de atletismo: puntos World Athletics (IAAF), ritmo de carrera, predictor de marcas y puntuación de pruebas combinadas.',
   publisher: { '@type': 'Organization', name: 'lanedata', url: siteUrl },
@@ -87,7 +88,12 @@ const faqLd = {
     {
       '@type': 'Question',
       name: '¿Cómo predice mi marca la calculadora?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Usa la fórmula de Peter Riegel (T2 = T1 × (D2/D1)^1.06), el estándar para estimar el tiempo en una distancia a partir de tu marca en otra.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Usa la fórmula de Peter Riegel (T2 = T1 × (D2/D1)^1.06), el estándar para estimar el tiempo en una distancia a partir de tu marca en otra. Es más fiable entre distancias cercanas y de fondo.' },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Cómo calculo mi ritmo de carrera?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Introduce la distancia y tu tiempo objetivo (o tu ritmo) y la calculadora devuelve el ritmo por kilómetro y milla, la velocidad en km/h y los parciales acumulados.' },
     },
     {
       '@type': 'Question',
@@ -103,57 +109,18 @@ export default function LaneLabPage() {
       <NavBar />
       <main className="mx-auto max-w-4xl px-4 sm:px-6 py-12 sm:py-16">
 
-        {/* Header */}
-        <header className="mb-8">
+        <header className="mb-9">
           <p className="label-mono text-ink/40 mb-2">lanedata · herramientas</p>
           <h1 className="font-brand text-4xl sm:text-5xl font-extrabold tracking-brand text-ink leading-none">
             LaneLab
           </h1>
           <p className="mt-3 text-sm text-ink/55 max-w-xl leading-relaxed">
             Calculadoras gratuitas para atletas, entrenadores y aficionados: puntos World Athletics,
-            ritmo de carrera, predicción de marcas y puntuación de pruebas combinadas.
+            ritmo de carrera, predicción de marcas y puntuación de pruebas combinadas. Elige una herramienta.
           </p>
         </header>
 
-        {/* Tool index */}
-        <nav aria-label="Herramientas" className="mb-12 grid gap-2 sm:grid-cols-2">
-          {TOOLS.map((t, i) => (
-            <a key={t.id} href={`#${t.id}`}
-              className="group flex items-center gap-3 rounded-xl border border-ink/[0.1] bg-paper px-4 py-3 hover:border-ink/25 hover:bg-cream/40 transition-colors">
-              <span className="font-mono text-[0.7rem] text-mint tabular-nums">{String(i + 1).padStart(2, '0')}</span>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-ink leading-tight">{t.n}</p>
-                <p className="font-mono text-[0.58rem] tracking-wider text-ink/35 uppercase mt-0.5 truncate">{t.d}</p>
-              </div>
-              <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true"
-                className="ml-auto shrink-0 text-ink/25 group-hover:text-ink/50 transition-colors">
-                <path d="M1 5h12M9 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex flex-col gap-14">
-          <Tool id="puntos-iaaf" title="Conversor de puntos IAAF" badge="Tablas 2025"
-            desc="Convierte cualquier marca a puntos World Athletics y al revés, con marcas equivalentes en pruebas de la misma familia.">
-            <IaafCalculator />
-          </Tool>
-
-          <Tool id="ritmo" title="Calculadora de ritmo"
-            desc="Calcula tu ritmo por kilómetro y milla, la velocidad y los parciales acumulados a partir de tu tiempo objetivo (o al revés).">
-            <PaceCalculator />
-          </Tool>
-
-          <Tool id="predictor" title="Predictor de marcas" badge="Fórmula de Riegel"
-            desc="Estima tu tiempo en otra distancia a partir de una marca reciente, con la fórmula estándar de Peter Riegel.">
-            <RacePredictor />
-          </Tool>
-
-          <Tool id="combinadas" title="Puntos de pruebas combinadas"
-            desc="Suma la puntuación del decatlón (hombres) y el heptatlón (mujeres) con las fórmulas oficiales de World Athletics.">
-            <CombinedEventsCalculator />
-          </Tool>
-        </div>
+        <LabTools />
 
         <p className="mt-12 text-xs text-ink/40 leading-relaxed">
           Cálculos basados en las tablas y fórmulas oficiales de World Athletics (edición 2025) y en la
@@ -166,24 +133,5 @@ export default function LaneLabPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
     </>
-  )
-}
-
-function Tool({ id, title, badge, desc, children }: {
-  id: string; title: string; badge?: string; desc: string; children: ReactNode
-}) {
-  return (
-    <section id={id} aria-labelledby={`${id}-h`} className="scroll-mt-20">
-      <div className="flex items-center gap-3 mb-2">
-        <h2 id={`${id}-h`} className="font-brand text-xl font-extrabold tracking-brand text-ink">{title}</h2>
-        {badge && (
-          <span className="inline-flex items-center rounded-full bg-mint/20 px-2.5 py-0.5 font-mono text-[0.56rem] tracking-widest uppercase text-ink/55">
-            {badge}
-          </span>
-        )}
-      </div>
-      <p className="text-sm text-ink/50 mb-4 max-w-2xl leading-relaxed">{desc}</p>
-      {children}
-    </section>
   )
 }
