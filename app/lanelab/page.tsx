@@ -110,24 +110,7 @@ export default function LaneLabPage() {
 
           <p className="mt-4 text-xs text-ink/40 leading-relaxed">
             Cálculo basado en las tablas de puntuación oficiales de World Athletics (edición 2025).
-            Los valores son una referencia muy aproximada a la tabla oficial y pueden variar en ±1 punto por redondeo.
           </p>
-        </section>
-
-        {/* Coming soon */}
-        <section className="mt-12">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-px flex-1 bg-ink/[0.08]" />
-            <span className="label-mono text-ink/30">Próximamente</span>
-            <div className="h-px flex-1 bg-ink/[0.08]" />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {['Calculadora de ritmos', 'Predictor de marcas', 'Conversor de vallas'].map(t => (
-              <div key={t} className="rounded-xl border border-dashed border-ink/[0.12] bg-cream/30 px-4 py-5 text-center">
-                <p className="font-mono text-[0.7rem] tracking-wider text-ink/35 uppercase">{t}</p>
-              </div>
-            ))}
-          </div>
         </section>
 
       </main>
