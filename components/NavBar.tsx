@@ -2,10 +2,18 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const RANKINGS_URL = 'https://mundoatletismo.es/#/?skin=lane'
 const INSTAGRAM_URL = 'https://www.instagram.com/lanedata/'
+
+const NAV_LINKS = [
+  { href: '/',           label: 'Inicio' },
+  { href: '/archivo',    label: 'Archivo' },
+  { href: '/buscar',     label: 'Buscar' },
+  { href: '/calendario', label: 'Calendario' },
+  { href: '/lanelab',    label: 'LaneLab' },
+]
 
 function TrackIcon({ size = 14 }: { size?: number }) {
   return (
@@ -33,12 +41,25 @@ export function NavBar() {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
 
+  // Lock body scroll while the menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [menuOpen])
+
+  // Close on Escape
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenuOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
   return (
     <header className="sticky top-0 z-50 border-b border-ink/[0.1] bg-paper/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
 
-        {/* Logo — en móvil solo el mark, en desktop mark + texto */}
-        <Link href="/" className="flex items-center gap-2.5" aria-label="lanedata — inicio">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2.5" aria-label="lanedata — inicio" onClick={() => setMenuOpen(false)}>
           <svg viewBox="0 0 200 200" width="32" height="32" aria-hidden="true" className="shrink-0">
             <rect width="200" height="200" rx="44" fill="#9FE88D" />
             <ellipse cx="74" cy="108" rx="18" ry="26" fill="#0D2A14" />
@@ -51,107 +72,82 @@ export function NavBar() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-6 sm:flex" aria-label="Navegación principal">
-          <NavLink href="/" active={pathname === '/'}>Inicio</NavLink>
-          <NavLink href="/archivo" active={pathname === '/archivo'}>Archivo</NavLink>
-          <NavLink href="/buscar" active={pathname === '/buscar'}>Buscar</NavLink>
-          <NavLink href="/calendario" active={pathname === '/calendario'}>Calendario</NavLink>
-          <a
-            href={RANKINGS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full border border-ink/[0.15] bg-mint/20 px-3 py-1 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
-          >
-            <TrackIcon size={13} />
-            Ranking: Mundo Atletismo
-          </a>
-          <a
-            href={INSTAGRAM_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram de lanedata"
-            className="text-ink/40 hover:text-ink transition-colors"
-          >
-            <InstagramIcon />
-          </a>
-        </nav>
-
-        {/* Mobile: píldora corta "Ranking" + hamburger */}
-        <div className="flex items-center gap-2 sm:hidden">
-          <a
-            href={RANKINGS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full border border-ink/[0.15] bg-mint/20 px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
-          >
-            <TrackIcon size={12} />
-            Mundo Atletismo
-          </a>
-          <button
-            className="flex h-8 w-8 items-center justify-center rounded-md"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
-          >
-            <span className="sr-only">{menuOpen ? 'Cerrar' : 'Menú'}</span>
-            <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true">
-              {menuOpen ? (
-                <>
-                  <line x1="1" y1="1" x2="17" y2="13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-                  <line x1="17" y1="1" x2="1" y2="13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-                </>
-              ) : (
-                <>
-                  <line x1="0" y1="2" x2="18" y2="2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-                  <line x1="0" y1="7" x2="18" y2="7" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-                  <line x1="0" y1="12" x2="18" y2="12" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
-                </>
-              )}
-            </svg>
-          </button>
-        </div>
+        {/* Hamburger — única acción en la barra */}
+        <button
+          className="flex h-9 w-9 items-center justify-center rounded-md text-ink hover:bg-ink/[0.05] transition-colors"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={menuOpen}
+        >
+          <svg width="20" height="16" viewBox="0 0 20 16" fill="none" aria-hidden="true">
+            {menuOpen ? (
+              <>
+                <line x1="2" y1="2" x2="18" y2="14" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round"/>
+                <line x1="18" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round"/>
+              </>
+            ) : (
+              <>
+                <line x1="1" y1="3" x2="19" y2="3" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round"/>
+                <line x1="1" y1="8" x2="19" y2="8" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round"/>
+                <line x1="1" y1="13" x2="19" y2="13" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round"/>
+              </>
+            )}
+          </svg>
+        </button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Dropdown menu */}
       {menuOpen && (
-        <div className="mobile-menu-enter border-t border-ink/[0.1] bg-paper px-4 py-4 sm:hidden">
-          <nav className="flex flex-col gap-3">
-            <MobileNavLink href="/" onClick={() => setMenuOpen(false)}>Inicio</MobileNavLink>
-            <MobileNavLink href="/archivo" onClick={() => setMenuOpen(false)}>Archivo</MobileNavLink>
-            <MobileNavLink href="/buscar" onClick={() => setMenuOpen(false)}>Buscar</MobileNavLink>
-            <MobileNavLink href="/calendario" onClick={() => setMenuOpen(false)}>Calendario</MobileNavLink>
-            <a
-              href={INSTAGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setMenuOpen(false)}
-              className="inline-flex items-center gap-2 label-mono text-ink/60 hover:text-ink transition-colors"
-            >
-              <InstagramIcon />
-              Instagram
-            </a>
-          </nav>
+        <div className="mobile-menu-enter border-t border-ink/[0.1] bg-paper">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6">
+            <nav className="flex flex-col gap-1" aria-label="Navegación principal">
+              {NAV_LINKS.map(link => {
+                const active = pathname === link.href
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={`group flex items-center justify-between rounded-lg px-3 py-2.5 font-brand text-lg font-bold tracking-tight transition-colors ${
+                      active ? 'text-ink bg-mint/15' : 'text-ink/55 hover:text-ink hover:bg-ink/[0.03]'
+                    }`}
+                  >
+                    {link.label}
+                    <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true"
+                      className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-150 text-ink/30">
+                      <path d="M1 5h12M8 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </Link>
+                )
+              })}
+            </nav>
+
+            <div className="mt-5 pt-5 border-t border-ink/[0.08] flex flex-wrap items-center gap-3">
+              <a
+                href={RANKINGS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-ink/[0.15] bg-mint/20 px-3.5 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
+              >
+                <TrackIcon size={13} />
+                Ranking: Mundo Atletismo
+              </a>
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Instagram de lanedata"
+                className="inline-flex items-center gap-2 rounded-full border border-ink/[0.15] px-3.5 py-1.5 label-mono text-ink/60 hover:text-ink hover:border-ink/30 transition-colors"
+              >
+                <InstagramIcon />
+                Instagram
+              </a>
+            </div>
+          </div>
         </div>
       )}
     </header>
-  )
-}
-
-function NavLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className={`label-mono transition-colors ${active ? 'text-ink' : 'text-ink/50 hover:text-ink/80'}`}
-    >
-      {children}
-    </Link>
-  )
-}
-
-function MobileNavLink({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <Link href={href} onClick={onClick} className="label-mono text-ink/60 hover:text-ink">
-      {children}
-    </Link>
   )
 }
