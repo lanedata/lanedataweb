@@ -7,22 +7,60 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'  // cu
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'lanedata',
+    default: 'lanedata · El atletismo español con datos',
     template: '%s · lanedata',
   },
-  description: 'Análisis, estadísticas y contexto del atletismo español.',
+  description:
+    'Análisis, estadísticas, calendario y herramientas del atletismo español. Datos, contexto y calculadoras (puntos World Athletics, ritmo, predictor de marcas) en lanedata.',
+  applicationName: 'lanedata',
+  authors: [{ name: 'lanedata', url: siteUrl }],
+  creator: 'lanedata',
+  publisher: 'lanedata',
+  category: 'sports',
+  keywords: [
+    'atletismo español',
+    'atletismo',
+    'análisis atletismo',
+    'estadísticas atletismo',
+    'calendario atletismo 2026',
+    'RFEA',
+    'World Athletics',
+    'calculadora puntos IAAF',
+    'rankings atletismo',
+    'lanedata',
+  ],
+  alternates: {
+    canonical: '/',
+  },
+  formatDetection: { telephone: false, email: false, address: false },
   openGraph: {
     siteName: 'lanedata',
     type: 'website',
     locale: 'es_ES',
+    url: siteUrl,
+    title: 'lanedata · El atletismo español con datos',
+    description:
+      'Análisis, estadísticas, calendario y calculadoras del atletismo español.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'lanedata — el atletismo español con datos' }],
   },
   twitter: {
     card: 'summary_large_image',
     site: '@lanedata',
+    creator: '@lanedata',
+    title: 'lanedata · El atletismo español con datos',
+    description: 'Análisis, estadísticas, calendario y calculadoras del atletismo español.',
+    images: ['/og-image.png'],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
   },
   icons: {
     icon: [
@@ -34,6 +72,30 @@ export const metadata: Metadata = {
   },
 }
 
+const organizationLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'lanedata',
+  url: siteUrl,
+  logo: `${siteUrl}/favicon-512.png`,
+  description: 'Medio editorial sobre el atletismo español con datos, análisis y herramientas.',
+  sameAs: ['https://www.instagram.com/lanedata/'],
+}
+
+const websiteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'lanedata',
+  url: siteUrl,
+  inLanguage: 'es',
+  description: 'El atletismo español con datos.',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: { '@type': 'EntryPoint', urlTemplate: `${siteUrl}/buscar?q={search_term_string}` },
+    'query-input': 'required name=search_term_string',
+  },
+}
+
 const GA_ID = 'G-S0941EEQ3L'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -41,6 +103,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es">
       <body>
         {children}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
           strategy="afterInteractive"

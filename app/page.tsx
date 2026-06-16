@@ -6,8 +6,13 @@ import { createStaticClient } from '@/lib/supabase/static'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'
+
 export const metadata: Metadata = {
-  title: 'lanedata',
+  title: { absolute: 'lanedata · El atletismo español con datos' },
+  description:
+    'El atletismo español con datos: análisis, estadísticas, calendario de competiciones 2026 y calculadoras (puntos World Athletics, ritmo, predictor de marcas).',
+  alternates: { canonical: '/' },
 }
 
 export default async function HomePage() {
@@ -24,8 +29,23 @@ export default async function HomePage() {
   const featured = articles?.[0] ?? null
   const rest = articles?.slice(1) ?? [] // max 3
 
+  const itemListLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Últimos análisis de lanedata',
+    itemListElement: (articles ?? []).map((a, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${siteUrl}/articulo/${a.slug}/`,
+      name: a.title,
+    })),
+  }
+
   return (
     <>
+      {(articles?.length ?? 0) > 0 && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListLd) }} />
+      )}
       <NavBar />
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">

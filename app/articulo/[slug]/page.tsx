@@ -55,14 +55,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? truncate(article.excerpt, 160)
     : 'Análisis de atletismo español en lanedata.'
 
+  const ogImage = article.cover_image_url || `${siteUrl}/og-image.png`
+
   return {
     title: article.title,
     description,
+    alternates: { canonical: `${siteUrl}/articulo/${slug}/` },
     openGraph: {
       title: article.title,
       description,
       url: `${siteUrl}/articulo/${slug}`,
-      images: article.cover_image_url ? [{ url: article.cover_image_url }] : [],
+      images: [{ url: ogImage }],
       type: 'article',
       publishedTime: article.published_at ?? undefined,
     },
@@ -70,7 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: article.title,
       description,
-      images: article.cover_image_url ? [article.cover_image_url] : [],
+      images: [ogImage],
     },
   }
 }
@@ -113,9 +116,41 @@ export default async function ArticlePage({ params }: Props) {
   // ── Inline HTML fragment → plantilla lanedata normal ──────────────────────
   const minutes = readingTime(article.html_content)
   const articleUrl = `${siteUrl}/articulo/${slug}`
+  const description = article.excerpt ? truncate(article.excerpt, 160) : 'Análisis de atletismo español en lanedata.'
+
+  const articleLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: article.title,
+    description,
+    image: [article.cover_image_url || `${siteUrl}/og-image.png`],
+    datePublished: article.published_at ?? undefined,
+    dateModified: article.updated_at ?? article.published_at ?? undefined,
+    inLanguage: 'es',
+    mainEntityOfPage: { '@type': 'WebPage', '@id': articleUrl },
+    author: { '@type': 'Organization', name: 'lanedata', url: siteUrl },
+    publisher: {
+      '@type': 'Organization',
+      name: 'lanedata',
+      logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon-512.png` },
+    },
+    articleSection: article.category ?? undefined,
+  }
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${siteUrl}/` },
+      { '@type': 'ListItem', position: 2, name: 'Archivo', item: `${siteUrl}/archivo/` },
+      { '@type': 'ListItem', position: 3, name: article.title, item: articleUrl },
+    ],
+  }
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
       <NavBar />
 
       <main>

@@ -3,9 +3,20 @@ import { Footer } from '@/components/Footer'
 import { CalendarView } from '@/components/CalendarView'
 import type { Metadata } from 'next'
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'
+
 export const metadata: Metadata = {
-  title: 'Calendario 2026',
-  description: 'Todas las competiciones de atletismo español 2026. Fuente: RFEA.',
+  title: 'Calendario de atletismo 2026',
+  description: 'Calendario completo del atletismo español 2026: 441 competiciones de pista, ruta, cross y concursos. Fuente RFEA y World Athletics.',
+  keywords: ['calendario atletismo 2026', 'competiciones atletismo España', 'calendario RFEA 2026', 'pruebas atletismo 2026'],
+  alternates: { canonical: `${siteUrl}/calendario/` },
+  openGraph: {
+    title: 'Calendario de atletismo 2026 · lanedata',
+    description: '441 competiciones del atletismo español 2026, con los análisis de lanedata enlazados.',
+    url: `${siteUrl}/calendario/`,
+    type: 'website',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+  },
 }
 
 export default function CalendarioPage() {
