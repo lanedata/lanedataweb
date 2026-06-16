@@ -54,6 +54,7 @@ export function NavBar() {
         {/* Desktop nav */}
         <nav className="hidden items-center gap-6 sm:flex" aria-label="Navegación principal">
           <NavLink href="/" active={pathname === '/'}>Inicio</NavLink>
+          <NavLink href="/archivo" active={pathname === '/archivo'}>Archivo</NavLink>
           <NavLink href="/buscar" active={pathname === '/buscar'}>Buscar</NavLink>
           <NavLink href="/calendario" active={pathname === '/calendario'}>Calendario</NavLink>
           <a
@@ -116,6 +117,7 @@ export function NavBar() {
         <div className="mobile-menu-enter border-t border-ink/[0.1] bg-paper px-4 py-4 sm:hidden">
           <nav className="flex flex-col gap-3">
             <MobileNavLink href="/" onClick={() => setMenuOpen(false)}>Inicio</MobileNavLink>
+            <MobileNavLink href="/archivo" onClick={() => setMenuOpen(false)}>Archivo</MobileNavLink>
             <MobileNavLink href="/buscar" onClick={() => setMenuOpen(false)}>Buscar</MobileNavLink>
             <MobileNavLink href="/calendario" onClick={() => setMenuOpen(false)}>Calendario</MobileNavLink>
             <a

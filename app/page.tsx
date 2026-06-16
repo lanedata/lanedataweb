@@ -20,10 +20,10 @@ export default async function HomePage() {
     .eq('status', 'published')
     .lte('published_at', new Date().toISOString())
     .order('published_at', { ascending: false })
-    .limit(16)
+    .limit(4)
 
   const featured = articles?.[0] ?? null
-  const rest = articles?.slice(1) ?? []
+  const rest = articles?.slice(1) ?? [] // max 3
 
   return (
     <>
@@ -71,7 +71,7 @@ export default async function HomePage() {
           <EmptyState />
         )}
 
-        {/* ── More articles ── */}
+        {/* ── More articles (max 3) ── */}
         {rest.length > 0 && (
           <section className="mt-16">
             <div className="flex items-center gap-3 mb-8">
@@ -84,6 +84,18 @@ export default async function HomePage() {
               {rest.map((article) => (
                 <ArticleCard key={article.id} article={article} />
               ))}
+            </div>
+
+            <div className="mt-10 flex justify-center">
+              <Link
+                href="/archivo"
+                className="inline-flex items-center gap-2 rounded-full border border-ink/[0.15] px-5 py-2.5 label-mono text-ink/55 hover:text-ink hover:border-ink/30 transition-colors duration-150"
+              >
+                Ver todos los análisis
+                <svg width="12" height="9" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+                  <path d="M1 5h12M8 1l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Link>
             </div>
           </section>
         )}
