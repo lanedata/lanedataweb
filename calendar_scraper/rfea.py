@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import date
+from datetime import date, datetime, timezone
 
 from selectolax.parser import HTMLParser
 
@@ -46,12 +46,15 @@ def _season_value(http: Http, year: int) -> str:
 
 
 def _ajax_calendario(http: Http, year: int, desde: date, hasta: date) -> str:
-    import time as _t
-
     season = _season_value(http, year)
+    # El PRIMER parámetro NO es un anti-caché: es el SELECTOR DE MES (timestamp Unix
+    # del día 1 del mes, UTC), igual que los enlaces `attr-date` del paginador. Usar
+    # time.time() (el "ahora") hacía que SIEMPRE devolviera el mes actual y se
+    # perdieran todos los meses futuros.
+    ts = int(datetime(desde.year, desde.month, 1, tzinfo=timezone.utc).timestamp())
     url = (
-        f"{BASE}/ajax/calendario/{int(_t.time())}/Deportivo/0/0/0/0/{season}/"
-        f"{desde.isoformat()}/{hasta.isoformat()}/0?_wrapper_format=drupal_ajax"
+        f"{BASE}/ajax/calendario/{ts}/Deportivo/0/0/0/0/{season}/0/0/0"
+        f"?_wrapper_format=drupal_ajax"
     )
     data = json.loads(http.get_text(url))
     for c in data:
@@ -257,10 +260,14 @@ def enriquecer(http: Http, comp: dict) -> Competicion:
         low = f"{txt} {href}".lower()
         if "sitio oficial" in txt.lower():
             sitio_oficial = url
+        elif "callroom" in href.lower() or "call-room" in href.lower():
+            continue  # cámara de llamadas, NO son resultados
         elif "directo" in low or "streaming" in low or "live" in low:
             url_directo = url_directo or url
-        elif "resultados de la competic" in txt.lower() or "rfeacontent" in href:
-            url_resultados = url_resultados or url
+        elif href.lower().endswith(".pdf") and (
+            "resultado" in txt.lower() or "rfeacontent" in href.lower()
+        ):
+            url_resultados = url_resultados or url   # solo PDF real de resultados
         elif href.lower().endswith(".pdf"):
             documentos.append(Documento(nombre=txt or href.rsplit("/", 1)[-1], url=url))
 
@@ -269,13 +276,10 @@ def enriquecer(http: Http, comp: dict) -> Competicion:
     # Inscripción (best-effort): buscar el plazo en el texto del detalle y en los
     # nombres de los documentos (p. ej. una circular de inscripción).
     plazo = _buscar_plazo(texto + " " + " ".join(d.nombre for d in documentos), anio)
-    insc_url = sitio_oficial or comp["url_detalle"]
-    if sitio_oficial:
-        instrucciones = "Inscripción en el sitio oficial de la competición."
-    elif (area.text(strip=True) if area else "") == "RFEA":
-        instrucciones = "Competición RFEA: inscripción por la federación (ver normas)."
-    else:
-        instrucciones = "Consultar la página de detalle / federación organizadora."
+    # Solo enlazamos inscripción si hay un SITIO OFICIAL real de inscripción.
+    # Si no lo hay, dejamos url=None (no hacemos pasar la ficha RFEA por "inscripción").
+    insc_url = sitio_oficial
+    instrucciones = "Inscripción en el sitio oficial de la competición." if sitio_oficial else None
 
     return Competicion(
         id=sfid,
@@ -293,7 +297,7 @@ def enriquecer(http: Http, comp: dict) -> Competicion:
             instrucciones=instrucciones,
         ),
         url_detalle=comp["url_detalle"],
-        url_inscritos=(f"{BASE}/championship-inscritos/{sfid}/0/1" if sfid else None),
+        url_inscritos=None,  # listado de inscritos retirado (a petición)
         url_resultados=url_resultados,
         url_directo=url_directo,
         documentos=documentos,

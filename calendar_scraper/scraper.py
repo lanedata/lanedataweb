@@ -22,52 +22,63 @@ def listar_competiciones(
     enriquecer: bool = True,
     con_inscritos: bool = False,
     limite: int | None = None,
+    federaciones: bool = True,
     on_error=None,
 ) -> list[Competicion]:
     """Devuelve las competiciones del rango [desde, hasta] con todos los campos.
 
-    - enriquecer=False: solo listado básico (rápido, sin abrir cada detalle).
-    - con_inscritos=True: además descarga la start list de cada prueba (lento: 1 req/prueba).
-    - limite: tope de competiciones a enriquecer (útil para pruebas).
-    - on_error(comp_basica, exc): callback opcional al fallar el enriquecido de una.
-    Los errores por competición se aíslan: una que falle no tumba al resto.
+    Combina la RFEA (calendario nacional + campeonatos autonómicos) con las fuentes
+    federativas adicionales (ver `fuentes/`) y deduplica las que aparecen en varias.
+
+    - enriquecer=False: solo listado básico de la RFEA (rápido, sin abrir cada detalle).
+    - con_inscritos=True: además descarga la start list de cada prueba (lento).
+    - federaciones=False: solo RFEA.
+    - limite: tope de competiciones RFEA a enriquecer (útil para pruebas).
+    - on_error(comp_basica, exc): callback opcional al fallar una.
     """
     d, h = _a_fecha(desde), _a_fecha(hasta)
-    salida: list[Competicion] = []
+    rfea_out: list[Competicion] = []
+    fed_grupos: list[list[Competicion]] = []
+
     with Http() as http:
+        # --- RFEA ---
         basicas = rfea.listar(http, d, h)
         if limite:
             basicas = basicas[:limite]
         for c in basicas:
             if not enriquecer:
-                salida.append(
-                    Competicion(
-                        nombre=c["nombre"],
-                        disciplina=c.get("disciplina"),
-                        fecha_inicio=c["fecha"],
-                        fecha_fin=c["fecha"],
-                        lugar=c.get("lugar"),
-                        url_detalle=c["url_detalle"],
-                    )
-                )
+                rfea_out.append(_basica(c))
                 continue
             try:
                 comp = rfea.enriquecer(http, c)
                 if con_inscritos:
                     comp = rfea.rellenar_inscritos(http, comp)
-                salida.append(comp)
+                rfea_out.append(comp)
             except Exception as exc:  # aislamiento por competición
                 if on_error:
                     on_error(c, exc)
-                salida.append(
-                    Competicion(
-                        nombre=c["nombre"],
-                        disciplina=c.get("disciplina"),
-                        fecha_inicio=c["fecha"],
-                        fecha_fin=c["fecha"],
-                        lugar=c.get("lugar"),
-                        url_detalle=c["url_detalle"],
-                    )
-                )
-    salida.sort(key=lambda x: (x.fecha_inicio, x.nombre))
-    return salida
+                rfea_out.append(_basica(c))
+
+        # --- Federaciones autonómicas ---
+        if federaciones:
+            from calendar_scraper.fuentes import FUENTES
+            for nombre, fn in FUENTES.items():
+                try:
+                    fed_grupos.append(fn(http, d, h))
+                except Exception as exc:
+                    if on_error:
+                        on_error({"nombre": f"fuente:{nombre}"}, exc)
+
+    from calendar_scraper.merge import combinar
+    return combinar([rfea_out, *fed_grupos])
+
+
+def _basica(c: dict) -> Competicion:
+    return Competicion(
+        nombre=c["nombre"],
+        disciplina=c.get("disciplina"),
+        fecha_inicio=c["fecha"],
+        fecha_fin=c["fecha"],
+        lugar=c.get("lugar"),
+        url_detalle=c["url_detalle"],
+    )

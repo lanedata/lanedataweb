@@ -31,13 +31,13 @@ export default function CalendarioPage() {
         <section className="mb-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <p className="label-mono text-ink/40 mb-2">Actualizado a diario · RFEA</p>
+              <p className="label-mono text-ink/40 mb-2">Actualizado a diario · RFEA + federaciones</p>
               <h1 className="font-brand text-4xl sm:text-5xl font-extrabold tracking-brand text-ink leading-none">
                 Calendario
               </h1>
               <p className="mt-3 text-sm text-ink/55 max-w-lg leading-relaxed">
-                Próximas competiciones del atletismo español con sus pruebas, inscripción y lista de inscritos.
-                Los datos se actualizan cada día desde el calendario de la RFEA.
+                Próximas competiciones del atletismo español con sus pruebas e inscripción. Se actualiza
+                cada día desde la RFEA y las federaciones autonómicas, fusionando las que aparecen en varias.
               </p>
             </div>
           </div>

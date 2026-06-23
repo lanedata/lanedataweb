@@ -75,6 +75,27 @@ Salida: array JSON UTF-8 (un objeto por competición). Ver `data/ejemplo.json`.
 pip install -r calendar_scraper/requirements.txt
 ```
 
+## Fuentes (multi-federación)
+
+El orquestador combina la **RFEA** (calendario nacional + campeonatos autonómicos) con
+**fuentes federativas** adicionales en `fuentes/` y **deduplica** las que aparecen en
+varias (misma fecha + núcleo de nombre normalizado → se fusionan conservando la más
+completa). Ver `merge.py`.
+
+| Fuente | Estado | Método |
+|---|---|---|
+| RFEA | ✅ | API AJAX de calendario (mes por timestamp) + detalle |
+| Galicia (`fuentes/galicia.py`) | ✅ | HTML estático de `atletismo.gal/competicions/` |
+| Madrid | ⚠️ sus campeonatos ya entran vía RFEA (usa su plataforma) |
+| Andalucía | ⛔ `web.faalive.com` es **Blazor WASM** → requiere navegador headless |
+| Valencia | ⛔ **SPA** (render JS) → requiere navegador headless |
+| Cataluña | ⛔ calendario en **PDF** → requiere PDF + parser |
+| La Rioja, Canarias, Castilla-La Mancha | 🟡 HTML estático, scrapeables (pendientes) |
+
+Para añadir una federación: crea `fuentes/<fed>.py` con `listar(http, desde, hasta) ->
+list[Competicion]` y regístrala en `fuentes/__init__.py::FUENTES`. El merge y el frontend
+la recogen automáticamente.
+
 ## Alcance y limitaciones (importante)
 
 - **Fuente:** RFEA. Su calendario incluye los campeonatos nacionales y autonómicos, pero

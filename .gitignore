@@ -19,3 +19,18 @@ next-env.d.ts
 # OS
 .DS_Store
 Thumbs.db
+
+# Python (scraper)
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# Motor de datos parqueado dentro del scraper: su .venv (105 MB) y su .git
+# anidado NO deben entrar en este repo (no se despliega con la web).
+/calendar_scraper/scrapers/.venv/
+/calendar_scraper/scrapers/.git/
+
+# log temporal del scraper
+/scrape.log
