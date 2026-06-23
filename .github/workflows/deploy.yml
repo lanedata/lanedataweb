@@ -36,6 +36,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Refresca el calendario desde la RFEA. Si falla, el build usa el JSON
+      # ya commiteado (public/data/competiciones.json) como respaldo.
+      - name: Refresh RFEA calendar
+        continue-on-error: true
+        run: |
+          python -m pip install -r calendar_scraper/requirements.txt
+          python scripts/scrape_calendar.py
+
       - name: Build (static export)
         run: npm run build
         env:

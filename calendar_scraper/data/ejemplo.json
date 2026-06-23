@@ -1,0 +1,630 @@
+[
+  {
+    "id": "a0bQs00000DqndtIAB",
+    "nombre": "Campeonato de España sub-16",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-06",
+    "fecha_fin": "2026-06-07",
+    "lugar": "La Nucía",
+    "pruebas": [
+      {
+        "id": "a16Qs00000AyJ5NIAV",
+        "nombre": "100m MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5OIAV",
+        "nombre": "300m MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5FIAV",
+        "nombre": "600m MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5PIAV",
+        "nombre": "1.000m MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5QIAV",
+        "nombre": "3.000m MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5JIAV",
+        "nombre": "100m vallas (0,91) MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5TIAV",
+        "nombre": "300m vallas (0,84) MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5MIAV",
+        "nombre": "1.500m Obst. MASC. - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5UIAV",
+        "nombre": "Altura MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5LIAV",
+        "nombre": "Pértiga MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5VIAV",
+        "nombre": "Longitud MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5SIAV",
+        "nombre": "Triple Salto MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5GIAV",
+        "nombre": "Peso (4kg) MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5WIAV",
+        "nombre": "Disco (1kg) MASC. - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5XIAV",
+        "nombre": "Martillo (4kg) MASC. - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5YIAV",
+        "nombre": "Jabalina (600g) MASC. - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5aIAF",
+        "nombre": "Octatlón MASC. Sub16 - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000DJKoLIAX",
+        "nombre": "4x100m MASC. AL - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5ZIAV",
+        "nombre": "3.000m Marcha MASC. en pista - U16M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5bIAF",
+        "nombre": "100m FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5cIAF",
+        "nombre": "300m FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5dIAF",
+        "nombre": "600m FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5IIAV",
+        "nombre": "1.000m FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5eIAF",
+        "nombre": "3.000m FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5fIAF",
+        "nombre": "100m vallas (0,762) Sub18/Sub16 FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5KIAV",
+        "nombre": "300m vallas (0,762) FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5oIAF",
+        "nombre": "1.500m Obst. FEM. - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5gIAF",
+        "nombre": "Altura FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5hIAF",
+        "nombre": "Pértiga FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5HIAV",
+        "nombre": "Longitud FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5iIAF",
+        "nombre": "Triple Salto FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5jIAF",
+        "nombre": "Peso (3kg) FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5kIAF",
+        "nombre": "Disco (800g) FEM. - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5lIAF",
+        "nombre": "Martillo (3kg) FEM. - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5mIAF",
+        "nombre": "Jabalina (500g) FEM. - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5RIAV",
+        "nombre": "Hexatlón FEM. Sub16 - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000DJKtBIAX",
+        "nombre": "4x100m FEM. AL - U16F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000AyJ5nIAF",
+        "nombre": "3.000m Marcha FEM. en pista - U16F",
+        "n_inscritos": null
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": "https://atletismorfea.es/calendario/campeonato/campeonato-de-espana-sub-16-0",
+      "instrucciones": "Competición RFEA: inscripción por la federación (ver normas)."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/campeonato-de-espana-sub-16-0",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000DqndtIAB/0/1",
+    "url_resultados": "https://www.rfeacontent.es/resultados/2026/airelibre/al_Cto.ESP_Sub16_LaNucia.pdf",
+    "url_directo": "https://bit.ly/43QAi7k",
+    "documentos": [
+      {
+        "nombre": "NORMAS REGULADORAS",
+        "url": "https://atletismorfea.es/sites/default/files/2025-12/Nomas%20reguladoras%20-%20AL%202026%20-%20Sub16.pdf"
+      },
+      {
+        "nombre": "Estadillos y equipos clasificados 4x100 m",
+        "url": "https://atletismorfea.es/sites/default/files/2026-05/089-2026%20Estadillo%20relevos%20Sub16.pdf"
+      },
+      {
+        "nombre": "Sorteo de calles 4x100m",
+        "url": "https://atletismorfea.es/sites/default/files/2026-05/092-2026%20Sorteo%20calles%20relevos%20Sub16.pdf"
+      },
+      {
+        "nombre": "Aplazamiento de la publicación de la lista provisional de atletas aceptados hasta el 27 de mayo.pdf",
+        "url": "https://atletismorfea.es/sites/default/files/2026-05/093-2026%20Aplazamiento%20de%20la%20publicaci%C3%B3n%20de%20la%20lista%20provisional%20de%20atletas%20aceptados%20hasta%20el%2027%20de%20mayo.pdf"
+      }
+    ],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000FC4orIAD",
+    "nombre": "Cto Aut Sub-18  Castilla y León (excepto marcha, Obstaculos, Martillo)",
+    "ambito": "",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-06",
+    "fecha_fin": "2026-06-06",
+    "lugar": "Valladolid-ESG",
+    "pruebas": [
+      {
+        "id": "a16Qs00000CJFMEIA5",
+        "nombre": "100m MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJ9v8IAD",
+        "nombre": "200m MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJH33IAH",
+        "nombre": "400m MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJGWoIAP",
+        "nombre": "800m MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJHB7IAP",
+        "nombre": "1.500m MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJF2sIAH",
+        "nombre": "3.000m MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJHKnIAP",
+        "nombre": "110m vallas (0,914) MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJHRFIA5",
+        "nombre": "400m vallas (0,84) MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJFMFIA5",
+        "nombre": "Altura MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJGrmIAH",
+        "nombre": "Pértiga MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJF2tIAH",
+        "nombre": "Longitud MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJEy3IAH",
+        "nombre": "Triple Salto MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJHpRIAX",
+        "nombre": "Peso (5kg) MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJI2LIAX",
+        "nombre": "Disco (1,5kg) MASC. - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJI7BIAX",
+        "nombre": "Jabalina (700g) MASC. - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJIDdIAP",
+        "nombre": "4x100m MASC. AL - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJGyDIAX",
+        "nombre": "100m FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJH1RIAX",
+        "nombre": "200m FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJFUJIA5",
+        "nombre": "400m FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJH6HIAX",
+        "nombre": "800m FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJHCjIAP",
+        "nombre": "1.500m FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJHELIA5",
+        "nombre": "3.000m FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJI0jIAH",
+        "nombre": "100m vallas (0,762) Sub18/Sub16 FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJ9v9IAD",
+        "nombre": "400m vallas (0,762) FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJFakIAH",
+        "nombre": "Altura FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJHflIAH",
+        "nombre": "Pértiga FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJHhNIAX",
+        "nombre": "Longitud FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJHmDIAX",
+        "nombre": "Triple Salto FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJGWpIAP",
+        "nombre": "Peso (3kg) FEM. AL - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJI3xIAH",
+        "nombre": "Disco (1kg) FEM. - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJCEgIAP",
+        "nombre": "Jabalina (500g) FEM. - U18F",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000CJIGrIAP",
+        "nombre": "4x100m FEM. AL - U18F",
+        "n_inscritos": null
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": "https://atletismorfea.es/calendario/campeonato/cto-aut-sub-18-castilla-y-leon-excepto-marcha-obstaculos-martillo",
+      "instrucciones": "Consultar la página de detalle / federación organizadora."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/cto-aut-sub-18-castilla-y-leon-excepto-marcha-obstaculos-martillo",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000FC4orIAD/0/1",
+    "url_resultados": "http://rfeacontent.es/callroom.html",
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000EToKjIAL",
+    "nombre": "II Nocturna de Atletismo. Memorial Antonio Moreno de Frutos",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-06",
+    "fecha_fin": "2026-06-06",
+    "lugar": "Logroño",
+    "pruebas": [
+      {
+        "id": "a16Qs000009JUBnIAO",
+        "nombre": "100m MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JUBrIAO",
+        "nombre": "1.500m MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JUBpIAO",
+        "nombre": "Longitud MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JUBjIAO",
+        "nombre": "Disco (1,5kg) MASC. - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JUBkIAO",
+        "nombre": "Disco (1,750kg) MASC. - U20M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000DdfjlIAB",
+        "nombre": "Disco (1kg) MASC.",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JUBtIAO",
+        "nombre": "Disco (2kg) MASC. - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000DR7sMIAT",
+        "nombre": "Jabalina (700g) MASC. - U18M",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JUBuIAO",
+        "nombre": "Jabalina (800g) MASC. - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000D1GG9IAN",
+        "nombre": "4x100m MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JUBvIAO",
+        "nombre": "100m FEM. AL - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JQ1fIAG",
+        "nombre": "400m FEM. AL - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JUBoIAO",
+        "nombre": "Longitud FEM. AL - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JUBsIAO",
+        "nombre": "Disco (1kg) FEM. - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009JUBhIAO",
+        "nombre": "Jabalina (600g) FEM. - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs00000D1GsrIAF",
+        "nombre": "4x100m FEM. AL - SF",
+        "n_inscritos": null
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": true,
+      "fecha_limite": null,
+      "url": "https://lariojaatletismo.com/memorial-antonio/",
+      "instrucciones": "Inscripción en el sitio oficial de la competición."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/ii-nocturna-de-atletismo-memorial-antonio-moreno-de-frutos",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000EToKjIAL/0/1",
+    "url_resultados": "https://www.rfeacontent.es/resultados/2026/airelibre/al_20260606_logro%C3%B1o.pdf",
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000ERqdZIAT",
+    "nombre": "XXVIII Trofeo de Atletismo Ciudad de Salamanca - Memorial Carlos Gil",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-06",
+    "fecha_fin": "2026-06-06",
+    "lugar": "Salamanca",
+    "pruebas": [
+      {
+        "id": "a16Qs000009IM9pIAG",
+        "nombre": "100m MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9oIAG",
+        "nombre": "200m MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9sIAG",
+        "nombre": "400m MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9uIAG",
+        "nombre": "800m MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9vIAG",
+        "nombre": "110m vallas (1,067) MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9wIAG",
+        "nombre": "400m vallas (0,91) MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9yIAG",
+        "nombre": "Longitud MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IMA1IAO",
+        "nombre": "Peso (5kg) MASC. AL",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9zIAG",
+        "nombre": "Peso (7,260kg) MASC. AL - SM",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9qIAG",
+        "nombre": "100m FEM. AL - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9rIAG",
+        "nombre": "200m FEM. AL - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9tIAG",
+        "nombre": "400m FEM. AL - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9lIAG",
+        "nombre": "800m FEM. AL - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9nIAG",
+        "nombre": "100m vallas (0,84) FEM. AL - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IM9xIAG",
+        "nombre": "400m vallas (0,762) FEM. AL - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IMMfIAO",
+        "nombre": "Longitud FEM. AL - SF",
+        "n_inscritos": null
+      },
+      {
+        "id": "a16Qs000009IMA0IAO",
+        "nombre": "Peso (4kg) FEM. AL - SF",
+        "n_inscritos": null
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": true,
+      "fecha_limite": null,
+      "url": "https://www.atletismosalmantino.org",
+      "instrucciones": "Inscripción en el sitio oficial de la competición."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/xxviii-trofeo-de-atletismo-ciudad-de-salamanca-memorial-carlos-gil",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000ERqdZIAT/0/1",
+    "url_resultados": "https://www.rfeacontent.es/resultados/2026/airelibre/al_salamanca.pdf",
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "rfea"
+  }
+]

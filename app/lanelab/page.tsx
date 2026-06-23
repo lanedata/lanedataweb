@@ -8,7 +8,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'
 export const metadata: Metadata = {
   title: 'LaneLab · Calculadoras de atletismo',
   description:
-    'Herramientas gratuitas de atletismo: conversor de puntos World Athletics (IAAF), calculadora de ritmo y parciales y calculadora de puntos de decatlón y heptatlón. Tablas oficiales 2025.',
+    'Herramientas gratuitas de atletismo: conversor de puntos World Athletics (IAAF), calculadora de ritmo y parciales, puntos de decatlón y heptatlón, corrección de viento del 100 m y calculadora de relevos. Tablas oficiales 2025.',
   keywords: [
     'calculadora atletismo',
     'puntos IAAF',
@@ -18,6 +18,11 @@ export const metadata: Metadata = {
     'equivalencia marcas atletismo',
     'calculadora decatlón puntos',
     'calculadora heptatlón',
+    'corrección de viento 100m 200m',
+    'corrección viento longitud triple salto',
+    'marca corregida viento altitud',
+    'calculadora relevos 4x100 4x400',
+    'estimar tiempo relevo',
     'tablas de puntuación atletismo 2025',
     'convertir marca a puntos',
     'herramientas para corredores',
@@ -44,6 +49,8 @@ const FEATURES = [
   'Conversor de puntos World Athletics (IAAF)',
   'Calculadora de ritmo y parciales',
   'Puntos de decatlón y heptatlón',
+  'Corrección de viento del 100 m (modelo Mureika)',
+  'Calculadora de relevos',
 ]
 
 const webAppLd = {
@@ -90,6 +97,11 @@ const faqLd = {
       '@type': 'Question',
       name: '¿Cómo se puntúan el decatlón y el heptatlón?',
       acceptedAnswer: { '@type': 'Answer', text: 'Con las fórmulas oficiales de pruebas combinadas de World Athletics, que asignan puntos a cada prueba mediante constantes específicas. LaneLab suma automáticamente el total.' },
+    },
+    {
+      '@type': 'Question',
+      name: '¿Cómo se corrige una marca por el viento?',
+      acceptedAnswer: { '@type': 'Answer', text: 'LaneLab ajusta la marca a viento nulo en las pruebas donde se mide el viento (100, 200, 110/100 m vallas, longitud y triple). El 100 m usa el modelo físico de Mureika (2001) e incluye la altitud; el resto son estimaciones ancladas al efecto típico del viento. Son aproximaciones, no correcciones oficiales; el límite legal para récords es +2.0 m/s.' },
     },
   ],
 }

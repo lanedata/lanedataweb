@@ -1,0 +1,1393 @@
+[
+  {
+    "id": "a0bQs00000KTxfVIAT",
+    "nombre": "Trofeo Ibérico Pruebas Combinadas POR-ESP",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-22",
+    "fecha_fin": "2026-06-23",
+    "lugar": "Lisboa",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": true,
+      "fecha_limite": null,
+      "url": "https://competicoes.aalisboa.com.pt/Competicoes/867",
+      "instrucciones": "Inscripción en el sitio oficial de la competición."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/trofeo-iberico-pruebas-combinadas-por-esp",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000KTxfVIAT/0/1",
+    "url_resultados": "http://rfeacontent.es/callroom.html",
+    "url_directo": "https://competicoes.aalisboa.com.pt/Resultados/867",
+    "documentos": [
+      {
+        "nombre": "PRESELECCIÓN ESPAÑA ATLETISMO",
+        "url": "https://atletismorfea.es/sites/default/files/2026-06/105-2026%20Preselecci%C3%B3n%20espa%C3%B1ola%20para%20el%20Trofeo%20Ib%C3%A9rico%20ESP-POR%20de%20Pruebas%20Combinadas%202026.pdf"
+      }
+    ],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000JuVnlIAF",
+    "nombre": "V Meeting de Atletismo Coria del Río Premio \"Rogelio Sales\"",
+    "ambito": "WA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-24",
+    "fecha_fin": "2026-06-24",
+    "lugar": "Coria del Río",
+    "pruebas": [
+      {
+        "id": "a16Qs00000DPYWtIAP",
+        "nombre": "60m MASC. AL - U12M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4EIAT",
+        "nombre": "80m MASC. AL - U14M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4FIAT",
+        "nombre": "100m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4GIAT",
+        "nombre": "200m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4IIAT",
+        "nombre": "400m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4KIAT",
+        "nombre": "800m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4MIAT",
+        "nombre": "1.500m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4NIAT",
+        "nombre": "Triple Salto MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DPa0nIAD",
+        "nombre": "60m FEM. AL - U12F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4PIAT",
+        "nombre": "80m FEM. AL - U14F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4QIAT",
+        "nombre": "100m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4RIAT",
+        "nombre": "200m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4TIAT",
+        "nombre": "400m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CGe4VIAT",
+        "nombre": "800m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DPZfpIAH",
+        "nombre": "Triple Salto FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": true,
+      "fecha_limite": null,
+      "url": "https://emacoriadelrio.blogspot.com/",
+      "instrucciones": "Inscripción en el sitio oficial de la competición."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/v-meeting-de-atletismo-coria-del-rio-premio-rogelio-sales",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000JuVnlIAF/0/1",
+    "url_resultados": "http://rfeacontent.es/callroom.html",
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000Km4KLIAZ",
+    "nombre": "V Meeting Internacional Lleida UA",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-25",
+    "fecha_fin": "2026-06-25",
+    "lugar": "Lleida",
+    "pruebas": [
+      {
+        "id": "a16Qs00000CmudxIAB",
+        "nombre": "60m MASC. AL - U12M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudzIAB",
+        "nombre": "80m MASC. AL - U14M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudhIAB",
+        "nombre": "100m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudiIAB",
+        "nombre": "150m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudjIAB",
+        "nombre": "200m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudkIAB",
+        "nombre": "300m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DZzPJIA1",
+        "nombre": "400m MASC. AL - U12M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudlIAB",
+        "nombre": "400m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Cmue4IAB",
+        "nombre": "800m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Cmue5IAB",
+        "nombre": "1.500m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DZzVlIAL",
+        "nombre": "3.000m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudmIAB",
+        "nombre": "Longitud MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Da0rdIAB",
+        "nombre": "Peso (4kg) MASC. AL - U16M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Da0mnIAB",
+        "nombre": "Peso (5kg) MASC. AL - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DZxycIAD",
+        "nombre": "Peso (6kg) MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DZzvbIAD",
+        "nombre": "Peso (7,260kg) MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Da169IAB",
+        "nombre": "Jabalina (600g) MASC. - U16M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Da12vIAB",
+        "nombre": "Jabalina (700g) MASC. - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Da11JIAR",
+        "nombre": "Jabalina (800g) MASC. - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudnIAB",
+        "nombre": "4x100m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudyIAB",
+        "nombre": "60m FEM. AL - U12F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Cmue0IAB",
+        "nombre": "80m FEM. AL - U14F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudoIAB",
+        "nombre": "100m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudpIAB",
+        "nombre": "150m FEM AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudqIAB",
+        "nombre": "200m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudrIAB",
+        "nombre": "300m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DZzM5IAL",
+        "nombre": "400m FEM. AL - U12F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudsIAB",
+        "nombre": "400m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Cmue3IAB",
+        "nombre": "800m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Cmue6IAB",
+        "nombre": "1.500m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DZzQvIAL",
+        "nombre": "3.000m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmudtIAB",
+        "nombre": "Longitud FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Da0YHIAZ",
+        "nombre": "Peso (3kg) FEM. AL - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Da0WfIAJ",
+        "nombre": "Peso (4kg) FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Da0bVIAR",
+        "nombre": "Jabalina (500g) FEM. - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DZxowIAD",
+        "nombre": "Jabalina (600g) FEM. - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000CmuduIAB",
+        "nombre": "4x100m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": true,
+      "fecha_limite": null,
+      "url": "https://lleidaua.com",
+      "instrucciones": "Inscripción en el sitio oficial de la competición."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/v-meeting-internacional-lleida-ua",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000Km4KLIAZ/0/1",
+    "url_resultados": "http://rfeacontent.es/callroom.html",
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000DqlGrIAJ",
+    "nombre": "Campeonato de España Master",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-26",
+    "fecha_fin": "2026-06-28",
+    "lugar": "Madrid-VLL",
+    "pruebas": [
+      {
+        "id": "a16Qs00000AzUJZIA3",
+        "nombre": "100m MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUOPIA3",
+        "nombre": "200m MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUWTIA3",
+        "nombre": "400m MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUZhIAN",
+        "nombre": "800m MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUeXIAV",
+        "nombre": "1.500m MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUt3IAF",
+        "nombre": "5.000m MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzV9BIAV",
+        "nombre": "Vallas Altas Vet. MAS. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzVcDIAV",
+        "nombre": "Vallas Bajas Vet. MAS. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzW3dIAF",
+        "nombre": "Obstáculos Máster MAS. - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzWWfIAN",
+        "nombre": "Altura MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzWYHIA3",
+        "nombre": "Pértiga MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzWjZIAV",
+        "nombre": "Longitud MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzWmnIAF",
+        "nombre": "Triple Salto MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzX7lIAF",
+        "nombre": "Peso Vet. MAS. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzXPVIA3",
+        "nombre": "Disco Vet. MAS. - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzXhFIAV",
+        "nombre": "Martillo Pesado Vet. MAS. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzXXZIA3",
+        "nombre": "Martillo Vet. MAS. - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzY73IAF",
+        "nombre": "Jabalina Vet. MAS. - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Aza2PIAR",
+        "nombre": "4x100m MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzZuLIAV",
+        "nombre": "4x100m MIXTO AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzaATIAZ",
+        "nombre": "4x400m MASC. AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzZHdIAN",
+        "nombre": "5.000m Marcha MASC. en pista - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUGLIA3",
+        "nombre": "100m FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUMnIAN",
+        "nombre": "200m FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUQ1IAN",
+        "nombre": "400m FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUY5IAN",
+        "nombre": "800m FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUcvIAF",
+        "nombre": "1.500m FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzUrRIAV",
+        "nombre": "5.000m FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzV5xIAF",
+        "nombre": "Vallas Altas VET. Fem. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzVXNIA3",
+        "nombre": "Vallas Bajas VET. Fem. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzW0PIAV",
+        "nombre": "2.000m Obst. FEM. - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzWV3IAN",
+        "nombre": "Altura FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzSCwIAN",
+        "nombre": "Pértiga FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzWgLIAV",
+        "nombre": "Longitud FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzWlBIAV",
+        "nombre": "Triple Salto FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzX69IAF",
+        "nombre": "Peso VET. Fem. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzWTSIA3",
+        "nombre": "Disco VET. Fem. - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzXcPIAV",
+        "nombre": "Martillo Pesado VET. Fem. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzXSjIAN",
+        "nombre": "Martillo VET. Fem. - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzY2DIAV",
+        "nombre": "Jabalina VET. Fem. - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzWbXIAV",
+        "nombre": "4x100m FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DdCY5IAN",
+        "nombre": "4x100m MIXTO AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Aza41IAB",
+        "nombre": "4x400m FEM. AL - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DdCQ1IAN",
+        "nombre": "4x400m MIXTO AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzZxZIAV",
+        "nombre": "4x400m MIXTO AL - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzZG1IAN",
+        "nombre": "5.000m Marcha FEM. en pista - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": "https://atletismorfea.es/calendario/campeonato/campeonato-de-espana-master-0",
+      "instrucciones": "Competición RFEA: inscripción por la federación (ver normas)."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/campeonato-de-espana-master-0",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000DqlGrIAJ/0/1",
+    "url_resultados": "https://www.rfeacontent.es/competi/calendario2026/inscritos_Cto_ESP_master_Madrid.pdf",
+    "url_directo": null,
+    "documentos": [
+      {
+        "nombre": "NORMAS REGULADORAS",
+        "url": "https://atletismorfea.es/sites/default/files/2026-02/Normas%20reguladoras%20-%20Master%202026%20-%20Aire%20Libre.pdf"
+      }
+    ],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000Et321IAB",
+    "nombre": "Campeonato del Mundo Master Off-Road",
+    "ambito": "EA",
+    "disciplina": "Trail Running",
+    "fecha_inicio": "2026-06-26",
+    "fecha_fin": "2026-06-28",
+    "lugar": "Janské Lázně",
+    "pruebas": [
+      {
+        "id": "a16Qs000009WR9ZIAW",
+        "nombre": "Carrera de Montaña Hombres",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs000009WR9bIAG",
+        "nombre": "Carrera de Trail Hombres",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DO0yfIAD",
+        "nombre": "Subida Vertical Hombres - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DO10IIAT",
+        "nombre": "Trail Running Classic Hombres - MM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs000009WR9aIAG",
+        "nombre": "Carrera de Montaña Mujeres - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs000009WR9cIAG",
+        "nombre": "Carrera de Trail Mujeres",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DO0x3IAD",
+        "nombre": "Subida Vertical Mujeres - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DO157IAD",
+        "nombre": "Trail Running Classic Mujeres - MF",
+        "n_inscritos": null,
+        "inscritos": []
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": true,
+      "fecha_limite": null,
+      "url": "https://https://wmmrc2026.maratonstav.cz/en",
+      "instrucciones": "Inscripción en el sitio oficial de la competición."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/campeonato-del-mundo-master-road",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000Et321IAB/0/1",
+    "url_resultados": "https://www.rfeacontent.es/veteranos/pdf/Gu%C3%ADa%20para%20atleta%20Janske%20Lazne%202026.pdf",
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000DqlGsIAJ",
+    "nombre": "Campeonato de España por Federaciones Autonómicas",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-27",
+    "fecha_fin": "2026-06-27",
+    "lugar": "Logroño",
+    "pruebas": [
+      {
+        "id": "a16Qs00000AzpUTIAZ",
+        "nombre": "200m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Azpe9IAB",
+        "nombre": "800m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzpnpIAB",
+        "nombre": "3.000m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzpsfIAB",
+        "nombre": "110m vallas (1,067) MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzqC1IAJ",
+        "nombre": "Pértiga MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzoF6IAJ",
+        "nombre": "Triple Salto MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzqITIAZ",
+        "nombre": "Disco (2kg) MASC. - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzqVNIAZ",
+        "nombre": "Jabalina (800g) MASC. - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzsAbIAJ",
+        "nombre": "4x100m MIXTO AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzimNIAR",
+        "nombre": "5.000m Marcha MASC. en pista - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzpO1IAJ",
+        "nombre": "100m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzpZJIAZ",
+        "nombre": "400m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Azqn7IAB",
+        "nombre": "1.500m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzrMbIAJ",
+        "nombre": "400m vallas (0,762) FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzqtZIAR",
+        "nombre": "3.000m Obst. FEM. - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzrhZIAR",
+        "nombre": "Altura FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzrXtIAJ",
+        "nombre": "Longitud FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Azrw5IAB",
+        "nombre": "Peso (4kg) FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AziknIAB",
+        "nombre": "Martillo (4kg) FEM. - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Azq2MIAR",
+        "nombre": "4x400m MIXTO AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": "https://atletismorfea.es/calendario/campeonato/campeonato-de-espana-por-federaciones-autonomicas",
+      "instrucciones": "Competición RFEA: inscripción por la federación (ver normas)."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/campeonato-de-espana-por-federaciones-autonomicas",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000DqlGsIAJ/0/1",
+    "url_resultados": "https://www.rfeacontent.es/competi/calendario2026/IT_Cto_ESP_FFAA_Logro%C3%B1o.pdf",
+    "url_directo": null,
+    "documentos": [
+      {
+        "nombre": "NORMAS REGULADORAS",
+        "url": "https://www.atletismorfea.es/sites/default/files/2026-06/115-2026%20Campeonato%20de%20Espa%C3%B1a%20por%20Federaciones%20Auton%C3%B3micas%20-%20Normas%20reguladoras.pdf"
+      }
+    ],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000G5I6LIAV",
+    "nombre": "Campionato de Galicia Sub20 y Sub23 aire libre",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-27",
+    "fecha_fin": "2026-06-28",
+    "lugar": "Pereiro de Aguiar",
+    "pruebas": [
+      {
+        "id": "a16Qs00000A1ShMIAV",
+        "nombre": "100m MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShZIAV",
+        "nombre": "200m MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShUIAV",
+        "nombre": "400m MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShXIAV",
+        "nombre": "800m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShRIAV",
+        "nombre": "1.500m MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DhVM1IAN",
+        "nombre": "3.000m MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Dgh4HIAR",
+        "nombre": "5.000m MASC. AL - SM",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShHIAV",
+        "nombre": "110m vallas (1,00) MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DgeEUIAZ",
+        "nombre": "110m vallas (1,067) MASC. AL - U23M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShJIAV",
+        "nombre": "400m vallas (0,91) MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShbIAF",
+        "nombre": "3.000m Obst. MASC. - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShLIAV",
+        "nombre": "Altura MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShcIAF",
+        "nombre": "Pértiga MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShdIAF",
+        "nombre": "Longitud MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShfIAF",
+        "nombre": "Triple Salto MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShhIAF",
+        "nombre": "Peso (6kg) MASC. AL - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Dgi0LIAR",
+        "nombre": "Peso (7,260kg) MASC. AL - U23M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShjIAF",
+        "nombre": "Disco (1,750kg) MASC. - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DghdlIAB",
+        "nombre": "Disco (2kg) MASC. - U23M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShlIAF",
+        "nombre": "Martillo (6kg) MASC. - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DgiI5IAJ",
+        "nombre": "Martillo (7,260kg) MASC. - U23M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShnIAF",
+        "nombre": "Jabalina (800g) MASC. - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DkvF8IAJ",
+        "nombre": "Decatlón MASC. - U23M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DkyT7IAJ",
+        "nombre": "Decatlón MASC. Sub20 - U20M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShNIAV",
+        "nombre": "100m FEM. AL - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShaIAF",
+        "nombre": "200m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShVIAV",
+        "nombre": "400m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShYIAV",
+        "nombre": "800m FEM. AL - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShSIAV",
+        "nombre": "1.500m FEM. AL - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DhSfuIAF",
+        "nombre": "3.000m FEM. AL - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000DgRadIAF",
+        "nombre": "5.000m FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShTIAV",
+        "nombre": "100m vallas (0,84) FEM. AL - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShWIAV",
+        "nombre": "400m vallas (0,762) FEM. AL - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShKIAV",
+        "nombre": "3.000m Obst. FEM. - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShGIAV",
+        "nombre": "Altura FEM. AL - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1SheIAF",
+        "nombre": "Pértiga FEM. AL - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShIIAV",
+        "nombre": "Longitud FEM. AL - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShgIAF",
+        "nombre": "Triple Salto FEM. AL - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShiIAF",
+        "nombre": "Peso (4kg) FEM. AL - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShkIAF",
+        "nombre": "Disco (1kg) FEM. - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShmIAF",
+        "nombre": "Martillo (4kg) FEM. - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000A1ShoIAF",
+        "nombre": "Jabalina (600g) FEM. - U20F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Dkv8gIAB",
+        "nombre": "Heptatlón FEM. - SF",
+        "n_inscritos": null,
+        "inscritos": []
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": true,
+      "fecha_limite": null,
+      "url": "https://www.atletismo.gal",
+      "instrucciones": "Inscripción en el sitio oficial de la competición."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/campionato-de-galicia-sub20-y-sub23-aire-libre",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000G5I6LIAV/0/1",
+    "url_resultados": "http://rfeacontent.es/callroom.html",
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000G5IHeIAN",
+    "nombre": "Campionato de Galicia Sub20 y Sub23 de probas combinadas",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-27",
+    "fecha_fin": "2026-06-28",
+    "lugar": "Pereiro de Aguiar",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": true,
+      "fecha_limite": null,
+      "url": "https://www.atletismo.gal",
+      "instrucciones": "Inscripción en el sitio oficial de la competición."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/campionato-de-galicia-sub20-y-sub23-de-probas-combinadas",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000G5IHeIAN/0/1",
+    "url_resultados": "http://rfeacontent.es/callroom.html",
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000DqlGtIAJ",
+    "nombre": "Campeonato de España sub-18 por Federaciones Autonómicas",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-28",
+    "fecha_fin": "2026-06-28",
+    "lugar": "Logroño",
+    "pruebas": [
+      {
+        "id": "a16Qs00000Azmy3IAB",
+        "nombre": "100m MASC. AL - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzpPeIAJ",
+        "nombre": "400m MASC. AL - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzuFdIAJ",
+        "nombre": "1.500m MASC. AL - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzqDeIAJ",
+        "nombre": "400m vallas (0,84) MASC. AL - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzuKTIAZ",
+        "nombre": "2.000m Obst. MASC. SUB18 (0,838m) - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Azj5iIAB",
+        "nombre": "Altura MASC. AL - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Azas2IAB",
+        "nombre": "Longitud MASC. AL - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzuifIAB",
+        "nombre": "Peso (5kg) MASC. AL - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzukHIAR",
+        "nombre": "Martillo (5kg) MASC. - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzvGXIAZ",
+        "nombre": "4x100m MIXTO AL - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Azup7IAB",
+        "nombre": "200m FEM. AL - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzusLIAR",
+        "nombre": "800m FEM. AL - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzutxIAB",
+        "nombre": "3.000m FEM. AL - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Azv3dIAB",
+        "nombre": "100m vallas (0,762) Sub18/Sub16 FEM. AL - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzfN4IAJ",
+        "nombre": "Pértiga FEM. AL - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000Azv8TIAR",
+        "nombre": "Triple Salto FEM. AL - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzutyIAB",
+        "nombre": "Disco (1kg) FEM. - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzvDJIAZ",
+        "nombre": "Jabalina (500g) FEM. - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzudqIAB",
+        "nombre": "4x400m MIXTO AL - U18M",
+        "n_inscritos": null,
+        "inscritos": []
+      },
+      {
+        "id": "a16Qs00000AzuacIAB",
+        "nombre": "5.000m Marcha FEM. en pista - U18F",
+        "n_inscritos": null,
+        "inscritos": []
+      }
+    ],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": "https://atletismorfea.es/calendario/campeonato/campeonato-de-espana-sub-18-por-federaciones-autonomicas",
+      "instrucciones": "Competición RFEA: inscripción por la federación (ver normas)."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/campeonato-de-espana-sub-18-por-federaciones-autonomicas",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000DqlGtIAJ/0/1",
+    "url_resultados": "https://www.rfeacontent.es/competi/calendario2026/IT_Cto_ESP_FFAA_Logro%C3%B1o.pdf",
+    "url_directo": null,
+    "documentos": [
+      {
+        "nombre": "NORMAS REGULADORAS",
+        "url": "https://www.atletismorfea.es/sites/default/files/2026-06/116-2026%20Campeonato%20de%20Espa%C3%B1a%20sub-18%20por%20Federaciones%20Auton%C3%B3micas%20-%20Normas%20reguladoras.pdf"
+      }
+    ],
+    "fuente": "rfea"
+  },
+  {
+    "id": "a0bQs00000IeDVdIAN",
+    "nombre": "Campionat de Catalunya Sub20 al aire lliure",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-28",
+    "fecha_fin": "2026-06-28",
+    "lugar": "Vic",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": "https://atletismorfea.es/calendario/campeonato/campionat-de-catalunya-sub20-al-aire-lliure",
+      "instrucciones": "Competición RFEA: inscripción por la federación (ver normas)."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/campionat-de-catalunya-sub20-al-aire-lliure",
+    "url_inscritos": "https://atletismorfea.es/championship-inscritos/a0bQs00000IeDVdIAN/0/1",
+    "url_resultados": "http://rfeacontent.es/callroom.html",
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "rfea"
+  }
+]

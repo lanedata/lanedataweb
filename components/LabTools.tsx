@@ -5,6 +5,8 @@ import type { ReactNode } from 'react'
 import { IaafCalculator } from './IaafCalculator'
 import { PaceCalculator } from './PaceCalculator'
 import { CombinedEventsCalculator } from './CombinedEventsCalculator'
+import { WindCalculator } from './WindCalculator'
+import { RelayCalculator } from './RelayCalculator'
 
 // ── Icons ──
 const IconPoints = (
@@ -21,6 +23,16 @@ const IconCombined = (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
     <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+  </svg>
+)
+const IconWind = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 8h11a3 3 0 1 0-3-3M3 13h15a3 3 0 1 1-3 3M3 18h9" />
+  </svg>
+)
+const IconRelay = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 19L19 5" /><circle cx="5" cy="19" r="2.4" /><circle cx="19" cy="5" r="2.4" />
   </svg>
 )
 
@@ -60,6 +72,23 @@ const TOOLS: Tool[] = [
     icon: IconCombined,
     render: () => <CombinedEventsCalculator />,
   },
+  {
+    id: 'viento',
+    name: 'Viento',
+    short: 'Marca ajustada por viento',
+    long: 'Ajusta tu marca a viento nulo en las pruebas donde se mide el viento: 100, 200, vallas, longitud y triple. El 100 m usa el modelo de Mureika (2001); el resto, una estimación. No es una corrección oficial.',
+    badge: 'Mureika',
+    icon: IconWind,
+    render: () => <WindCalculator />,
+  },
+  {
+    id: 'relevos',
+    name: 'Relevos',
+    short: 'Estima tu relevo 4 × N',
+    long: 'Estima el tiempo de un relevo (4×100, 4×200, 4×400 o mixto) a partir de las marcas individuales y la compenetración del equipo, teniendo en cuenta las salidas lanzadas en los cambios.',
+    icon: IconRelay,
+    render: () => <RelayCalculator />,
+  },
 ]
 
 export function LabTools() {
@@ -68,7 +97,7 @@ export function LabTools() {
   return (
     <div>
       {/* Tool chooser */}
-      <div role="tablist" aria-label="Herramientas" className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4 mb-9">
+      <div role="tablist" aria-label="Herramientas" className="grid gap-2.5 grid-cols-2 lg:grid-cols-5 mb-9">
         {TOOLS.map(t => {
           const on = t.id === active
           return (
