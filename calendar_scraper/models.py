@@ -61,6 +61,12 @@ class Competicion(BaseModel):
     url_inscritos: str | None = None     # listado de inscritos (start list)
     url_resultados: str | None = None
     url_directo: str | None = None       # resultados en directo / streaming
+    url_callroom: str | None = None      # cámara de llamadas RFEA
+    url_reglamento: str | None = None    # PDF de normas/reglamento de la competición
+    url_calendario_federacion: str | None = None  # calendario de la federación de origen
     documentos: list[Documento] = []
+
+    # Comunidad autónoma de la sede (para filtrar por cercanía en el buscador)
+    comunidad: str | None = None
 
     fuente: str = "rfea"

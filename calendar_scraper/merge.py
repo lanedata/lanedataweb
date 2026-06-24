@@ -62,7 +62,9 @@ def _completitud(c: Competicion) -> tuple:
 
 def _fusionar_en(base: Competicion, extra: Competicion) -> None:
     """Rellena huecos de `base` con datos de `extra` (no sobrescribe)."""
-    for f in ("lugar", "disciplina", "ambito", "url_detalle", "url_resultados", "url_directo"):
+    for f in ("lugar", "disciplina", "ambito", "comunidad", "url_detalle",
+              "url_resultados", "url_directo", "url_callroom", "url_reglamento",
+              "url_inscritos", "url_calendario_federacion"):
         if not getattr(base, f) and getattr(extra, f):
             setattr(base, f, getattr(extra, f))
     if not base.pruebas and extra.pruebas:

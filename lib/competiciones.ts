@@ -33,6 +33,10 @@ export interface RfeaCompeticion {
   url_inscritos?: string | null
   url_resultados?: string | null
   url_directo?: string | null
+  url_callroom?: string | null
+  url_reglamento?: string | null
+  url_calendario_federacion?: string | null
+  comunidad?: string | null
   documentos: RfeaDocumento[]
   fuente?: string
 }

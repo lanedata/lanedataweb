@@ -14,6 +14,7 @@ from datetime import date, datetime, timezone
 
 from selectolax.parser import HTMLParser
 
+from calendar_scraper.geo import comunidad_de
 from calendar_scraper.http import Http
 from calendar_scraper.models import Competicion, Documento, Inscripcion, Inscrito, Prueba
 
@@ -246,10 +247,11 @@ def enriquecer(http: Http, comp: dict) -> Competicion:
     if not ini:
         ini = fin = comp["fecha"]
 
-    # Enlaces: sitio oficial, directo, resultados, documentos
+    # Enlaces: sitio oficial, call room, directo, resultados, documentos
     sitio_oficial = None
     url_directo = None
     url_resultados = None
+    url_callroom = None
     documentos: list[Documento] = []
     for a in tree.css("a"):
         href = (a.attributes.get("href") or "").strip()
@@ -260,8 +262,8 @@ def enriquecer(http: Http, comp: dict) -> Competicion:
         low = f"{txt} {href}".lower()
         if "sitio oficial" in txt.lower():
             sitio_oficial = url
-        elif "callroom" in href.lower() or "call-room" in href.lower():
-            continue  # cámara de llamadas, NO son resultados
+        elif "callroom" in href.lower() or "call-room" in href.lower() or "cámara de llamad" in txt.lower():
+            url_callroom = url_callroom or url   # cámara de llamadas
         elif "directo" in low or "streaming" in low or "live" in low:
             url_directo = url_directo or url
         elif href.lower().endswith(".pdf") and (
@@ -270,6 +272,13 @@ def enriquecer(http: Http, comp: dict) -> Competicion:
             url_resultados = url_resultados or url   # solo PDF real de resultados
         elif href.lower().endswith(".pdf"):
             documentos.append(Documento(nombre=txt or href.rsplit("/", 1)[-1], url=url))
+
+    # Reglamento / normas: el PDF cuyo nombre lo indique
+    url_reglamento = next(
+        (d.url for d in documentos
+         if any(k in d.nombre.lower() for k in ("norma", "reglamento", "regulador"))),
+        None,
+    )
 
     pruebas = _pruebas(http, sfid) if sfid else []
 
@@ -297,9 +306,13 @@ def enriquecer(http: Http, comp: dict) -> Competicion:
             instrucciones=instrucciones,
         ),
         url_detalle=comp["url_detalle"],
-        url_inscritos=None,  # listado de inscritos retirado (a petición)
+        url_inscritos=(f"{BASE}/championship-inscritos/{sfid}/0/1" if sfid else None),
         url_resultados=url_resultados,
         url_directo=url_directo,
+        url_callroom=url_callroom or "https://www.rfeacontent.es/callroom.html",
+        url_reglamento=url_reglamento,
+        url_calendario_federacion=f"{BASE}/calendario",
+        comunidad=comunidad_de(comp.get("lugar"), area.text(strip=True) if area else None),
         documentos=documentos,
         fuente="rfea",
     )

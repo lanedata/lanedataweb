@@ -75,6 +75,8 @@ def listar(http: Http, desde: date, hasta: date) -> list[Competicion]:
             pruebas=[],
             inscripcion=Inscripcion(instrucciones="Consultar la ficha de la Federación Riojana."),
             url_detalle=LISTADO,
+            url_calendario_federacion=LISTADO,
+            comunidad="La Rioja",
             fuente="larioja",
         ))
     return out

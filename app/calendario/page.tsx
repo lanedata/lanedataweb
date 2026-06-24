@@ -36,8 +36,9 @@ export default function CalendarioPage() {
                 Calendario
               </h1>
               <p className="mt-3 text-sm text-ink/55 max-w-lg leading-relaxed">
-                Próximas competiciones del atletismo español con sus pruebas e inscripción. Se actualiza
-                cada día desde la RFEA y las federaciones autonómicas, fusionando las que aparecen en varias.
+                Competiciones del atletismo español —pasadas y por venir— con sus pruebas, inscripción,
+                reglamento y resultados. Se actualiza cada día desde la RFEA y las federaciones autonómicas.
+                Usa <span className="font-semibold text-ink/70">«Encuentra tu competición»</span> para filtrar por prueba y cercanía.
               </p>
             </div>
           </div>

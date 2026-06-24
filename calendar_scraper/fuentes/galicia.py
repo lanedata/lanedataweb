@@ -84,6 +84,8 @@ def listar(http: Http, desde: date, hasta: date) -> list[Competicion]:
                 instrucciones="Consultar la ficha de la Federación Galega.",
             ),
             url_detalle=url if url.startswith("http") else f"{BASE}{url}",
+            url_calendario_federacion=LISTADO,
+            comunidad="Galicia",
             fuente="galicia",
         ))
     return out
