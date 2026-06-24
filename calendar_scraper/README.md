@@ -82,17 +82,26 @@ El orquestador combina la **RFEA** (calendario nacional + campeonatos autonómic
 varias (misma fecha + núcleo de nombre normalizado → se fusionan conservando la más
 completa). Ver `merge.py`.
 
+**Dos vías:** las de HTML estático/API las hace el scraper principal (httpx, en el
+deploy). Las **SPA** (Blazor/JS) las hace un workflow aparte con **Playwright**
+(`scripts/scrape_spa.py` → `public/data/federaciones_spa.json`), que el scraper
+principal fusiona.
+
 | Fuente | Estado | Método |
 |---|---|---|
-| RFEA | ✅ | API AJAX de calendario (mes por timestamp) + detalle |
-| Galicia (`fuentes/galicia.py`) | ✅ | HTML estático de `atletismo.gal/competicions/` |
-| La Rioja (`fuentes/larioja.py`) | ✅ | HTML estático de `fratletismo.com/competiciones` |
+| RFEA | ✅ httpx | API AJAX de calendario (mes por timestamp) + detalle |
+| Galicia (`fuentes/galicia.py`) | ✅ httpx | HTML estático de `atletismo.gal/competicions/` |
+| La Rioja (`fuentes/larioja.py`) | ✅ httpx | HTML estático de `fratletismo.com/competiciones` |
+| **Andalucía** (`fuentes_spa/andalucia.py`) | ✅ Playwright | `web.faalive.com/Calendar` es Blazor WASM: se renderiza, se iteran las pestañas de mes y se leen las `.card` del DOM |
 | Madrid | ⚠️ sus campeonatos ya entran vía RFEA (usa su plataforma) |
-| Andalucía | ⛔ `faalive` = **Blazor WASM**; su API (`manager.faalive.com/api/RaceRanger`) exige `x-api-key` embebida en el WASM y el bucket S3 no lista. Requiere navegador o la clave. |
-| Valencia | ⛔ **SPA** (render JS) → requiere navegador headless |
+| Valencia | 🟡 SPA → añadir a `fuentes_spa/` (Playwright) |
 | Cataluña | ⛔ calendario en **PDF** → requiere PDF + parser |
-| Canarias | ⛔ calendario JS (FullCalendar), sin HTML estático |
-| Castilla-La Mancha | 🟡 PHP clásico, scrapeable (pendiente) |
+| Canarias | ⛔ calendario JS (FullCalendar) → añadir a `fuentes_spa/` |
+| Castilla-La Mancha | 🟡 PHP clásico, scrapeable (httpx, pendiente) |
+
+Para añadir una federación SPA: crea `fuentes_spa/<fed>.py` con
+`listar(page, desde, hasta) -> list[Competicion]` y regístrala en
+`fuentes_spa/__init__.py::FUENTES_SPA`.
 
 Para añadir una federación: crea `fuentes/<fed>.py` con `listar(http, desde, hasta) ->
 list[Competicion]` y regístrala en `fuentes/__init__.py::FUENTES`. El merge y el frontend

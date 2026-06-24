@@ -1,0 +1,47 @@
+name: Scrape federaciones SPA (Playwright)
+
+# Las federaciones SPA (Andalucía/faalive…) necesitan navegador headless, que es
+# pesado para el deploy. Este job aparte las scrapea y commitea su JSON; el deploy
+# normal lo fusiona. Corre antes del deploy diario.
+
+on:
+  schedule:
+    - cron: '0 5 * * *'        # a diario 05:00 UTC (antes del deploy de las 07:00)
+  workflow_dispatch:
+
+permissions:
+  contents: write             # para commitear el JSON
+
+concurrency:
+  group: scrape-spa
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install deps + Playwright
+        run: |
+          python -m pip install -r calendar_scraper/requirements.txt playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Scrape SPA federations
+        run: python scripts/scrape_spa.py
+
+      - name: Commit JSON if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/data/federaciones_spa.json
+          git diff --staged --quiet || git commit -m "chore: refresca calendario SPA (federaciones con navegador)"
+          git push
