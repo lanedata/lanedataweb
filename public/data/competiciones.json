@@ -1,56 +1,5 @@
 [
   {
-    "id": "a0bQs00000KTxfVIAT",
-    "nombre": "Trofeo Ibérico Pruebas Combinadas POR-ESP",
-    "ambito": "RFEA",
-    "disciplina": "Pista Aire libre",
-    "fecha_inicio": "2026-06-22",
-    "fecha_fin": "2026-06-23",
-    "lugar": "Lisboa",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": true,
-      "fecha_limite": null,
-      "url": "https://competicoes.aalisboa.com.pt/Competicoes/867",
-      "instrucciones": "Inscripción en el sitio oficial de la competición."
-    },
-    "url_detalle": "https://atletismorfea.es/calendario/campeonato/trofeo-iberico-pruebas-combinadas-por-esp",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": "https://competicoes.aalisboa.com.pt/Resultados/867",
-    "documentos": [
-      {
-        "nombre": "PRESELECCIÓN ESPAÑA ATLETISMO",
-        "url": "https://atletismorfea.es/sites/default/files/2026-06/105-2026%20Preselecci%C3%B3n%20espa%C3%B1ola%20para%20el%20Trofeo%20Ib%C3%A9rico%20ESP-POR%20de%20Pruebas%20Combinadas%202026.pdf"
-      }
-    ],
-    "fuente": "rfea"
-  },
-  {
-    "id": null,
-    "nombre": "XVIII Trofeo Alfonso Posada",
-    "ambito": "Galicia",
-    "disciplina": "Pista Aire Libre",
-    "fecha_inicio": "2026-06-23",
-    "fecha_fin": "2026-06-23",
-    "lugar": "Vigo",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la ficha de la Federación Galega."
-    },
-    "url_detalle": "https://atletismo.gal/competicions/122753/",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "documentos": [],
-    "fuente": "galicia"
-  },
-  {
     "id": "a0bQs00000JuVnlIAF",
     "nombre": "V Meeting de Atletismo Coria del Río Premio \"Rogelio Sales\"",
     "ambito": "WA",
@@ -256,14 +205,14 @@
         "inscritos": []
       },
       {
-        "id": "a16Qs00000CmudlIAB",
-        "nombre": "400m MASC. AL - SM",
+        "id": "a16Qs00000DZzPJIA1",
+        "nombre": "400m MASC. AL - U12M",
         "n_inscritos": null,
         "inscritos": []
       },
       {
-        "id": "a16Qs00000DZzPJIA1",
-        "nombre": "400m MASC. AL - U12M",
+        "id": "a16Qs00000CmudlIAB",
+        "nombre": "400m MASC. AL - SM",
         "n_inscritos": null,
         "inscritos": []
       },
@@ -376,14 +325,14 @@
         "inscritos": []
       },
       {
-        "id": "a16Qs00000CmudsIAB",
-        "nombre": "400m FEM. AL - SF",
+        "id": "a16Qs00000DZzM5IAL",
+        "nombre": "400m FEM. AL - U12F",
         "n_inscritos": null,
         "inscritos": []
       },
       {
-        "id": "a16Qs00000DZzM5IAL",
-        "nombre": "400m FEM. AL - U12F",
+        "id": "a16Qs00000CmudsIAB",
+        "nombre": "400m FEM. AL - SF",
         "n_inscritos": null,
         "inscritos": []
       },
@@ -724,13 +673,13 @@
         "inscritos": []
       },
       {
-        "id": "a16Qs00000DdCQ1IAN",
+        "id": "a16Qs00000AzZxZIAV",
         "nombre": "4x400m MIXTO AL - MM",
         "n_inscritos": null,
         "inscritos": []
       },
       {
-        "id": "a16Qs00000AzZxZIAV",
+        "id": "a16Qs00000DdCQ1IAN",
         "nombre": "4x400m MIXTO AL - MM",
         "n_inscritos": null,
         "inscritos": []
@@ -1003,7 +952,7 @@
         "url": "https://www.atletismorfea.es/sites/default/files/2026-06/115-2026%20Campeonato%20de%20Espa%C3%B1a%20por%20Federaciones%20Auton%C3%B3micas%20-%20Normas%20reguladoras.pdf"
       }
     ],
-    "fuente": "rfea"
+    "fuente": "larioja+rfea"
   },
   {
     "id": "a0bQs00000G5I6LIAV",
@@ -1288,6 +1237,29 @@
     "fuente": "rfea"
   },
   {
+    "id": "a0bQs00000G5IHeIAN",
+    "nombre": "Campionato de Galicia Sub20 y Sub23 de probas combinadas",
+    "ambito": "RFEA",
+    "disciplina": "Pista Aire libre",
+    "fecha_inicio": "2026-06-27",
+    "fecha_fin": "2026-06-28",
+    "lugar": "Pereiro de Aguiar",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": true,
+      "fecha_limite": null,
+      "url": "https://www.atletismo.gal",
+      "instrucciones": "Inscripción en el sitio oficial de la competición."
+    },
+    "url_detalle": "https://atletismorfea.es/calendario/campeonato/campionato-de-galicia-sub20-y-sub23-de-probas-combinadas",
+    "url_inscritos": null,
+    "url_resultados": null,
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "rfea"
+  },
+  {
     "id": null,
     "nombre": "XXXVI Campionato Xunta de Galicia de Atletismo Sub23 – XXXVIII Sub20 (agás Marcha)",
     "ambito": "Galicia",
@@ -1480,7 +1452,7 @@
         "url": "https://www.atletismorfea.es/sites/default/files/2026-06/116-2026%20Campeonato%20de%20Espa%C3%B1a%20sub-18%20por%20Federaciones%20Auton%C3%B3micas%20-%20Normas%20reguladoras.pdf"
       }
     ],
-    "fuente": "rfea"
+    "fuente": "larioja+rfea"
   },
   {
     "id": "a0bQs00000IeDVdIAN",
@@ -1781,14 +1753,14 @@
         "inscritos": []
       },
       {
-        "id": "a16Qs00000CAdpBIAT",
-        "nombre": "1.000m MASC. AL - U14M",
+        "id": "a16Qs00000CAdsPIAT",
+        "nombre": "1.000m MASC. AL - U16M",
         "n_inscritos": null,
         "inscritos": []
       },
       {
-        "id": "a16Qs00000CAdsPIAT",
-        "nombre": "1.000m MASC. AL - U16M",
+        "id": "a16Qs00000CAdpBIAT",
+        "nombre": "1.000m MASC. AL - U14M",
         "n_inscritos": null,
         "inscritos": []
       },
@@ -1859,14 +1831,14 @@
         "inscritos": []
       },
       {
-        "id": "a16Qs00000CAey9IAD",
-        "nombre": "1.000m FEM. AL - U16F",
+        "id": "a16Qs00000CAaksIAD",
+        "nombre": "1.000m FEM. AL - U14F",
         "n_inscritos": null,
         "inscritos": []
       },
       {
-        "id": "a16Qs00000CAaksIAD",
-        "nombre": "1.000m FEM. AL - U14F",
+        "id": "a16Qs00000CAey9IAD",
+        "nombre": "1.000m FEM. AL - U16F",
         "n_inscritos": null,
         "inscritos": []
       },
@@ -2570,6 +2542,29 @@
       }
     ],
     "fuente": "rfea"
+  },
+  {
+    "id": null,
+    "nombre": "CTO DE LA RIOJA ABSOLUTO - Jornada 2",
+    "ambito": "La Rioja",
+    "disciplina": null,
+    "fecha_inicio": "2026-07-04",
+    "fecha_fin": "2026-07-04",
+    "lugar": "Logroño",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": null,
+      "instrucciones": "Consultar la ficha de la Federación Riojana."
+    },
+    "url_detalle": "https://www.fratletismo.com/competiciones",
+    "url_inscritos": null,
+    "url_resultados": null,
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "larioja"
   },
   {
     "id": "a0bQs00000JuOBDIA3",
@@ -3981,6 +3976,29 @@
     "url_directo": null,
     "documentos": [],
     "fuente": "rfea"
+  },
+  {
+    "id": null,
+    "nombre": "CONTROL FEDERACION",
+    "ambito": "La Rioja",
+    "disciplina": null,
+    "fecha_inicio": "2026-07-11",
+    "fecha_fin": "2026-07-11",
+    "lugar": "Logroño",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": null,
+      "instrucciones": "Consultar la ficha de la Federación Riojana."
+    },
+    "url_detalle": "https://www.fratletismo.com/competiciones",
+    "url_inscritos": null,
+    "url_resultados": null,
+    "url_directo": null,
+    "documentos": [],
+    "fuente": "larioja"
   },
   {
     "id": "a0bQs00000JucdxIAB",
@@ -5678,44 +5696,7 @@
     "fecha_inicio": "2026-09-11",
     "fecha_fin": "2026-09-11",
     "lugar": "Guadalajara",
-    "pruebas": [
-      {
-        "id": "a16Qs00000BEUW9IAP",
-        "nombre": "Milla MASC RUTA - SM",
-        "n_inscritos": null,
-        "inscritos": []
-      },
-      {
-        "id": "a16Qs00000BEUWDIA5",
-        "nombre": "Milla MASC RUTA - U16M",
-        "n_inscritos": null,
-        "inscritos": []
-      },
-      {
-        "id": "a16Qs00000BEUWCIA5",
-        "nombre": "Milla MASC RUTA - U14M",
-        "n_inscritos": null,
-        "inscritos": []
-      },
-      {
-        "id": "a16Qs00000BEUWBIA5",
-        "nombre": "Milla FEM RUTA - U16F",
-        "n_inscritos": null,
-        "inscritos": []
-      },
-      {
-        "id": "a16Qs00000BEUWAIA5",
-        "nombre": "Milla FEM RUTA - SF",
-        "n_inscritos": null,
-        "inscritos": []
-      },
-      {
-        "id": "a16Qs00000BEUWEIA5",
-        "nombre": "Milla FEM RUTA - U14F",
-        "n_inscritos": null,
-        "inscritos": []
-      }
-    ],
+    "pruebas": [],
     "horario": [],
     "inscripcion": {
       "abierta": true,

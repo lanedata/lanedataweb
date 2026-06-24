@@ -86,11 +86,13 @@ completa). Ver `merge.py`.
 |---|---|---|
 | RFEA | ✅ | API AJAX de calendario (mes por timestamp) + detalle |
 | Galicia (`fuentes/galicia.py`) | ✅ | HTML estático de `atletismo.gal/competicions/` |
+| La Rioja (`fuentes/larioja.py`) | ✅ | HTML estático de `fratletismo.com/competiciones` |
 | Madrid | ⚠️ sus campeonatos ya entran vía RFEA (usa su plataforma) |
-| Andalucía | ⛔ `web.faalive.com` es **Blazor WASM** → requiere navegador headless |
+| Andalucía | ⛔ `faalive` = **Blazor WASM**; su API (`manager.faalive.com/api/RaceRanger`) exige `x-api-key` embebida en el WASM y el bucket S3 no lista. Requiere navegador o la clave. |
 | Valencia | ⛔ **SPA** (render JS) → requiere navegador headless |
 | Cataluña | ⛔ calendario en **PDF** → requiere PDF + parser |
-| La Rioja, Canarias, Castilla-La Mancha | 🟡 HTML estático, scrapeables (pendientes) |
+| Canarias | ⛔ calendario JS (FullCalendar), sin HTML estático |
+| Castilla-La Mancha | 🟡 PHP clásico, scrapeable (pendiente) |
 
 Para añadir una federación: crea `fuentes/<fed>.py` con `listar(http, desde, hasta) ->
 list[Competicion]` y regístrala en `fuentes/__init__.py::FUENTES`. El merge y el frontend
