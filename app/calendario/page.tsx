@@ -8,7 +8,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'
 
 export const metadata: Metadata = {
   title: 'Calendario de competiciones',
-  description: 'Calendario del atletismo español actualizado a diario desde la RFEA: próximas competiciones con sus pruebas, inscripción e inscritos.',
+  description: 'Calendario del atletismo español actualizado a diario desde la RFEA: próximas competiciones con sus pruebas, inscripción y reglamento.',
   keywords: ['calendario atletismo', 'competiciones atletismo España', 'calendario RFEA', 'inscripciones atletismo', 'próximas competiciones atletismo'],
   alternates: { canonical: `${siteUrl}/calendario/` },
   openGraph: {

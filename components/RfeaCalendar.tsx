@@ -206,7 +206,6 @@ function Modal({ c, onClose }: { c: RfeaCompeticion; onClose: () => void }) {
             <p className="font-mono text-[0.58rem] tracking-widest uppercase text-ink/35 mb-0.5">Información</p>
             {c.url_reglamento && <LinkRow href={c.url_reglamento} label="Info de la competición" sub="reglamento · PDF"
               icon={<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>} />}
-            {c.url_inscritos && <LinkRow href={c.url_inscritos} label="Listado de inscritos" sub="start list" />}
             {c.url_resultados && <LinkRow href={c.url_resultados} label="Resultados" sub="PDF oficial" />}
             {c.url_directo && <LinkRow href={c.url_directo} label="Seguir en directo" sub="streaming / live" />}
             {c.url_detalle && <LinkRow href={c.url_detalle} label="Ficha completa" sub={(c.url_detalle.match(/\/\/([^/]+)/)?.[1]) ?? ''} />}

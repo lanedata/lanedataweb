@@ -8,6 +8,7 @@ Flujo:
 
 from __future__ import annotations
 
+import html as _html
 import json
 import re
 from datetime import date, datetime, timezone
@@ -155,12 +156,30 @@ def _buscar_plazo(texto: str, anio: int) -> date | None:
         return None
 
 
+_TEXTAREA = re.compile(r"<textarea[^>]*>(.*)</textarea>", re.I | re.S)
+
+
+def _ajax_json(http: Http, url: str):
+    """Descarga una respuesta AJAX de Drupal y devuelve la lista de comandos.
+
+    El endpoint `/championship-inscritos/...` no responde JSON puro: envuelve el
+    array en un `<textarea>` con las entidades HTML escapadas (patrón "iframe
+    upload" de Drupal). Por eso `r.json()` fallaba y las pruebas salían vacías.
+    Soportamos ambos formatos: textarea-envuelto y JSON directo.
+    """
+    txt = http.get_text(url)
+    m = _TEXTAREA.search(txt)
+    if m:
+        txt = _html.unescape(m.group(1))
+    return json.loads(txt)
+
+
 def _pruebas(http: Http, sfid: str) -> list[Prueba]:
     try:
-        data = http.get_json(f"{BASE}/championship-inscritos/{sfid}/0/1")
+        data = _ajax_json(http, f"{BASE}/championship-inscritos/{sfid}/0/1")
     except Exception:
         return []
-    inner = next((c["data"] for c in data if c.get("data")), "")
+    inner = _inner(data)
     tree = HTMLParser(inner)
     out: list[Prueba] = []
     for opt in tree.css("select option"):
@@ -206,7 +225,7 @@ def inscritos_de_prueba(
     todas: list[Inscrito] = []
     for page in range(1, max_paginas + 1):
         try:
-            data = http.get_json(f"{BASE}/championship-inscritos/{sfid}/{prueba_id}/{page}")
+            data = _ajax_json(http, f"{BASE}/championship-inscritos/{sfid}/{prueba_id}/{page}")
         except Exception:
             break
         lote = parse_inscritos_tabla(_inner(data))
