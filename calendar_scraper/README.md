@@ -89,11 +89,11 @@ principal fusiona.
 
 | Fuente | Estado | Método |
 |---|---|---|
-| RFEA | ✅ httpx | API AJAX de calendario (mes por timestamp) + detalle |
-| Galicia (`fuentes/galicia.py`) | ✅ httpx | HTML estático de `atletismo.gal/competicions/` |
-| La Rioja (`fuentes/larioja.py`) | ✅ httpx | HTML estático de `fratletismo.com/competiciones` |
+| RFEA | ✅ http | API AJAX de calendario (mes por timestamp) + detalle |
+| Galicia (`fuentes/galicia.py`) | ✅ http | HTML estático de `atletismo.gal/competicions/` |
+| La Rioja (`fuentes/larioja.py`) | ✅ http | HTML estático de `fratletismo.com/competiciones` |
+| **Madrid** (`fuentes/madrid.py`) | ✅ http | Calendario Joomla (`atletismomadrid.com`). Tras **Cloudflare** → se pasa con curl_cffi. Trae reglamento/inscritos/resultados PDF y plazo de inscripción |
 | **Andalucía** (`fuentes_spa/andalucia.py`) | ✅ Playwright | `web.faalive.com/Calendar` es Blazor WASM: se renderiza, se iteran las pestañas de mes y se leen las `.card` del DOM |
-| Madrid | ⚠️ sus campeonatos ya entran vía RFEA (usa su plataforma) |
 | Valencia | 🟡 SPA → añadir a `fuentes_spa/` (Playwright) |
 | Cataluña | ⛔ calendario en **PDF** → requiere PDF + parser |
 | Canarias | ⛔ calendario JS (FullCalendar) → añadir a `fuentes_spa/` |

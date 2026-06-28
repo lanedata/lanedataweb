@@ -11,11 +11,12 @@ Estado:
     catalunya (PDF), canarias (calendario JS).
 """
 
-from calendar_scraper.fuentes import galicia, larioja
+from calendar_scraper.fuentes import galicia, larioja, madrid
 
 FUENTES = {
     "galicia": galicia.listar,
     "larioja": larioja.listar,
+    "madrid": madrid.listar,
 }
 
-__all__ = ["FUENTES", "galicia", "larioja"]
+__all__ = ["FUENTES", "galicia", "larioja", "madrid"]
