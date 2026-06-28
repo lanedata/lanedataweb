@@ -55,8 +55,7 @@ def main() -> int:
     hoy = date.today()
     desde = hoy - timedelta(days=PAST)
     hasta = hoy + timedelta(days=DAYS)
-    limite = desde.isoformat()
-    print(f"[scrape] refresco {desde} -> {hasta} (congela < {desde})", file=sys.stderr)
+    print(f"[scrape] refresco {desde} -> {hasta}", file=sys.stderr)
 
     nuevas = listar_competiciones(
         desde, hasta,
@@ -70,10 +69,18 @@ def main() -> int:
     # Federaciones SPA (pre-scrapeadas por scrape_spa.py / scrape-spa.yml)
     spa = _a_objetos(_cargar(SPA))
 
-    # Histórico congelado: del JSON previo, lo anterior a la ventana de refresco.
-    congeladas = _a_objetos([c for c in _cargar(OUT) if (c.get("fecha_inicio") or "") < limite])
+    # RESILIENCIA: usamos TODO el JSON previo (acotado a ~200 días) como base.
+    # Así, si una fuente falla en este run (p. ej. Cloudflare bloquea Madrid desde
+    # la IP de CI), sus competiciones NO se pierden: se conservan del JSON anterior.
+    # Las nuevas/SPA fusionan encima (combinar prefiere la ficha más completa).
+    # Las de >10 días no se re-scrapean (vienen de la base), cumpliendo el "freeze".
+    hace_200 = (hoy - timedelta(days=200)).isoformat()
+    base = _a_objetos([
+        c for c in _cargar(OUT)
+        if (c.get("fecha_fin") or c.get("fecha_inicio") or "") >= hace_200
+    ])
 
-    combinadas = combinar([congeladas, nuevas, spa])
+    combinadas = combinar([base, nuevas, spa])
     payload = [c.model_dump(mode="json") for c in combinadas]
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
@@ -81,7 +88,7 @@ def main() -> int:
     with open(tmp, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, ensure_ascii=False, indent=2)
     os.replace(tmp, OUT)
-    print(f"[scrape] {len(nuevas)} RFEA+feds · {len(spa)} SPA · {len(congeladas)} congeladas "
+    print(f"[scrape] {len(nuevas)} RFEA+feds · {len(spa)} SPA · base {len(base)} "
           f"= {len(payload)} -> {OUT}", file=sys.stderr)
     return 0
 
