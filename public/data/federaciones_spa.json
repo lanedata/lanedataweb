@@ -1,33 +1,6 @@
 [
   {
     "id": null,
-    "nombre": "Campeonato de Europa Master Ruta",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-04-30",
-    "fecha_fin": "2026-04-30",
-    "lugar": "Catania, Italia",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
     "nombre": "13ª Media Maratón Ciudad de Vélez-Málaga y Carrera 10k",
     "ambito": "Andalucía",
     "disciplina": null,
@@ -6670,7 +6643,7 @@
   },
   {
     "id": null,
-    "nombre": "XVI Carrera Popular Nocturna \"Día Mundial Enfermos de Alzheimer\"",
+    "nombre": "XVI Carrera Popular \"Día Mundial Enfermos de Alzheimer\"",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-10-17",
