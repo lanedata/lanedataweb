@@ -3808,6 +3808,33 @@
   },
   {
     "id": null,
+    "nombre": "XII Media Maratón, 10k y 4k Ciudad de Vera *",
+    "ambito": "Andalucía",
+    "disciplina": null,
+    "fecha_inicio": "2026-07-04",
+    "fecha_fin": "2026-07-04",
+    "lugar": "Vera",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": null,
+      "instrucciones": "Consultar la web de la Federación Andaluza."
+    },
+    "url_detalle": "https://web.faalive.com/Calendar",
+    "url_inscritos": null,
+    "url_resultados": null,
+    "url_directo": null,
+    "url_callroom": null,
+    "url_reglamento": null,
+    "url_calendario_federacion": "https://web.faalive.com/Calendar",
+    "documentos": [],
+    "comunidad": "Andalucía",
+    "fuente": "andalucia"
+  },
+  {
+    "id": null,
     "nombre": "XXI Carrera Popular Ruta de los Íberos",
     "ambito": "Andalucía",
     "disciplina": null,
