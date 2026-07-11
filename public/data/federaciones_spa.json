@@ -1,33 +1,6 @@
 [
   {
     "id": null,
-    "nombre": "IV Control Federativo Cádiz (SUB16/SUB12 REPROGRAMADO)",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-05-11",
-    "fecha_fin": "2026-05-11",
-    "lugar": "Chiclana",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
     "nombre": "Control Federativo Medio Fondo Málaga - 43º Trofeo San Isidro XXIII Memorial Paco Sánchez",
     "ambito": "Andalucía",
     "disciplina": null,
@@ -3457,12 +3430,12 @@
   },
   {
     "id": null,
-    "nombre": "Circuito Carreras Populares Almería-Turre",
+    "nombre": "Circuito Carreras Populares Almería-Turre APLAZADA",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-07-11",
     "fecha_fin": "2026-07-11",
-    "lugar": "Turre, Almería",
+    "lugar": "Turre",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4030,6 +4003,33 @@
     "fecha_inicio": "2026-08-04",
     "fecha_fin": "2026-08-09",
     "lugar": "Eugene",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": null,
+      "instrucciones": "Consultar la web de la Federación Andaluza."
+    },
+    "url_detalle": "https://web.faalive.com/Calendar",
+    "url_inscritos": null,
+    "url_resultados": null,
+    "url_directo": null,
+    "url_callroom": null,
+    "url_reglamento": null,
+    "url_calendario_federacion": "https://web.faalive.com/Calendar",
+    "documentos": [],
+    "comunidad": "Andalucía",
+    "fuente": "andalucia"
+  },
+  {
+    "id": null,
+    "nombre": "XXVI Carrera Popular Antonio Jiménez Alba",
+    "ambito": "Andalucía",
+    "disciplina": null,
+    "fecha_inicio": "2026-08-04",
+    "fecha_fin": "2026-08-04",
+    "lugar": null,
     "pruebas": [],
     "horario": [],
     "inscripcion": {
