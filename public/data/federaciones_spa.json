@@ -1,33 +1,6 @@
 [
   {
     "id": null,
-    "nombre": "Control Federativo Medio Fondo Málaga - 43º Trofeo San Isidro XXIII Memorial Paco Sánchez",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-05-13",
-    "fecha_fin": "2026-05-13",
-    "lugar": "Nerja",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
     "nombre": "Campeonato de Andalucía Sub16",
     "ambito": "Andalucía",
     "disciplina": null,
@@ -3462,7 +3435,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-11",
     "fecha_fin": "2026-07-11",
-    "lugar": "Jaén",
+    "lugar": null,
     "pruebas": [],
     "horario": [],
     "inscripcion": {
