@@ -3538,12 +3538,12 @@
   },
   {
     "id": null,
-    "nombre": "13ª Carrera Popular Antonio Romero El Viso *",
+    "nombre": "Meeting Madrid 2026",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-07-17",
     "fecha_fin": "2026-07-17",
-    "lugar": "El Viso",
+    "lugar": "Madrid",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3565,12 +3565,12 @@
   },
   {
     "id": null,
-    "nombre": "Meeting Madrid 2026",
+    "nombre": "XII Carrera Popular Antonio Romero El Viso",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-07-17",
     "fecha_fin": "2026-07-17",
-    "lugar": "Madrid",
+    "lugar": "El Viso",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5163,7 +5163,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-03",
     "fecha_fin": "2026-10-03",
-    "lugar": "Carranque, Málaga - Carranque",
+    "lugar": null,
     "pruebas": [],
     "horario": [],
     "inscripcion": {
