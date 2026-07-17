@@ -1,120 +1,12 @@
 [
   {
     "id": null,
-    "nombre": "IV Encuentro de Relevos Atletismo Alamillo",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-05-17",
-    "fecha_fin": "2026-05-17",
-    "lugar": "Sevilla - La Cartuja",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
-    "nombre": "VI San Isidro Running de Posadas",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-05-17",
-    "fecha_fin": "2026-05-17",
-    "lugar": "Posadas, Córdoba",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
-    "nombre": "VII Control Federativo Málaga",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-05-17",
-    "fecha_fin": "2026-05-17",
-    "lugar": "Málaga",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
-    "nombre": "XX Carrera de Montaña Valle del Almanzora",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-05-17",
-    "fecha_fin": "2026-05-17",
-    "lugar": "Armuña del Almanzora, Almería",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
     "nombre": "VI Campeonato Nacional Militar de Atletismo",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-05-19",
     "fecha_fin": "2026-05-21",
-    "lugar": "Cádiz - Piata Manuel Irigoyen",
+    "lugar": "Cádiz",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -141,7 +33,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-20",
     "fecha_fin": "2026-05-20",
-    "lugar": "Nerja - Málaga",
+    "lugar": "Nerja",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -249,7 +141,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-23",
     "fecha_fin": "2026-05-23",
-    "lugar": "La Salobreja, Jaén, A designar",
+    "lugar": "La Salobreja, Jaén",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -303,7 +195,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-23",
     "fecha_fin": "2026-05-23",
-    "lugar": "Olula del Río - Almería",
+    "lugar": "Olula del Río",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -357,7 +249,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-23",
     "fecha_fin": "2026-05-23",
-    "lugar": "Carmona, Sevilla, Sevilla - Carmona",
+    "lugar": "Carmona, Sevilla",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -438,7 +330,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-24",
     "fecha_fin": "2026-05-24",
-    "lugar": "La Cartuja, Sevilla, A designar",
+    "lugar": "La Cartuja, Sevilla",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -546,7 +438,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-24",
     "fecha_fin": "2026-05-24",
-    "lugar": "Pista Anexa - Almería",
+    "lugar": "Pista Anexa",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -573,7 +465,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-24",
     "fecha_fin": "2026-05-24",
-    "lugar": "Baeza - Jaén",
+    "lugar": "Baeza",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -627,7 +519,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-29",
     "fecha_fin": "2026-05-29",
-    "lugar": "Málaga - Estadio Ciudad de Málaga",
+    "lugar": "Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -654,7 +546,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-30",
     "fecha_fin": "2026-05-30",
-    "lugar": "Pista atletismo San Pablo - Sevilla",
+    "lugar": "Pista atletismo San Pablo",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -681,7 +573,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-30",
     "fecha_fin": "2026-05-31",
-    "lugar": "Estepona, Málaga, A designar",
+    "lugar": "Estepona, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -762,7 +654,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-30",
     "fecha_fin": "2026-05-30",
-    "lugar": "Chiclana, Cádiz - Pista de Atletismo Huerta Mata",
+    "lugar": "Chiclana, Cádiz",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -816,7 +708,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-30",
     "fecha_fin": "2026-05-30",
-    "lugar": "Jaén - La Salobreja",
+    "lugar": "Jaén",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -951,7 +843,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-31",
     "fecha_fin": "2026-05-31",
-    "lugar": "Jerez de la Frontera - Cádiz",
+    "lugar": "Jerez de la Frontera",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1032,7 +924,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-05-31",
     "fecha_fin": "2026-05-31",
-    "lugar": "Galaroza, Huelva, Huelva",
+    "lugar": "Galaroza, Huelva",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1086,7 +978,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-05",
     "fecha_fin": "2026-06-07",
-    "lugar": "Ljubljana-Kamnik, Eslovenia, Eslovenia - Ljubljana-Kamnik",
+    "lugar": "Ljubljana-Kamnik, Eslovenia",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1302,7 +1194,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-06",
     "fecha_fin": "2026-06-06",
-    "lugar": "Carmona, Sevilla, Sevilla - Carmona",
+    "lugar": "Carmona, Sevilla",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1356,7 +1248,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-06",
     "fecha_fin": "2026-06-06",
-    "lugar": "Mengíbar - Jaén",
+    "lugar": "Mengíbar",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1410,7 +1302,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-07",
     "fecha_fin": "2026-06-07",
-    "lugar": "Pista atletismo San Pablo - Sevilla",
+    "lugar": "Pista atletismo San Pablo",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1464,7 +1356,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-12",
     "fecha_fin": "2026-06-12",
-    "lugar": "Granada - Estadio de la juventud",
+    "lugar": "Granada",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1896,7 +1788,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-13",
     "fecha_fin": "2026-06-13",
-    "lugar": "Marmolejo - Jaén",
+    "lugar": "Marmolejo",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1923,7 +1815,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-13",
     "fecha_fin": "2026-06-13",
-    "lugar": "San Fernando - Cádiz",
+    "lugar": "San Fernando",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2004,7 +1896,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-14",
     "fecha_fin": "2026-06-14",
-    "lugar": "PISTA ANEXA ESTADIO MEDITERRÁNEO - Almería",
+    "lugar": "PISTA ANEXA ESTADIO MEDITERRÁNEO",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2031,7 +1923,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-14",
     "fecha_fin": "2026-06-14",
-    "lugar": "Córdoba, Córdoba",
+    "lugar": "Córdoba",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2058,7 +1950,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-18",
     "fecha_fin": "2026-06-18",
-    "lugar": "Málaga - Estadio Ciudad de Málaga",
+    "lugar": "Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2112,7 +2004,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-19",
     "fecha_fin": "2026-06-19",
-    "lugar": "Jerez de la Frontera, Cádiz - Pista Chapín",
+    "lugar": "Jerez de la Frontera, Cádiz",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2274,7 +2166,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-20",
     "fecha_fin": "2026-06-20",
-    "lugar": "Sevilla - Cartuja, Sevilla - Anexo La Cartuja",
+    "lugar": "Sevilla - Cartuja, Sevilla",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2382,7 +2274,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-21",
     "fecha_fin": "2026-06-21",
-    "lugar": "Sevilla - San Pablo, Sevilla - San Pablo",
+    "lugar": "Sevilla - San Pablo, Sevilla",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2571,7 +2463,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-26",
     "fecha_fin": "2026-06-28",
-    "lugar": "Janske Lazne, República Checa, República Checa - Janske Lazne",
+    "lugar": "Janske Lazne,, República Checa",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2733,7 +2625,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-28",
     "fecha_fin": "2026-06-28",
-    "lugar": "Jódar - Jaén",
+    "lugar": "Jódar",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3003,7 +2895,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-10",
     "fecha_fin": "2026-07-10",
-    "lugar": "Granada - Pista Atletismo María Pérez",
+    "lugar": "Granada",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3165,7 +3057,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-11",
     "fecha_fin": "2026-07-11",
-    "lugar": "Jaén - La salobreja",
+    "lugar": "Jaén",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3408,7 +3300,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-18",
     "fecha_fin": "2026-07-18",
-    "lugar": "Cártama - Málaga",
+    "lugar": "Cártama",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3435,7 +3327,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-18",
     "fecha_fin": "2026-07-18",
-    "lugar": "Villagordo - Jaén",
+    "lugar": "Villagordo",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3462,7 +3354,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-19",
     "fecha_fin": "2026-07-19",
-    "lugar": "Vélez-Málaga, Málaga - Polideportivo Fernando Ruiz Hierro",
+    "lugar": "Vélez-Málaga, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3678,7 +3570,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-02",
     "fecha_fin": "2026-08-02",
-    "lugar": "Bedmar - Jaén",
+    "lugar": "Bedmar",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3705,7 +3597,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-04",
     "fecha_fin": "2026-08-09",
-    "lugar": "Eugene - Estados Unidos",
+    "lugar": "Eugene",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3732,7 +3624,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-04",
     "fecha_fin": "2026-08-04",
-    "lugar": "Córdoba - Aguilar de la Frontera",
+    "lugar": "Córdoba",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3840,7 +3732,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-08",
     "fecha_fin": "2026-08-08",
-    "lugar": "Martos - Jaén",
+    "lugar": "Martos",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3867,7 +3759,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-09",
     "fecha_fin": "2026-08-09",
-    "lugar": "Granada - Granada",
+    "lugar": "Granada",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3894,7 +3786,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-10",
     "fecha_fin": "2026-08-16",
-    "lugar": "Birmingham, Inglaterra, Inglaterra - Birmingham",
+    "lugar": "Birmingham, Inglaterra",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4056,7 +3948,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-22",
     "fecha_fin": "2026-08-03",
-    "lugar": "Daegu, Korea, Korea - Daegu",
+    "lugar": "Daegu, Korea",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4299,7 +4191,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-09-11",
     "fecha_fin": "2026-09-13",
-    "lugar": "Budapest, Hungria, Hungria - Budapest",
+    "lugar": "Budapest, Hungria",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4650,7 +4542,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-09-20",
     "fecha_fin": "2026-09-20",
-    "lugar": "Jaén, Jaén",
+    "lugar": "Jaén",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4758,7 +4650,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-09-26",
     "fecha_fin": "2026-09-26",
-    "lugar": "Málaga, Málaga",
+    "lugar": "Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4893,7 +4785,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-03",
     "fecha_fin": "2026-10-03",
-    "lugar": "Córdoba, Córdoba",
+    "lugar": "Córdoba",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5109,7 +5001,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-10",
     "fecha_fin": "2026-10-10",
-    "lugar": "Balanegra - Almería",
+    "lugar": "Balanegra",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5217,7 +5109,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-10",
     "fecha_fin": "2026-10-10",
-    "lugar": "Málaga - Carranque",
+    "lugar": "Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5379,7 +5271,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-17",
     "fecha_fin": "2026-10-18",
-    "lugar": "Palafrugell, Gerona, A designar",
+    "lugar": "Palafrugell, Gerona",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5433,7 +5325,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-17",
     "fecha_fin": "2026-10-18",
-    "lugar": "Palafrugell, Gerona, A designar",
+    "lugar": "Palafrugell, Gerona",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5460,7 +5352,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-17",
     "fecha_fin": "2026-10-18",
-    "lugar": "Palafrugell, Gerona, A designar",
+    "lugar": "Palafrugell, Gerona",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5541,7 +5433,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-17",
     "fecha_fin": "2026-10-17",
-    "lugar": "Carmona, Sevilla, Sevilla - Carmona",
+    "lugar": "Carmona, Sevilla",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5595,7 +5487,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-18",
     "fecha_fin": "2026-10-18",
-    "lugar": "Motril, Granada, Granada - Motril",
+    "lugar": "Motril, Granada",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6081,7 +5973,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-30",
     "fecha_fin": "2026-10-15",
-    "lugar": "Dakar, Senegal, Senegal - Dakar",
+    "lugar": "Dakar, Senegal",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6243,7 +6135,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-02",
     "fecha_fin": "2026-11-02",
-    "lugar": "Nerja - Málaga",
+    "lugar": "Nerja",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6297,7 +6189,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-08",
     "fecha_fin": "2026-11-08",
-    "lugar": "Málaga, Málaga",
+    "lugar": "Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6351,7 +6243,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-08",
     "fecha_fin": "2026-11-08",
-    "lugar": "Santiponce, Sevilla, Sevilla - Santiponce",
+    "lugar": "Santiponce, Sevilla",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6513,7 +6405,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-15",
     "fecha_fin": "2026-11-15",
-    "lugar": "Antequera, Málaga, Málaga - Antequera",
+    "lugar": "Antequera, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6675,7 +6567,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-21",
     "fecha_fin": "2026-11-21",
-    "lugar": "Antequera, Málaga, Málaga - Antequera",
+    "lugar": "Antequera, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6891,7 +6783,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-28",
     "fecha_fin": "2026-11-28",
-    "lugar": "Antequera, Málaga, Málaga - Antequera",
+    "lugar": "Antequera, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6972,7 +6864,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-29",
     "fecha_fin": "2026-11-29",
-    "lugar": "Antequera, Málaga, Málaga - Antequera",
+    "lugar": "Antequera, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -7188,7 +7080,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-12-12",
     "fecha_fin": "2026-12-12",
-    "lugar": "Antequera, Málaga, Málaga - Antequera",
+    "lugar": "Antequera, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -7242,7 +7134,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-12-13",
     "fecha_fin": "2026-12-13",
-    "lugar": "Los Palacios y Villafranca, Sevilla, Sevilla - Los Palacios y Villafranca",
+    "lugar": "Los Palacios y Villafranca, Sevilla",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -7269,7 +7161,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-12-13",
     "fecha_fin": "2026-12-13",
-    "lugar": "Antequera, Málaga, Málaga - Antequera",
+    "lugar": "Antequera, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -7296,7 +7188,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-12-13",
     "fecha_fin": "2026-12-13",
-    "lugar": "Castro-Urdiales, Cantabria, A designar",
+    "lugar": "Castro-Urdiales, Cantabria",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -7323,7 +7215,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-12-13",
     "fecha_fin": "2026-12-13",
-    "lugar": "Castro-Urdiales, Cantabria, A designar",
+    "lugar": "Castro-Urdiales, Cantabria",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
