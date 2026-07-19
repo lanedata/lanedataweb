@@ -1,33 +1,6 @@
 [
   {
     "id": null,
-    "nombre": "VI Campeonato Nacional Militar de Atletismo",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-05-19",
-    "fecha_fin": "2026-05-21",
-    "lugar": "Cádiz",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
     "nombre": "Desafío Nerja",
     "ambito": "Andalucía",
     "disciplina": null,
