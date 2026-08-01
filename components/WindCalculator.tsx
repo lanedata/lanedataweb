@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { parseClock } from '@/lib/running'
-import { Segmented, LabField, Metric, inputCls } from './lab/ui'
+import { LabField, Metric, inputCls } from './lab/ui'
 
 type Kind = 'track' | 'field'
 

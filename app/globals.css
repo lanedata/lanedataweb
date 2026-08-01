@@ -63,6 +63,18 @@ body {
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/* ─── LaneLab · entrada del panel de herramienta ─────────────────────────── */
+.panel-enter { animation: panelIn 220ms var(--ease-out) both; }
+
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Carrusel de herramientas en móvil: sin barra de scroll visible */
+.scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
 /* ─── Nav menu item stagger ──────────────────────────────────────────────── */
 .menu-item { animation: menuItemIn 300ms var(--ease-out) both; }
 

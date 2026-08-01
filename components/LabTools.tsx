@@ -1,40 +1,35 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { IaafCalculator } from './IaafCalculator'
 import { PaceCalculator } from './PaceCalculator'
+import { PredictorCalculator } from './PredictorCalculator'
 import { CombinedEventsCalculator } from './CombinedEventsCalculator'
 import { WindCalculator } from './WindCalculator'
 import { RelayCalculator } from './RelayCalculator'
+import { CategoryCalculator } from './CategoryCalculator'
 
 // ── Icons ──
-const IconPoints = (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M7 8H5a1 1 0 0 0-1 1v9M7 8l4-4M7 8v10M17 16h2a1 1 0 0 0 1-1V6M17 16l-4 4M17 16V6" />
+const svg = (children: ReactNode) => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {children}
   </svg>
 )
-const IconPace = (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="13" r="8" /><path d="M12 13V9M9 2h6" />
-  </svg>
-)
-const IconCombined = (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
-    <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
-  </svg>
-)
-const IconWind = (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M3 8h11a3 3 0 1 0-3-3M3 13h15a3 3 0 1 1-3 3M3 18h9" />
-  </svg>
-)
-const IconRelay = (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M5 19L19 5" /><circle cx="5" cy="19" r="2.4" /><circle cx="19" cy="5" r="2.4" />
-  </svg>
-)
+
+const IconPoints = svg(<path d="M7 8H5a1 1 0 0 0-1 1v9M7 8l4-4M7 8v10M17 16h2a1 1 0 0 0 1-1V6M17 16l-4 4M17 16V6" />)
+const IconPace = svg(<><circle cx="12" cy="13" r="8" /><path d="M12 13V9M9 2h6" /></>)
+const IconPredictor = svg(<><path d="M3 17l5-5 3.5 3.5L21 6" /><path d="M15 6h6v6" /></>)
+const IconCombined = svg(<>
+  <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
+  <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
+</>)
+const IconWind = svg(<path d="M3 8h11a3 3 0 1 0-3-3M3 13h15a3 3 0 1 1-3 3M3 18h9" />)
+const IconRelay = svg(<><path d="M5 19L19 5" /><circle cx="5" cy="19" r="2.4" /><circle cx="19" cy="5" r="2.4" /></>)
+const IconCategory = svg(<>
+  <rect x="3" y="5" width="18" height="16" rx="2.5" /><path d="M3 10h18M8 3v4M16 3v4" />
+</>)
 
 interface Tool {
   id: string
@@ -51,8 +46,8 @@ const TOOLS: Tool[] = [
     id: 'puntos-iaaf',
     name: 'Puntos IAAF',
     short: 'Marca ⇄ puntos World Athletics',
-    long: 'Convierte cualquier marca a puntos World Athletics y al revés, con marcas equivalentes en pruebas de la misma familia.',
-    badge: 'Tablas 2025',
+    long: 'Convierte cualquier marca a puntos World Athletics y al revés, con la tabla que toca en cada caso: aire libre y pista cubierta puntúan distinto. Incluye la equivalencia AL ⇄ PC y marcas equivalentes en pruebas de la misma familia.',
+    badge: 'AL · PC 2025',
     icon: IconPoints,
     render: () => <IaafCalculator />,
   },
@@ -63,6 +58,15 @@ const TOOLS: Tool[] = [
     long: 'Calcula tu ritmo por kilómetro y milla, la velocidad y los parciales acumulados a partir de tu tiempo objetivo (o al revés).',
     icon: IconPace,
     render: () => <PaceCalculator />,
+  },
+  {
+    id: 'predictor',
+    name: 'Predictor',
+    short: 'Marcas equivalentes y VDOT',
+    long: 'A partir de una marca reciente estima tus tiempos en el resto de distancias con los modelos de Riegel y Daniels (VDOT), y te da los ritmos de entrenamiento correspondientes.',
+    badge: 'VDOT',
+    icon: IconPredictor,
+    render: () => <PredictorCalculator />,
   },
   {
     id: 'combinadas',
@@ -89,67 +93,148 @@ const TOOLS: Tool[] = [
     icon: IconRelay,
     render: () => <RelayCalculator />,
   },
+  {
+    id: 'categorias',
+    name: 'Categorías',
+    short: 'Tu categoría RFEA por edad',
+    long: 'Dice en qué categoría RFEA compites cada temporada según tu año de nacimiento (Sub-8 a absoluta) y en qué grupo máster entras, que ese sí depende del día exacto de tu cumpleaños.',
+    badge: 'RFEA',
+    icon: IconCategory,
+    render: () => <CategoryCalculator />,
+  },
 ]
 
+const DEFAULT_TOOL = TOOLS[0].id
+
 export function LabTools() {
-  const [active, setActive] = useState('puntos-iaaf')
+  const [active, setActive] = useState(DEFAULT_TOOL)
+  const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
+
+  // Cada herramienta es enlazable: /lanelab#predictor
+  useEffect(() => {
+    const fromHash = () => {
+      const id = window.location.hash.replace('#', '')
+      if (TOOLS.some(t => t.id === id)) setActive(id)
+    }
+    fromHash()
+    window.addEventListener('hashchange', fromHash)
+    return () => window.removeEventListener('hashchange', fromHash)
+  }, [])
+
+  const select = useCallback((id: string) => {
+    setActive(id)
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', id === DEFAULT_TOOL ? window.location.pathname : `#${id}`)
+    }
+  }, [])
+
+  // Flechas para moverse entre pestañas, como manda el patrón ARIA.
+  function onKeyDown(e: React.KeyboardEvent, index: number) {
+    const keys: Record<string, number> = {
+      ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1,
+    }
+    let next: number | null = null
+    if (e.key in keys) next = (index + keys[e.key] + TOOLS.length) % TOOLS.length
+    else if (e.key === 'Home') next = 0
+    else if (e.key === 'End') next = TOOLS.length - 1
+    if (next === null) return
+    e.preventDefault()
+    select(TOOLS[next].id)
+    tabsRef.current[next]?.focus()
+  }
 
   return (
-    <div>
-      {/* Tool chooser */}
-      <div role="tablist" aria-label="Herramientas" className="grid gap-2.5 grid-cols-2 lg:grid-cols-5 mb-9">
-        {TOOLS.map(t => {
+    <div className="lg:grid lg:grid-cols-[15.5rem_minmax(0,1fr)] lg:gap-8 lg:items-start">
+
+      {/* Selector — carrusel en móvil, lista lateral fija en escritorio */}
+      <div
+        role="tablist"
+        aria-label="Herramientas de LaneLab"
+        className="
+          -mx-4 sm:-mx-6 lg:mx-0 px-4 sm:px-6 lg:px-0 mb-6 lg:mb-0
+          flex gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-none
+          lg:flex-col lg:gap-1.5 lg:overflow-visible lg:sticky lg:top-24
+        "
+      >
+        {TOOLS.map((t, i) => {
           const on = t.id === active
           return (
             <button
               key={t.id}
+              ref={el => { tabsRef.current[i] = el }}
               role="tab"
+              id={`tab-${t.id}`}
               aria-selected={on}
-              onClick={() => setActive(t.id)}
-              className={`group text-left rounded-2xl border p-4 transition-[transform,box-shadow,background-color,border-color] duration-200 ${
-                on
-                  ? 'border-ink bg-ink shadow-[0_8px_24px_rgba(13,42,20,0.18)]'
-                  : 'border-ink/[0.1] bg-paper hover:-translate-y-0.5 hover:border-ink/25 hover:shadow-[0_4px_16px_rgba(13,42,20,0.07)]'
-              }`}
+              aria-controls={t.id}
+              tabIndex={on ? 0 : -1}
+              onClick={() => select(t.id)}
+              onKeyDown={e => onKeyDown(e, i)}
+              className={`
+                group shrink-0 snap-start text-left rounded-2xl border
+                px-3.5 py-3 lg:w-full lg:px-3.5 lg:py-2.5
+                transition-[background-color,border-color,box-shadow,transform] duration-200
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint/60
+                ${on
+                  ? 'border-ink bg-ink shadow-[0_6px_20px_rgba(13,42,20,0.16)]'
+                  : 'border-ink/[0.1] bg-paper hover:border-ink/25 hover:bg-cream/50 lg:hover:translate-x-0.5'}
+              `}
             >
-              <div className="flex items-center justify-between mb-3">
-                <span className={`flex h-9 w-9 items-center justify-center rounded-xl transition-colors ${
-                  on ? 'bg-mint text-ink' : 'bg-mint/20 text-ink/70 group-hover:bg-mint/30'
+              <span className="flex items-center gap-2.5">
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                  on ? 'bg-mint text-ink' : 'bg-mint/20 text-ink/70 group-hover:bg-mint/35'
                 }`}>
                   {t.icon}
                 </span>
-                {t.badge && (
-                  <span className={`rounded-full px-2 py-0.5 font-mono text-[0.5rem] tracking-widest uppercase ${
-                    on ? 'bg-cream/15 text-mint' : 'bg-ink/[0.05] text-ink/45'
-                  }`}>
-                    {t.badge}
+                <span className="min-w-0">
+                  <span className={`block font-brand text-[0.92rem] font-extrabold tracking-tight leading-tight ${on ? 'text-cream' : 'text-ink'}`}>
+                    {t.name}
                   </span>
-                )}
-              </div>
-              <p className={`font-brand text-base font-extrabold tracking-tight ${on ? 'text-cream' : 'text-ink'}`}>
-                {t.name}
-              </p>
-              <p className={`mt-0.5 font-mono text-[0.58rem] tracking-wider uppercase leading-relaxed ${on ? 'text-cream/55' : 'text-ink/40'}`}>
-                {t.short}
-              </p>
+                  <span className={`hidden lg:block font-mono text-[0.52rem] tracking-wider uppercase leading-tight mt-0.5 truncate ${on ? 'text-cream/50' : 'text-ink/35'}`}>
+                    {t.short}
+                  </span>
+                </span>
+              </span>
             </button>
           )
         })}
       </div>
 
-      {/* Active tool — all rendered for SEO, inactive hidden */}
-      {TOOLS.map(t => (
-        <section
-          key={t.id}
-          id={t.id}
-          aria-labelledby={`${t.id}-h`}
-          className={t.id === active ? 'scroll-mt-20' : 'hidden'}
-        >
-          <h2 id={`${t.id}-h`} className="sr-only">{t.name}</h2>
-          <p className="text-sm text-ink/55 mb-4 max-w-2xl leading-relaxed">{t.long}</p>
-          {t.render()}
-        </section>
-      ))}
+      {/* Panel — todas montadas por SEO, sólo se muestra la activa */}
+      <div className="min-w-0">
+        {TOOLS.map(t => {
+          const on = t.id === active
+          return (
+            <section
+              key={t.id}
+              id={t.id}
+              role="tabpanel"
+              aria-labelledby={`tab-${t.id}`}
+              tabIndex={0}
+              className={on ? 'panel-enter scroll-mt-24 focus-visible:outline-none' : 'hidden'}
+            >
+              <header className="mb-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+                <h2 className="font-brand text-2xl sm:text-[1.75rem] font-extrabold tracking-brand text-ink leading-none">
+                  {t.name}
+                </h2>
+                {t.badge && (
+                  <span className="rounded-full bg-ink/[0.06] px-2.5 py-1 font-mono text-[0.52rem] tracking-[0.18em] uppercase text-ink/50">
+                    {t.badge}
+                  </span>
+                )}
+                <a
+                  href={`#${t.id}`}
+                  onClick={() => select(t.id)}
+                  className="ml-auto font-mono text-[0.55rem] tracking-[0.18em] uppercase text-ink/30 hover:text-ink/60 transition-colors"
+                >
+                  enlace directo
+                </a>
+              </header>
+              <p className="text-sm text-ink/55 mb-5 max-w-2xl leading-relaxed">{t.long}</p>
+              {t.render()}
+            </section>
+          )
+        })}
+      </div>
     </div>
   )
 }
