@@ -3,10 +3,15 @@
 La FAM publica el calendario MENSUAL en artículos Joomla distintos (un id de
 artículo por mes), por lo que scrapear un único artículo (antes id=3292) solo
 traía ese mes y se perdían julio, agosto… En cambio expone la TEMPORADA COMPLETA
-como Excel:
-  `modules/mod_calendario/excel/calendario_excel.php?temporada=<año>`
-Leemos ese Excel (todos los meses de una vez) con openpyxl. Columnas:
+como Excel. Leemos ese Excel (todos los meses de una vez) con openpyxl. Columnas:
   Fecha · Día · Fecha Fin · Día · Competición · Lugar · Tipo · Últ. modificación.
+
+OJO (ago 2026): la FAM retiró el export antiguo (`mod_calendario/excel/...php`,
+ahora 404) y lo sustituyó por un endpoint AJAX de Joomla (`com_ajax`, parámetro
+`season`). Probamos las variantes por orden y usamos la primera que devuelva un
+.xlsx de verdad (firma PK). El 404 antiguo estuvo SEMANAS tragado por un
+`except: continue`; hoy los errores se propagan y quedan en el resumen — esa es
+la política de fuentes/__init__.py, adaptada del motor fantasy-atletismo-engine.
 
 Va tras Cloudflare; `http.Http` (curl_cffi impersonate chrome) lo pasa en local.
 """
@@ -16,14 +21,20 @@ from __future__ import annotations
 import io
 from datetime import date, datetime
 
-from calendar_scraper.http import Http
+from calendar_scraper.http import Http, HttpError
 from calendar_scraper.models import Competicion, Inscripcion
 
 BASE = "https://www.atletismomadrid.com"
 # Página de calendario (vista web del mes en curso): la usamos como enlace de ficha.
 CAL = f"{BASE}/index.php?option=com_content&view=article&id=3292&Itemid=111"
-# Export Excel de la temporada completa (parametrizado por año, estable toda la temporada).
-EXCEL = f"{BASE}/modules/mod_calendario/excel/calendario_excel.php?temporada={{anio}}&Itemid=111"
+# Variantes del export de temporada, en orden de preferencia:
+#   1. endpoint com_ajax actual (visto en el href "Exportar" de la página id=3292)
+#   2. export legado (por si la FAM lo restaura)
+EXPORTS = (
+    BASE + "/component/ajax/?module=calendario&method=export&format=raw"
+           "&module_id=205&season={anio}&Itemid=111",
+    BASE + "/modules/mod_calendario/excel/calendario_excel.php?temporada={anio}&Itemid=111",
+)
 
 _DISC = {
     "AL": "Pista Aire libre", "PC": "Pista Cubierta", "R": "Ruta",
@@ -44,19 +55,38 @@ def _texto(v: object) -> str | None:
     return s or None
 
 
+def _descargar_excel(http: Http, anio: int) -> bytes:
+    """Prueba las variantes del export y devuelve el primer .xlsx real (firma PK).
+
+    Si TODAS fallan, propaga el último error: eso es un fallo de la fuente, no
+    "temporada sin competiciones", y debe constar en el resumen.
+    """
+    ultimo: Exception | None = None
+    for plantilla in EXPORTS:
+        try:
+            data = http.get_bytes(plantilla.format(anio=anio))
+            if data[:2] == b"PK":
+                return data
+            ultimo = RuntimeError(
+                f"el export no devolvió un xlsx (¿HTML de error?): {plantilla.format(anio=anio)}"
+            )
+        except HttpError as exc:
+            ultimo = exc
+    raise ultimo if ultimo else RuntimeError("sin variantes de export configuradas")
+
+
 def listar(http: Http, desde: date, hasta: date) -> list[Competicion]:
-    try:
-        from openpyxl import load_workbook
-    except Exception:
-        return []
+    # Los errores se PROPAGAN a propósito (ver política en fuentes/__init__.py).
+    # Madrid es justo el caso que motivó la regla: va tras Cloudflare y desde la IP
+    # de CI el Excel puede devolver 403. Tragarse eso y seguir con `out` vacío hacía
+    # que el calendario pareciese correcto (conserva las competiciones del JSON
+    # anterior) mientras Madrid llevaba semanas sin actualizarse.
+    from openpyxl import load_workbook
 
     out: list[Competicion] = []
     for anio in range(desde.year, hasta.year + 1):
-        try:
-            data = http.get_bytes(EXCEL.format(anio=anio))
-            wb = load_workbook(io.BytesIO(data), read_only=True, data_only=True)
-        except Exception:
-            continue
+        data = _descargar_excel(http, anio)
+        wb = load_workbook(io.BytesIO(data), read_only=True, data_only=True)
         try:
             for row in wb.active.iter_rows(min_row=2, values_only=True):
                 if not row or len(row) < 6:

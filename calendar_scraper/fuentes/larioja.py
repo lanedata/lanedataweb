@@ -12,17 +12,12 @@ from datetime import date
 
 from selectolax.parser import HTMLParser
 
+from calendar_scraper.fechas import mes_en_texto
 from calendar_scraper.http import Http
 from calendar_scraper.models import Competicion, Inscripcion
 
 BASE = "https://www.fratletismo.com"
 LISTADO = f"{BASE}/competiciones"
-
-_MESES = {
-    "enero": 1, "febrero": 2, "marzo": 3, "abril": 4, "mayo": 5, "junio": 6,
-    "julio": 7, "agosto": 8, "septiembre": 9, "setiembre": 9, "octubre": 10,
-    "noviembre": 11, "diciembre": 12,
-}
 
 
 def _fecha(comp) -> date | None:
@@ -36,8 +31,8 @@ def _fecha(comp) -> date | None:
     dia = int(m_dia.group())
     # mes: del title del <abbr> o del texto
     abbr = cuando.css_first("abbr")
-    mes_txt = (abbr.attributes.get("title") if abbr and abbr.attributes.get("title") else cuando.text()).lower()
-    mes = next((v for k, v in _MESES.items() if k in mes_txt), None)
+    mes_txt = abbr.attributes.get("title") if abbr and abbr.attributes.get("title") else cuando.text()
+    mes = mes_en_texto(mes_txt)
     # año
     ano_el = cuando.css_first(".ano")
     m_ano = re.search(r"\d{4}", ano_el.text() if ano_el else cuando.text())
@@ -50,11 +45,8 @@ def _fecha(comp) -> date | None:
 
 
 def listar(http: Http, desde: date, hasta: date) -> list[Competicion]:
-    try:
-        html = http.get_text(LISTADO)
-    except Exception:
-        return []
-    tree = HTMLParser(html)
+    # Los errores se PROPAGAN a propósito (ver política en fuentes/__init__.py).
+    tree = HTMLParser(http.get_text(LISTADO))
 
     out: list[Competicion] = []
     for comp in tree.css(".competicion"):

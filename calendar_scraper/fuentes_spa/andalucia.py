@@ -10,28 +10,16 @@ from __future__ import annotations
 import re
 from datetime import date
 
+from calendar_scraper.fechas import MESES_ABREV, anyo_en_ventana
+
 CAL_URL = "https://web.faalive.com/Calendar"
-_MESES = {
-    "ENE": 1, "FEB": 2, "MAR": 3, "ABR": 4, "MAY": 5, "JUN": 6,
-    "JUL": 7, "AGO": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DIC": 12,
-}
+_MES_RE = re.compile("|".join(MESES_ABREV))
 
 _EXTRAER = r"""() => [...document.querySelectorAll('.card')].map(c => ({
     fecha: (c.querySelector('.fecha')?.innerText||'').replace(/\s+/g,' ').trim(),
     nombre: (c.querySelector('.titleDate')?.innerText||'').trim(),
     loc: (c.querySelector('.location')?.innerText||'').replace(/\s+/g,' ').trim()
 })).filter(x => x.nombre)"""
-
-
-def _anyo_en_ventana(mes: int, dia: int, desde: date, hasta: date) -> date | None:
-    for y in (desde.year, desde.year + 1, hasta.year, desde.year - 1):
-        try:
-            cand = date(y, mes, dia)
-        except ValueError:
-            continue
-        if desde <= cand <= hasta:
-            return cand
-    return None
 
 
 def listar(page, desde: date, hasta: date):
@@ -45,7 +33,7 @@ def listar(page, desde: date, hasta: date):
         r"""() => [...document.querySelectorAll('li a .date, li a span.date')]
             .map(e => e.innerText.trim().split(/\s+/)[0])"""
     )
-    tabs = [t for t in tabs if t in _MESES]
+    tabs = [t for t in tabs if t in MESES_ABREV]
 
     crudas: dict[tuple, dict] = {}
     for mes in tabs or ["JUN"]:
@@ -59,15 +47,15 @@ def listar(page, desde: date, hasta: date):
 
     out = []
     for c in crudas.values():
-        m = re.search(r"(ENE|FEB|MAR|ABR|MAY|JUN|JUL|AGO|SEP|OCT|NOV|DIC)", c["fecha"])
+        m = _MES_RE.search(c["fecha"])
         dias = re.findall(r"\d{1,2}", c["fecha"])
         if not m or not dias:
             continue
-        mes = _MESES[m.group(1)]
-        ini = _anyo_en_ventana(mes, int(dias[0]), desde, hasta)
+        mes = MESES_ABREV[m.group(0)]
+        ini = anyo_en_ventana(mes, int(dias[0]), desde, hasta)
         if not ini:
             continue
-        fin = _anyo_en_ventana(mes, int(dias[-1]), desde, hasta) if len(dias) > 1 else ini
+        fin = anyo_en_ventana(mes, int(dias[-1]), desde, hasta) if len(dias) > 1 else ini
         lugar = c["loc"] or None
         out.append(Competicion(
             nombre=c["nombre"],

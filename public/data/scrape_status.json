@@ -1,0 +1,70 @@
+{
+  "generado": "2026-08-01T19:28:06+00:00",
+  "total": 373,
+  "fuentes": {
+    "galicia": {
+      "ok": true,
+      "n": 12
+    },
+    "larioja": {
+      "ok": true,
+      "n": 0
+    },
+    "madrid": {
+      "ok": true,
+      "n": 7
+    },
+    "motor:aragon": {
+      "ok": true,
+      "n": 7
+    },
+    "motor:baleares": {
+      "ok": true,
+      "n": 16
+    },
+    "motor:cantabria": {
+      "ok": true,
+      "n": 4
+    },
+    "motor:castillalamancha": {
+      "ok": true,
+      "n": 1
+    },
+    "motor:castillayleon": {
+      "ok": true,
+      "n": 6
+    },
+    "motor:cataluna": {
+      "ok": true,
+      "n": 7
+    },
+    "motor:extremadura": {
+      "ok": true,
+      "n": 0
+    },
+    "motor:galicia": {
+      "ok": true,
+      "n": 12
+    },
+    "motor:larioja": {
+      "ok": true,
+      "n": 0
+    },
+    "motor:navarra": {
+      "ok": true,
+      "n": 10
+    },
+    "motor:paisvasco": {
+      "ok": true,
+      "n": 20
+    },
+    "rfea": {
+      "ok": true,
+      "n": 15
+    },
+    "spa:precargadas": {
+      "ok": true,
+      "n": 256
+    }
+  }
+}

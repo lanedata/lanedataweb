@@ -82,10 +82,13 @@ El orquestador combina la **RFEA** (calendario nacional + campeonatos autonómic
 varias (misma fecha + núcleo de nombre normalizado → se fusionan conservando la más
 completa). Ver `merge.py`.
 
-**Dos vías:** las de HTML estático/API las hace el scraper principal (httpx, en el
+**Tres vías:** las de HTML estático/API las hace el scraper principal (httpx, en el
 deploy). Las **SPA** (Blazor/JS) las hace un workflow aparte con **Playwright**
 (`scripts/scrape_spa.py` → `public/data/federaciones_spa.json`), que el scraper
-principal fusiona.
+principal fusiona. Y el **motor `fantasy-atletismo-engine`** (repo propio, clonado
+en `fantasy-atletismo-engine/` en local y en CI con el secret `ENGINE_REPO_TOKEN`)
+aporta el descubrimiento de **14 federaciones autonómicas** vía
+`fuentes_engine.py` — si el motor no está clonado, se omite sin fallar.
 
 | Fuente | Estado | Método |
 |---|---|---|
@@ -94,18 +97,45 @@ principal fusiona.
 | La Rioja (`fuentes/larioja.py`) | ✅ http | HTML estático de `fratletismo.com/competiciones` |
 | **Madrid** (`fuentes/madrid.py`) | ✅ http | Calendario Joomla (`atletismomadrid.com`). Tras **Cloudflare** → se pasa con curl_cffi. Trae reglamento/inscritos/resultados PDF y plazo de inscripción |
 | **Andalucía** (`fuentes_spa/andalucia.py`) | ✅ Playwright | `web.faalive.com/Calendar` es Blazor WASM: se renderiza, se iteran las pestañas de mes y se leen las `.card` del DOM |
-| Valencia | 🟡 SPA → añadir a `fuentes_spa/` (Playwright) |
-| Cataluña | ⛔ calendario en **PDF** → requiere PDF + parser |
-| Canarias | ⛔ calendario JS (FullCalendar) → añadir a `fuentes_spa/` |
-| Castilla-La Mancha | 🟡 PHP clásico, scrapeable (httpx, pendiente) |
+| **Motor** (`fuentes_engine.py`) | ✅ adapters | Galicia, La Rioja, Andalucía, Aragón, Extremadura, Navarra, Cantabria, Cataluña, Castilla y León, Castilla-La Mancha, País Vasco, Baleares (http) + Valencia (Playwright headless, en `scrape_spa.py`) + Madrid (Playwright headed, solo local con `ENGINE_HEADED=1`) |
+| Canarias | ⛔ calendario JS (FullCalendar) → pendiente |
 
 Para añadir una federación SPA: crea `fuentes_spa/<fed>.py` con
 `listar(page, desde, hasta) -> list[Competicion]` y regístrala en
-`fuentes_spa/__init__.py::FUENTES_SPA`.
+`fuentes_spa/__init__.py::FUENTES_SPA`. Las federaciones nuevas del motor se
+recogen solas: `fuentes_engine.listar` usa `engine.adapters.adapters()` (solo hay
+que añadir su `ambito` a `fuentes_engine.AMBITOS` si el id es nuevo).
 
 Para añadir una federación: crea `fuentes/<fed>.py` con `listar(http, desde, hasta) ->
 list[Competicion]` y regístrala en `fuentes/__init__.py::FUENTES`. El merge y el frontend
 la recogen automáticamente.
+
+## Procesamiento (patrones adaptados del motor `fantasy-atletismo-engine`)
+
+En agosto de 2026 se adaptaron al calendario los patrones de procesamiento del motor:
+
+- **Política de errores** (`fuentes/__init__.py`): una fuente que falla **propaga** su
+  error; nunca devuelve `[]` como si no hubiera competiciones. El orquestador aísla el
+  fallo por fuente y lo registra. La regla existe porque `scrape_calendar.py` conserva
+  el JSON anterior cuando una fuente cae: el calendario sigue pareciendo correcto y una
+  captura degradada disfrazada de n=0 es invisible durante semanas (pasó con Madrid y
+  con el propio calendario RFEA).
+- **Resumen por fuente** (`resumen.py`): cada pasada deja
+  `public/data/scrape_status.json` (y `spa_status.json` en el workflow SPA) con la
+  aportación de cada fuente, y compara con la pasada anterior para avisar de
+  **regresiones** (fuente que aportaba y ahora falla o da 0) con anotaciones
+  `::warning::` visibles en GitHub Actions.
+- **HTTP endurecido** (`http.py`): reintentos con backoff SOLO en red/5xx (nunca 4xx),
+  throttle de 1 req/s por dominio **thread-safe** (modelo de reserva de turnos, seguro
+  con el pool de hilos de `fuentes_engine`), detección de charset
+  (cabecera → `<meta>` → fallback) y cabeceras por petición (`get_text(url, headers=…)`).
+- **Fechas compartidas** (`fechas.py`): tabla única de meses (completos y abreviados)
+  y `anyo_en_ventana()` para calendarios que publican día/mes sin año.
+- **AJAX de Drupal** (`rfea.py::_ajax_json`): TODOS los endpoints AJAX de la RFEA se
+  piden con `Accept: application/json` + `X-Requested-With` y se desenvuelven del
+  `<textarea>` (patrón iframe-upload de Drupal 10, que su page cache puede servir a
+  cualquier cliente). Antes solo lo hacía el endpoint de inscritos; el del calendario
+  rompió en ago 2026 por esto mismo.
 
 ## Alcance y limitaciones (importante)
 

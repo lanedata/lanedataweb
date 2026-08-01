@@ -44,11 +44,9 @@ def _fechas(art) -> tuple[date | None, date | None]:
 
 
 def listar(http: Http, desde: date, hasta: date) -> list[Competicion]:
-    try:
-        html = http.get_text(LISTADO)
-    except Exception:
-        return []
-    tree = HTMLParser(html)
+    # Los errores se PROPAGAN a propósito (ver política en fuentes/__init__.py):
+    # el orquestador los aísla y los apunta en el resumen.
+    tree = HTMLParser(http.get_text(LISTADO))
 
     out: list[Competicion] = []
     for art in tree.css("article.competition"):

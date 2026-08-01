@@ -32,5 +32,18 @@ __pycache__/
 /calendar_scraper/scrapers/.venv/
 /calendar_scraper/scrapers/.git/
 
+# Motor fantasy-atletismo-engine: repo propio (rrojjo/fantasy-atletismo-engine),
+# clonado aquí en local y en CI para usar sus adapters (fuentes_engine.py).
+# NO se commitea con la web.
+/fantasy-atletismo-engine/
+
 # log temporal del scraper
 /scrape.log
+
+# borradores de La Previa (scripts/generar_previa.py)
+/previa_out/
+
+# Workspace de scrapers de podios (repo aparte clonado en local; tiene su propio .git
+# y commitearlo crearía un gitlink roto). Lo aprovechable ya está extraído en
+# calendar_scraper/scraper-podios-extraido/.
+/calendar_scraper/scrapers/

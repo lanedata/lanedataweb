@@ -35,6 +35,20 @@ jobs:
           python -m pip install -r calendar_scraper/requirements.txt playwright
           python -m playwright install --with-deps chromium
 
+      # Motor fantasy-atletismo-engine: aporta los adapters de navegador
+      # (Valencia headless). Opcional: sin ENGINE_REPO_TOKEN se scrapean solo
+      # las fuentes SPA propias (Andalucía).
+      - name: Checkout motor (adapters de navegador)
+        continue-on-error: true
+        env:
+          ENGINE_REPO_TOKEN: ${{ secrets.ENGINE_REPO_TOKEN }}
+        run: |
+          if [ -n "$ENGINE_REPO_TOKEN" ]; then
+            git clone --depth 1 "https://x-access-token:${ENGINE_REPO_TOKEN}@github.com/rrojjo/fantasy-atletismo-engine.git" fantasy-atletismo-engine
+          else
+            echo "ENGINE_REPO_TOKEN no configurado; solo fuentes SPA propias"
+          fi
+
       - name: Scrape SPA federations
         run: python scripts/scrape_spa.py
 
@@ -42,6 +56,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/data/federaciones_spa.json
+          # spa_status.json se commitea también: es la referencia contra la que la
+          # próxima pasada detecta regresiones (fuente que aportaba y ahora 0/falla).
+          git add public/data/federaciones_spa.json public/data/spa_status.json
           git diff --staged --quiet || git commit -m "chore: refresca calendario SPA (federaciones con navegador)"
           git push

@@ -58,7 +58,10 @@ def _ajax_calendario(http: Http, year: int, desde: date, hasta: date) -> str:
         f"{BASE}/ajax/calendario/{ts}/Deportivo/0/0/0/0/{season}/0/0/0"
         f"?_wrapper_format=drupal_ajax"
     )
-    data = json.loads(http.get_text(url))
+    # Vía _ajax_json: el endpoint del calendario también puede llegar envuelto en
+    # <textarea> (lo servía desnudo hasta que el page cache de Drupal empezó a
+    # devolver la variante envuelta; visto 2026-08-01).
+    data = _ajax_json(http, url)
     for c in data:
         if "calendar_container" in (c.get("data") or ""):
             return c["data"]
@@ -159,15 +162,24 @@ def _buscar_plazo(texto: str, anio: int) -> date | None:
 _TEXTAREA = re.compile(r"<textarea[^>]*>(.*)</textarea>", re.I | re.S)
 
 
+# Drupal 10 envuelve la AjaxResponse en <textarea>…</textarea> si el Accept de la
+# petición contiene text/html (compat iframe-upload), y su page cache puede servir
+# esa variante envuelta a cualquier cliente. Igual que el adapter RFEA del motor
+# fantasy-atletismo-engine: se pide JSON explícito Y se desenvuelve si aun así
+# llega envuelto. Afecta a TODOS los endpoints AJAX (calendario e inscritos).
+_AJAX_HEADERS = {
+    "Accept": "application/json, text/javascript, */*; q=0.01",
+    "X-Requested-With": "XMLHttpRequest",
+}
+
+
 def _ajax_json(http: Http, url: str):
     """Descarga una respuesta AJAX de Drupal y devuelve la lista de comandos.
 
-    El endpoint `/championship-inscritos/...` no responde JSON puro: envuelve el
-    array en un `<textarea>` con las entidades HTML escapadas (patrón "iframe
-    upload" de Drupal). Por eso `r.json()` fallaba y las pruebas salían vacías.
-    Soportamos ambos formatos: textarea-envuelto y JSON directo.
+    Soporta ambos formatos: textarea-envuelto (con entidades HTML escapadas) y
+    JSON directo.
     """
-    txt = http.get_text(url)
+    txt = http.get_text(url, headers=_AJAX_HEADERS)
     m = _TEXTAREA.search(txt)
     if m:
         txt = _html.unescape(m.group(1))

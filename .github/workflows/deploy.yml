@@ -41,9 +41,24 @@ jobs:
         with:
           python-version: '3.12'
 
-      # Refresca el calendario desde la RFEA. Si falla, el build usa el JSON
-      # ya commiteado (public/data/competiciones.json) como respaldo.
-      - name: Refresh RFEA calendar
+      # Clona el motor fantasy-atletismo-engine (repo privado) para usar sus
+      # adapters de federación en el calendario. Requiere el secret
+      # ENGINE_REPO_TOKEN (PAT con acceso de lectura a rrojjo/fantasy-atletismo-engine).
+      # Sin él, el scraper sigue con sus fuentes propias.
+      - name: Checkout motor (adapters de federaciones)
+        continue-on-error: true
+        env:
+          ENGINE_REPO_TOKEN: ${{ secrets.ENGINE_REPO_TOKEN }}
+        run: |
+          if [ -n "$ENGINE_REPO_TOKEN" ]; then
+            git clone --depth 1 "https://x-access-token:${ENGINE_REPO_TOKEN}@github.com/rrojjo/fantasy-atletismo-engine.git" fantasy-atletismo-engine
+          else
+            echo "ENGINE_REPO_TOKEN no configurado; el calendario usa solo las fuentes propias"
+          fi
+
+      # Refresca el calendario desde la RFEA + adapters del motor. Si falla, el
+      # build usa el JSON ya commiteado (public/data/competiciones.json) como respaldo.
+      - name: Refresh calendar (RFEA + motor)
         continue-on-error: true
         run: |
           python -m pip install -r calendar_scraper/requirements.txt

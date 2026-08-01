@@ -3,3 +3,7 @@ curl_cffi>=0.7
 selectolax>=0.3.21
 pydantic>=2.7
 openpyxl>=3.1
+# Reintentos del cliente HTTP (hay repliegue interno si falta, pero mejor tenerla)
+tenacity>=9
+# Para descubrir con los adapters del motor (calendar_scraper/fuentes_engine.py)
+pydantic-settings>=2.5
