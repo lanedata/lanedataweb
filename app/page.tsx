@@ -11,7 +11,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'
 export const metadata: Metadata = {
   title: { absolute: 'lanedata · El atletismo español con datos' },
   description:
-    'El atletismo español con datos: análisis, estadísticas, calendario de competiciones 2026 y calculadoras (puntos World Athletics, ritmo, predictor de marcas).',
+    'El atletismo español con datos: análisis, estadísticas y calculadoras (puntos World Athletics, ritmo, predictor de marcas).',
   alternates: { canonical: '/' },
 }
 

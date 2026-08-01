@@ -7,11 +7,12 @@ import { useState, useEffect } from 'react'
 const RANKINGS_URL = 'https://mundoatletismo.es/#/?skin=lane'
 const INSTAGRAM_URL = 'https://www.instagram.com/lanedata/'
 
+// /calendario sigue existiendo y funcionando, pero ya no es una sección pública:
+// se quitó de aquí, del sitemap y se marcó noindex (ver app/calendario/page.tsx).
 const NAV_LINKS = [
-  { href: '/',           label: 'Inicio' },
-  { href: '/archivo',    label: 'Archivo' },
-  { href: '/calendario', label: 'Calendario' },
-  { href: '/lanelab',    label: 'LaneLab' },
+  { href: '/',        label: 'Inicio' },
+  { href: '/archivo', label: 'Archivo' },
+  { href: '/lanelab', label: 'LaneLab' },
 ]
 
 function TrackIcon({ size = 14 }: { size?: number }) {

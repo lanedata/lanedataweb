@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     template: '%s · lanedata',
   },
   description:
-    'Análisis, estadísticas, calendario y herramientas del atletismo español. Datos, contexto y calculadoras (puntos World Athletics, ritmo, predictor de marcas) en lanedata.',
+    'Análisis, estadísticas y herramientas del atletismo español. Datos, contexto y calculadoras (puntos World Athletics, ritmo, predictor de marcas) en lanedata.',
   applicationName: 'lanedata',
   authors: [{ name: 'lanedata', url: siteUrl }],
   creator: 'lanedata',
@@ -22,7 +22,6 @@ export const metadata: Metadata = {
     'atletismo',
     'análisis atletismo',
     'estadísticas atletismo',
-    'calendario atletismo 2026',
     'RFEA',
     'World Athletics',
     'calculadora puntos IAAF',
@@ -40,7 +39,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     title: 'lanedata · El atletismo español con datos',
     description:
-      'Análisis, estadísticas, calendario y calculadoras del atletismo español.',
+      'Análisis, estadísticas y calculadoras del atletismo español.',
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'lanedata — el atletismo español con datos' }],
   },
   twitter: {
@@ -48,7 +47,7 @@ export const metadata: Metadata = {
     site: '@lanedata',
     creator: '@lanedata',
     title: 'lanedata · El atletismo español con datos',
-    description: 'Análisis, estadísticas, calendario y calculadoras del atletismo español.',
+    description: 'Análisis, estadísticas y calculadoras del atletismo español.',
     images: ['/og-image.png'],
   },
   robots: {

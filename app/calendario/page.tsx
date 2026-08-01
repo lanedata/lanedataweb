@@ -6,18 +6,17 @@ import type { Metadata } from 'next'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'
 
+// OCULTO (ago 2026): el calendario deja de ser una sección pública de lanedata.
+// La página y todo su código siguen aquí y funcionando —el scraper sigue generando
+// competiciones.json a diario, que además alimenta La Previa—, pero no se enlaza
+// desde la navegación, no entra en el sitemap y se marca noindex/nofollow. Mismo
+// tratamiento que /calendarapp. Para volver a publicarlo: quitar `robots` de aquí,
+// devolver el enlace a NAV_LINKS en NavBar.tsx y la entrada a app/sitemap.ts.
 export const metadata: Metadata = {
   title: 'Calendario de competiciones',
   description: 'Calendario del atletismo español actualizado a diario desde la RFEA: próximas competiciones con sus pruebas, inscripción y reglamento.',
-  keywords: ['calendario atletismo', 'competiciones atletismo España', 'calendario RFEA', 'inscripciones atletismo', 'próximas competiciones atletismo'],
+  robots: { index: false, follow: false },
   alternates: { canonical: `${siteUrl}/calendario/` },
-  openGraph: {
-    title: 'Calendario de competiciones · lanedata',
-    description: 'Próximas competiciones del atletismo español, actualizadas a diario desde la RFEA.',
-    url: `${siteUrl}/calendario/`,
-    type: 'website',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
-  },
 }
 
 export default function CalendarioPage() {
