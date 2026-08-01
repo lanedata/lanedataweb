@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { slugify } from '@/lib/utils'
+import { PLANTILLAS } from '@/lib/plantillas'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import type { Article, ArticleFormData } from '@/types'
@@ -100,6 +101,24 @@ export function ArticleForm({ article }: Props) {
     const { data } = supabase.storage.from('covers').getPublicUrl(path)
     set('cover_image_url', data.publicUrl)
     setUploading(false)
+  }
+
+  // ── Editorial templates ─────────────────────────────────────────────────────
+  function applyTemplate(id: string) {
+    const plantilla = PLANTILLAS.find((p) => p.id === id)
+    if (!plantilla) return
+    if (form.html_content.trim() &&
+        !window.confirm('Ya hay contenido HTML. ¿Reemplazarlo por la plantilla?')) {
+      return
+    }
+    setForm((prev) => ({
+      ...prev,
+      html_content: plantilla.html,
+      category: prev.category === 'general' ? plantilla.categoria : prev.category,
+    }))
+    setHtmlFileName('')
+    setError('')
+    setSuccess('')
   }
 
   // ── HTML file reader (no Storage — reads as text, stores in html_content) ──
@@ -324,6 +343,26 @@ export function ArticleForm({ article }: Props) {
                 <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
               </svg>
             </button>
+          </div>
+        )}
+
+        {/* Editorial templates — one click fills the textarea with a ready structure */}
+        {!hasStandaloneHtml && (
+          <div className="space-y-2">
+            <p className="label-mono text-ink/40">Empezar desde una plantilla</p>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              {PLANTILLAS.map((p) => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => applyTemplate(p.id)}
+                  className="rounded-xl border border-ink/[0.12] bg-paper px-3.5 py-3 text-left transition-colors hover:border-mint hover:bg-mint/5"
+                >
+                  <span className="block font-brand text-sm font-bold text-ink">{p.nombre}</span>
+                  <span className="mt-0.5 block text-xs leading-snug text-ink/50">{p.descripcion}</span>
+                </button>
+              ))}
+            </div>
           </div>
         )}
 

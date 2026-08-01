@@ -43,6 +43,9 @@ export function AdminNav() {
             <AdminNavLink href="/admin/calendario" active={pathname === '/admin/calendario'}>
               Calendario
             </AdminNavLink>
+            <AdminNavLink href="/admin/estudio" active={pathname === '/admin/estudio'}>
+              Estudio IG
+            </AdminNavLink>
           </nav>
         </div>
 
