@@ -43,6 +43,49 @@ export const HEPTATHLON: SubEvent[] = [
   { id: '800m',  label: '800 m',            kind: 'track', unit: 'tiempo', A: 0.11193,  B: 254,  C: 1.88,  ph: '2:10' },
 ]
 
+// ── Heptatlón de pista cubierta (hombres) ──
+// Comprobado con el récord del mundo de Ashton Eaton (6645, Estambul 2012).
+export const INDOOR_HEPTATHLON: SubEvent[] = [
+  { id: '60m',   label: '60 m',              kind: 'track', unit: 'tiempo', A: 58.0150,  B: 11.5,  C: 1.81, ph: '6.90' },
+  { id: 'LJ',    label: 'Salto de longitud', kind: 'jump',  unit: 'metros', A: 0.14354,  B: 220,   C: 1.40, ph: '7.40' },
+  { id: 'SP',    label: 'Peso',              kind: 'throw', unit: 'metros', A: 51.39,    B: 1.5,   C: 1.05, ph: '14.50' },
+  { id: 'HJ',    label: 'Salto de altura',   kind: 'jump',  unit: 'metros', A: 0.8465,   B: 75,    C: 1.42, ph: '2.00' },
+  { id: '60mH',  label: '60 m vallas',       kind: 'track', unit: 'tiempo', A: 20.5173,  B: 15.5,  C: 1.92, ph: '8.00' },
+  { id: 'PV',    label: 'Salto con pértiga', kind: 'jump',  unit: 'metros', A: 0.2797,   B: 100,   C: 1.35, ph: '4.90' },
+  { id: '1000m', label: '1000 m',            kind: 'track', unit: 'tiempo', A: 0.08713,  B: 305.5, C: 1.85, ph: '2:40' },
+]
+
+// ── Pentatlón de pista cubierta (mujeres) ──
+// Comprobado con el récord del mundo de Nataliya Dobrynska (5013, Estambul 2012).
+export const INDOOR_PENTATHLON: SubEvent[] = [
+  { id: '60mH', label: '60 m vallas',       kind: 'track', unit: 'tiempo', A: 20.0479,  B: 17,  C: 1.835, ph: '8.50' },
+  { id: 'HJ',   label: 'Salto de altura',   kind: 'jump',  unit: 'metros', A: 1.84523,  B: 75,  C: 1.348, ph: '1.80' },
+  { id: 'SP',   label: 'Peso',              kind: 'throw', unit: 'metros', A: 56.0211,  B: 1.5, C: 1.05,  ph: '14.00' },
+  { id: 'LJ',   label: 'Salto de longitud', kind: 'jump',  unit: 'metros', A: 0.188807, B: 210, C: 1.41,  ph: '6.00' },
+  { id: '800m', label: '800 m',             kind: 'track', unit: 'tiempo', A: 0.11193,  B: 254, C: 1.88,  ph: '2:15' },
+]
+
+export type CombinedEnv = 'outdoor' | 'indoor'
+
+export interface Discipline {
+  label: string
+  /** Prueba equivalente en las tablas de puntos de World Athletics. */
+  scoringId: string
+  events: SubEvent[]
+}
+
+/** Las cuatro combinadas, según sexo y entorno. */
+export const DISCIPLINES: Record<CombinedEnv, Record<'men' | 'women', Discipline>> = {
+  outdoor: {
+    men:   { label: 'Decatlón',       scoringId: 'combined',   events: DECATHLON },
+    women: { label: 'Heptatlón',      scoringId: 'combined',   events: HEPTATHLON },
+  },
+  indoor: {
+    men:   { label: 'Heptatlón (PC)', scoringId: 'combinedIn', events: INDOOR_HEPTATHLON },
+    women: { label: 'Pentatlón (PC)', scoringId: 'combinedIn', events: INDOOR_PENTATHLON },
+  },
+}
+
 /**
  * Score one sub-event.
  *  - track → `value` in seconds

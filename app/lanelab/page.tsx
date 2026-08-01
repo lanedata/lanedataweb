@@ -58,7 +58,7 @@ const FEATURES = [
   'Conversor de puntos World Athletics (IAAF) en aire libre y pista cubierta',
   'Calculadora de ritmo y parciales',
   'Predictor de marcas y ritmos de entrenamiento (Riegel y VDOT)',
-  'Puntos de decatlón y heptatlón',
+  'Puntos de las cuatro combinadas: decatlón, heptatlón, heptatlón PC y pentatlón PC',
   'Corrección de viento del 100 m (modelo Mureika)',
   'Calculadora de relevos',
   'Categorías RFEA por año de nacimiento y grupos máster',
@@ -112,7 +112,7 @@ const faqLd = {
     {
       '@type': 'Question',
       name: '¿Cómo se puntúan el decatlón y el heptatlón?',
-      acceptedAnswer: { '@type': 'Answer', text: 'Con las fórmulas oficiales de pruebas combinadas de World Athletics, que asignan puntos a cada prueba mediante constantes específicas. LaneLab suma automáticamente el total.' },
+      acceptedAnswer: { '@type': 'Answer', text: 'Con las fórmulas oficiales de pruebas combinadas de World Athletics, que asignan puntos a cada prueba mediante constantes específicas. LaneLab cubre las cuatro combinadas —decatlón y heptatlón al aire libre, heptatlón y pentatlón en pista cubierta—, suma el total automáticamente y lo traduce a puntos World Athletics.' },
     },
     {
       '@type': 'Question',

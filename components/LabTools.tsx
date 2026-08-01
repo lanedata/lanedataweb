@@ -71,8 +71,9 @@ const TOOLS: Tool[] = [
   {
     id: 'combinadas',
     name: 'Combinadas',
-    short: 'Decatlón y heptatlón',
-    long: 'Suma la puntuación del decatlón (hombres) y el heptatlón (mujeres) con las fórmulas oficiales de World Athletics.',
+    short: 'Decatlón, heptatlón y PC',
+    long: 'Suma la puntuación de las cuatro combinadas con las fórmulas oficiales de World Athletics: decatlón y heptatlón al aire libre, heptatlón y pentatlón en pista cubierta. Además traduce el total a puntos World Athletics.',
+    badge: 'AL · PC',
     icon: IconCombined,
     render: () => <CombinedEventsCalculator />,
   },
