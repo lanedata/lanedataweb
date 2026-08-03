@@ -1,33 +1,6 @@
 [
   {
     "id": null,
-    "nombre": "Mitin Internacional Andalucía Challenger",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-06-03",
-    "fecha_fin": "2026-06-03",
-    "lugar": "Granada",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
     "nombre": "Campeonato de Europa Off-Road",
     "ambito": "Andalucía",
     "disciplina": null,
@@ -6892,6 +6865,33 @@
     "fecha_inicio": "2026-12-27",
     "fecha_fin": "2026-12-27",
     "lugar": "Cómpeta, Málaga",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": null,
+      "instrucciones": "Consultar la web de la Federación Andaluza."
+    },
+    "url_detalle": "https://web.faalive.com/Calendar",
+    "url_inscritos": null,
+    "url_resultados": null,
+    "url_directo": null,
+    "url_callroom": null,
+    "url_reglamento": null,
+    "url_calendario_federacion": "https://web.faalive.com/Calendar",
+    "documentos": [],
+    "comunidad": "Andalucía",
+    "fuente": "andalucia"
+  },
+  {
+    "id": null,
+    "nombre": "42ª San Silvestre Cordobesa *",
+    "ambito": "Andalucía",
+    "disciplina": null,
+    "fecha_inicio": "2026-12-31",
+    "fecha_fin": "2026-12-31",
+    "lugar": "Córdoba",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
