@@ -2539,7 +2539,7 @@
   },
   {
     "id": null,
-    "nombre": "Carrera Pedestre Feria Real Fernán Núñez 2026 *",
+    "nombre": "Carrera Pedestre Feria Real Fernán Núñez 2026",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-08-14",
@@ -2755,7 +2755,7 @@
   },
   {
     "id": null,
-    "nombre": "XXXII Media Legua Playa de Burriana *",
+    "nombre": "XXXII Media Legua Playa de Burriana",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-08-28",
@@ -2890,7 +2890,7 @@
   },
   {
     "id": null,
-    "nombre": "XXXVIII Carrera Feria de Maro *",
+    "nombre": "XXXVIII Carrera Feria de Maro",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-09-04",
@@ -3220,6 +3220,33 @@
     "fecha_inicio": "2026-09-19",
     "fecha_fin": "2026-09-19",
     "lugar": "Torrox, Málaga",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": null,
+      "instrucciones": "Consultar la web de la Federación Andaluza."
+    },
+    "url_detalle": "https://web.faalive.com/Calendar",
+    "url_inscritos": null,
+    "url_resultados": null,
+    "url_directo": null,
+    "url_callroom": null,
+    "url_reglamento": null,
+    "url_calendario_federacion": "https://web.faalive.com/Calendar",
+    "documentos": [],
+    "comunidad": "Andalucía",
+    "fuente": "andalucia"
+  },
+  {
+    "id": null,
+    "nombre": "Carrera Solidaria Palmones \"por el Cáncer Infantil\"",
+    "ambito": "Andalucía",
+    "disciplina": null,
+    "fecha_inicio": "2026-09-19",
+    "fecha_fin": "2026-09-19",
+    "lugar": "Cádiz - Palmones",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3619,7 +3646,7 @@
   },
   {
     "id": null,
-    "nombre": "69ª Carrera Urbana y 41º Trofeo de Marcha Feria de Nerja*",
+    "nombre": "69ª Carrera Urbana y 41º Trofeo de Marcha Feria de Nerja",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-09-27",
@@ -5104,7 +5131,7 @@
   },
   {
     "id": null,
-    "nombre": "XII Almijara Trail, X Mini Almijara y I Almijara Kids *",
+    "nombre": "XII Almijara Trail, X Mini Almijara y I Almijara Kids",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-11-02",
