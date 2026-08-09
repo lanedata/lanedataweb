@@ -6667,5 +6667,32 @@
     "documentos": [],
     "comunidad": "Andalucía",
     "fuente": "andalucia"
+  },
+  {
+    "id": null,
+    "nombre": "XLVI Marathón del Pavo de Espera",
+    "ambito": "Andalucía",
+    "disciplina": null,
+    "fecha_inicio": "2027-01-06",
+    "fecha_fin": "2027-01-06",
+    "lugar": "Espera, Cádiz",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": null,
+      "instrucciones": "Consultar la web de la Federación Andaluza."
+    },
+    "url_detalle": "https://web.faalive.com/Calendar",
+    "url_inscritos": null,
+    "url_resultados": null,
+    "url_directo": null,
+    "url_callroom": null,
+    "url_reglamento": null,
+    "url_calendario_federacion": "https://web.faalive.com/Calendar",
+    "documentos": [],
+    "comunidad": "Andalucía",
+    "fuente": "andalucia"
   }
 ]
