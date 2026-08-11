@@ -20,7 +20,7 @@ const svg = (children: ReactNode) => (
 
 const IconPoints = svg(<path d="M7 8H5a1 1 0 0 0-1 1v9M7 8l4-4M7 8v10M17 16h2a1 1 0 0 0 1-1V6M17 16l-4 4M17 16V6" />)
 const IconPace = svg(<><circle cx="12" cy="13" r="8" /><path d="M12 13V9M9 2h6" /></>)
-const IconPredictor = svg(<><path d="M3 17l5-5 3.5 3.5L21 6" /><path d="M15 6h6v6" /></>)
+const IconEstimador = svg(<><path d="M3 17l5-5 3.5 3.5L21 6" /><path d="M15 6h6v6" /></>)
 const IconCombined = svg(<>
   <rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" />
   <rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" />
@@ -60,12 +60,12 @@ const TOOLS: Tool[] = [
     render: () => <PaceCalculator />,
   },
   {
-    id: 'predictor',
-    name: 'Predictor',
+    id: 'estimador',
+    name: 'Estimador',
     short: 'Marcas equivalentes y VDOT',
     long: 'A partir de una marca reciente estima tus tiempos en el resto de distancias con los modelos de Riegel y Daniels (VDOT), y te da los ritmos de entrenamiento correspondientes.',
     badge: 'VDOT',
-    icon: IconPredictor,
+    icon: IconEstimador,
     render: () => <PredictorCalculator />,
   },
   {
@@ -111,10 +111,12 @@ export function LabTools() {
   const [active, setActive] = useState(DEFAULT_TOOL)
   const tabsRef = useRef<(HTMLButtonElement | null)[]>([])
 
-  // Cada herramienta es enlazable: /lanelab#predictor
+  // Cada herramienta es enlazable: /lanelab#estimador
   useEffect(() => {
     const fromHash = () => {
-      const id = window.location.hash.replace('#', '')
+      const raw = window.location.hash.replace('#', '')
+      // El Estimador se llamaba Predictor: no rompemos los enlaces antiguos.
+      const id = raw === 'predictor' ? 'estimador' : raw
       if (TOOLS.some(t => t.id === id)) setActive(id)
     }
     fromHash()

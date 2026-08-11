@@ -42,7 +42,7 @@ function EditArticle() {
     return (
       <div className="py-20 text-center">
         <p className="font-brand text-xl font-bold text-ink/30">Artículo no encontrado</p>
-        <Link href="/admin" className="mt-4 inline-block label-mono text-ink/40 hover:text-ink">
+        <Link href="/admin/articulos" className="mt-4 inline-block label-mono text-ink/40 hover:text-ink">
           ← Volver
         </Link>
       </div>
@@ -52,7 +52,7 @@ function EditArticle() {
   return (
     <div>
       <div className="mb-8 flex items-center gap-3">
-        <Link href="/admin" className="label-mono text-ink/35 hover:text-ink/60 transition-colors">
+        <Link href="/admin/articulos" className="label-mono text-ink/35 hover:text-ink/60 transition-colors">
           ← Volver
         </Link>
         <span className="text-ink/20">/</span>

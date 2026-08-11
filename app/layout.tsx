@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: '%s · lanedata',
   },
   description:
-    'Análisis, estadísticas y herramientas del atletismo español. Datos, contexto y calculadoras (puntos World Athletics, ritmo, predictor de marcas) en lanedata.',
+    'Análisis, estadísticas y herramientas del atletismo español. Datos, contexto y calculadoras (puntos World Athletics, ritmo, estimador de marcas) en lanedata.',
   applicationName: 'lanedata',
   authors: [{ name: 'lanedata', url: siteUrl }],
   creator: 'lanedata',

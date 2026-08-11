@@ -5,7 +5,15 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 const REBUILD_URL =
-  'https://github.com/mateogsilvaa/lanedata/actions/workflows/deploy.yml'
+  'https://github.com/lanedata/lanedataweb/actions/workflows/deploy.yml'
+
+/** Secciones del panel. `match` decide el estado activo con las subrutas. */
+const SECTIONS = [
+  { href: '/admin/articulos', label: 'Artículos', match: ['/admin/articulos', '/admin/nuevo', '/admin/editar'] },
+  { href: '/admin/calendario', label: 'Calendario', match: ['/admin/calendario'] },
+  { href: '/admin/estudio', label: 'Estudio IG', match: ['/admin/estudio'] },
+  { href: '/admin/historias', label: 'Historias', match: ['/admin/historias'] },
+]
 
 export function AdminNav() {
   const pathname = usePathname()
@@ -19,43 +27,25 @@ export function AdminNav() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink/[0.1] bg-ink">
+    <header className="sticky top-0 z-50 bg-ink">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-5">
           <Link
-            href="/"
+            href="/admin"
             className="font-brand text-lg font-extrabold tracking-brand text-cream"
-            target="_blank"
-            aria-label="Ver sitio público"
+            aria-label="Panel de administración"
           >
             lanedata
           </Link>
-
-          <span className="hidden label-mono text-cream/20 sm:inline">Admin</span>
-
-          <nav className="hidden items-center gap-4 sm:flex">
-            <AdminNavLink href="/admin" active={pathname === '/admin'}>
-              Artículos
-            </AdminNavLink>
-            <AdminNavLink href="/admin/nuevo" active={pathname === '/admin/nuevo'}>
-              + Nuevo
-            </AdminNavLink>
-            <AdminNavLink href="/admin/calendario" active={pathname === '/admin/calendario'}>
-              Calendario
-            </AdminNavLink>
-            <AdminNavLink href="/admin/estudio" active={pathname === '/admin/estudio'}>
-              Estudio IG
-            </AdminNavLink>
-          </nav>
+          <span className="label-mono text-mint/70">Admin</span>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Rebuild button — opens GitHub Actions Run workflow page */}
+        <div className="flex items-center gap-3">
           <a
             href={REBUILD_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-mint/20 px-3 py-1.5 label-mono text-mint hover:bg-mint/30 transition-colors"
+            className="inline-flex items-center gap-1.5 bg-mint px-3 py-2 label-mono text-ink transition-colors hover:bg-cream"
             title="Abre GitHub Actions para lanzar un rebuild del sitio"
           >
             <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -65,35 +55,48 @@ export function AdminNav() {
             Publicar web
           </a>
 
+          <Link
+            href="/"
+            target="_blank"
+            className="hidden label-mono text-cream/40 hover:text-cream transition-colors sm:inline"
+          >
+            Ver web ↗
+          </Link>
+
           <button
             onClick={logout}
-            className="label-mono text-cream/35 hover:text-cream/60 transition-colors"
+            className="label-mono text-cream/40 hover:text-cream transition-colors"
           >
-            Cerrar sesión
+            Salir
           </button>
         </div>
       </div>
-    </header>
-  )
-}
 
-function AdminNavLink({
-  href,
-  active,
-  children,
-}: {
-  href: string
-  active: boolean
-  children: React.ReactNode
-}) {
-  return (
-    <Link
-      href={href}
-      className={`label-mono transition-colors ${
-        active ? 'text-cream' : 'text-cream/40 hover:text-cream/65'
-      }`}
-    >
-      {children}
-    </Link>
+      {/* Barra de secciones */}
+      <nav
+        aria-label="Secciones del panel"
+        className="border-t border-cream/[0.12] bg-ink"
+      >
+        <div className="mx-auto flex max-w-6xl items-stretch gap-0 overflow-x-auto px-4 sm:px-6 scrollbar-none">
+          {SECTIONS.map((s) => {
+            const active = s.match.some((m) => pathname === m || pathname.startsWith(m + '/'))
+            return (
+              <Link
+                key={s.href}
+                href={s.href}
+                aria-current={active ? 'page' : undefined}
+                className={`shrink-0 border-b-2 px-4 py-3 label-mono transition-colors ${
+                  active
+                    ? 'border-mint text-mint'
+                    : 'border-transparent text-cream/40 hover:text-cream/75'
+                }`}
+              >
+                {s.label}
+              </Link>
+            )
+          })}
+        </div>
+      </nav>
+    </header>
   )
 }

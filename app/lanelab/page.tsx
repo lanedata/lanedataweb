@@ -8,7 +8,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'
 export const metadata: Metadata = {
   title: 'LaneLab · Calculadoras de atletismo',
   description:
-    'Herramientas gratuitas de atletismo: conversor de puntos World Athletics (IAAF) en aire libre y pista cubierta, calculadora de ritmo y parciales, predictor de marcas y VDOT, puntos de decatlón y heptatlón, corrección de viento, relevos y categorías RFEA. Tablas oficiales 2025.',
+    'Herramientas gratuitas de atletismo: conversor de puntos World Athletics (IAAF) en aire libre y pista cubierta, calculadora de ritmo y parciales, estimador de marcas y VDOT, puntos de decatlón y heptatlón, corrección de viento, relevos y categorías RFEA. Tablas oficiales 2025.',
   keywords: [
     'calculadora atletismo',
     'puntos IAAF',
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     'calculadora de ritmo running',
     'calculadora de pace',
     'equivalencia marcas atletismo',
+    'estimador de marcas',
     'predictor de marcas',
     'calculadora VDOT',
     'ritmos de entrenamiento Daniels',
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'LaneLab · Calculadoras de atletismo',
     description:
-      'Conversor de puntos IAAF, calculadora de ritmo, predictor de marcas y puntos de pruebas combinadas. Gratis.',
+      'Conversor de puntos IAAF, calculadora de ritmo, estimador de marcas y puntos de pruebas combinadas. Gratis.',
     url: `${siteUrl}/lanelab/`,
     type: 'website',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
@@ -49,7 +50,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'LaneLab · Calculadoras de atletismo',
-    description: 'Conversor de puntos IAAF, ritmo, predictor de marcas y combinadas. Gratis.',
+    description: 'Conversor de puntos IAAF, ritmo, estimador de marcas y combinadas. Gratis.',
     images: ['/og-image.png'],
   },
 }
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
 const FEATURES = [
   'Conversor de puntos World Athletics (IAAF) en aire libre y pista cubierta',
   'Calculadora de ritmo y parciales',
-  'Predictor de marcas y ritmos de entrenamiento (Riegel y VDOT)',
+  'Estimador de marcas y ritmos de entrenamiento (Riegel y VDOT)',
   'Puntos de las cuatro combinadas: decatlón, heptatlón, heptatlón PC y pentatlón PC',
   'Corrección de viento del 100 m (modelo Mureika)',
   'Calculadora de relevos',
@@ -77,7 +78,7 @@ const webAppLd = {
   isAccessibleForFree: true,
   featureList: FEATURES,
   description:
-    'Suite gratuita de calculadoras de atletismo: puntos World Athletics (IAAF), ritmo de carrera, predictor de marcas y puntuación de pruebas combinadas.',
+    'Suite gratuita de calculadoras de atletismo: puntos World Athletics (IAAF), ritmo de carrera, estimador de marcas y puntuación de pruebas combinadas.',
   publisher: { '@type': 'Organization', name: 'lanedata', url: siteUrl },
 }
 
@@ -145,7 +146,7 @@ export default function LaneLabPage() {
           </h1>
           <p className="mt-4 text-sm text-ink/55 max-w-xl leading-relaxed">
             Calculadoras gratuitas para atletas, entrenadores y aficionados: puntos World Athletics
-            (aire libre y pista cubierta), ritmo de carrera, predictor de marcas, pruebas combinadas
+            (aire libre y pista cubierta), ritmo de carrera, estimador de marcas, pruebas combinadas
             y categorías RFEA. Elige una herramienta.
           </p>
         </header>

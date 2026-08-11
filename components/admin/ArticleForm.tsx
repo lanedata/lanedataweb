@@ -199,7 +199,7 @@ export function ArticleForm({ article }: Props) {
     )
     setSaving(false)
 
-    if (!isEdit) router.push('/admin')
+    if (!isEdit) router.push('/admin/articulos')
   }
 
   return (
@@ -386,7 +386,7 @@ export function ArticleForm({ article }: Props) {
           className="rounded-xl bg-ink px-6 py-3 text-sm font-semibold text-cream transition-opacity hover:opacity-85 disabled:opacity-50">
           {saving ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Crear artículo'}
         </button>
-        <button type="button" onClick={() => router.push('/admin')}
+        <button type="button" onClick={() => router.push('/admin/articulos')}
           className="rounded-xl border border-ink/[0.15] px-6 py-3 text-sm text-ink/60 transition-colors hover:border-ink/30 hover:text-ink">
           Cancelar
         </button>

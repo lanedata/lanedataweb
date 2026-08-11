@@ -9,7 +9,7 @@ export default function NewArticlePage() {
     <div>
       <div className="mb-8 flex items-center gap-3">
         <Link
-          href="/admin"
+          href="/admin/articulos"
           className="label-mono text-ink/35 hover:text-ink/60 transition-colors"
         >
           ← Volver
