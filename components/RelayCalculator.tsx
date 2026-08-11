@@ -61,12 +61,12 @@ export function RelayCalculator() {
   const setLeg = (i: number, v: string) => setLegs(prev => prev.map((x, j) => (j === i ? v : x)))
 
   return (
-    <div className="rounded-2xl border border-ink/[0.1] bg-paper">
-      <div className="p-5 sm:p-7 flex flex-col gap-5 rounded-t-2xl">
+    <div className="border border-ink/[0.14] bg-paper">
+      <div className="p-5 sm:p-7 flex flex-col gap-5">
         <Segmented options={RELAYS.map(r => ({ v: r.id, l: r.label }))} value={relayId} onChange={setRelayId} />
 
         {/* Coordination slider */}
-        <div className="rounded-xl border border-ink/[0.08] bg-cream/30 px-4 py-3.5">
+        <div className="border border-ink/[0.14] bg-cream/30 px-4 py-3.5">
           <div className="flex items-center justify-between mb-2">
             <span className={`${MONO} text-ink/45`}>Compenetración del relevo</span>
             <span className="font-mono text-[0.62rem] text-ink/70">
@@ -91,8 +91,8 @@ export function RelayCalculator() {
             const isFast = calc?.complete && s !== null && s === calc.fastest && calc.fastest !== calc.slowest
             const isSlow = calc?.complete && s !== null && s === calc.slowest && calc.fastest !== calc.slowest
             return (
-              <div key={i} className="flex items-center gap-3 rounded-xl border border-ink/[0.08] bg-cream/30 px-3 py-2">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ink text-cream font-mono text-[0.7rem]">{i + 1}ª</span>
+              <div key={i} className="flex items-center gap-3 border border-ink/[0.14] bg-cream/30 px-3 py-2">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center bg-ink text-cream font-mono text-[0.7rem]">{i + 1}ª</span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[0.8rem] font-semibold text-ink leading-tight">
                     Posta {i + 1}{i > 0 ? ' · lanzada' : ' · tacos'}
@@ -106,7 +106,7 @@ export function RelayCalculator() {
                 )}
                 <input
                   value={v} onChange={e => setLeg(i, e.target.value)} placeholder={relay.ph} inputMode="decimal"
-                  className="h-9 w-[5.5rem] shrink-0 rounded-lg border border-ink/[0.15] bg-paper px-2.5 text-sm text-ink text-right placeholder:text-ink/25 focus:outline-none focus:ring-2 focus:ring-mint/40 tabular-nums"
+                  className="h-9 w-[5.5rem] shrink-0 border border-ink/[0.15] bg-paper px-2.5 text-sm text-ink text-right placeholder:text-ink/25 focus:outline-none focus:ring-2 focus:ring-mint/40 tabular-nums"
                 />
               </div>
             )
@@ -115,7 +115,7 @@ export function RelayCalculator() {
       </div>
 
       {/* Result */}
-      <div className={`border-t border-ink/[0.08] bg-ink px-5 sm:px-7 py-6 ${calc?.complete ? '' : 'rounded-b-2xl'}`}>
+      <div className="border-t border-ink/[0.14] bg-ink px-5 sm:px-7 py-6">
         {calc?.complete && calc.estimate !== null ? (
           <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
             <div>
@@ -138,11 +138,11 @@ export function RelayCalculator() {
 
       {/* Cumulative */}
       {calc?.complete && (
-        <div className="border-t border-ink/[0.08] px-5 sm:px-7 py-5 rounded-b-2xl">
+        <div className="border-t border-ink/[0.14] px-5 sm:px-7 py-5">
           <p className={`${MONO} text-ink/40 mb-3`}>Acumulado estimado en cada cambio</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {calc.cumulative.map((c, i) => (
-              <div key={i} className="rounded-xl border border-ink/[0.08] bg-cream/40 px-3 py-2.5">
+              <div key={i} className="border border-ink/[0.14] bg-cream/40 px-3 py-2.5">
                 <p className="font-mono text-[0.56rem] tracking-wider text-ink/40 uppercase">tras {i + 1}ª posta</p>
                 <p className="text-sm font-semibold text-ink tabular-nums mt-0.5">{c !== null ? fmt(c) : '—'}</p>
               </div>

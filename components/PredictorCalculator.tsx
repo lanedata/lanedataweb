@@ -56,7 +56,7 @@ export function PredictorCalculator() {
   }, [from, timeInput, gender])
 
   return (
-    <div className="rounded-2xl border border-ink/[0.1] bg-paper">
+    <div className="border border-ink/[0.14] bg-paper">
       <div className="p-5 sm:p-7 flex flex-col gap-4">
         <div className="grid gap-3 sm:grid-cols-3">
           <LabField label="Distancia de referencia">
@@ -86,7 +86,7 @@ export function PredictorCalculator() {
       </div>
 
       {/* Resultado */}
-      <div className={`border-t border-ink/[0.08] bg-ink px-5 sm:px-7 py-6 ${calc ? '' : 'rounded-b-2xl'}`}>
+      <div className="border-t border-ink/[0.14] bg-ink px-5 sm:px-7 py-6">
         {calc ? (
           <div className="flex flex-wrap gap-x-10 gap-y-5">
             <Metric primary value={calc.vdot.toFixed(1)} label="VDOT · VO₂máx estimado" />
@@ -103,12 +103,12 @@ export function PredictorCalculator() {
       {calc && (
         <>
           {/* Predicciones */}
-          <div className="border-t border-ink/[0.08] px-5 sm:px-7 py-5">
+          <div className="border-t border-ink/[0.14] px-5 sm:px-7 py-5">
             <p className={`${MONO} text-ink/40 mb-3`}>Marcas equivalentes previstas</p>
             <div className="-mx-1 overflow-x-auto">
               <table className="w-full min-w-[26rem] border-collapse text-sm">
                 <thead>
-                  <tr className="border-b border-ink/[0.1]">
+                  <tr className="border-b border-ink/[0.14]">
                     <th className={`${MONO} text-ink/40 py-2 px-1 text-left font-normal`}>Distancia</th>
                     <th className={`${MONO} text-ink/40 py-2 px-1 text-right font-normal`}>Daniels</th>
                     <th className={`${MONO} text-ink/40 py-2 px-1 text-right font-normal`}>Riegel</th>
@@ -144,11 +144,11 @@ export function PredictorCalculator() {
           </div>
 
           {/* Ritmos de entrenamiento */}
-          <div className="border-t border-ink/[0.08] px-5 sm:px-7 py-5">
+          <div className="border-t border-ink/[0.14] px-5 sm:px-7 py-5">
             <p className={`${MONO} text-ink/40 mb-3`}>Ritmos de entrenamiento · VDOT {calc.vdot.toFixed(1)}</p>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {calc.zones.map(({ z, pace, paceTo }) => (
-                <div key={z.id} className="rounded-xl border border-ink/[0.08] bg-cream/40 px-3.5 py-3">
+                <div key={z.id} className="border border-ink/[0.14] bg-cream/40 px-3.5 py-3">
                   <div className="flex items-baseline justify-between gap-2">
                     <p className="text-[0.82rem] font-semibold text-ink">{z.label}</p>
                     <p className="font-brand text-base font-extrabold text-ink tabular-nums shrink-0">
@@ -161,7 +161,7 @@ export function PredictorCalculator() {
             </div>
           </div>
 
-          <div className="border-t border-ink/[0.08] px-5 sm:px-7 py-4 rounded-b-2xl">
+          <div className="border-t border-ink/[0.14] px-5 sm:px-7 py-4">
             <p className="text-[0.7rem] text-ink/45 leading-relaxed">
               <strong className="text-ink/65">Daniels</strong> traduce tu marca a un VO₂máx equivalente (VDOT) y busca
               qué tiempo daría ese mismo VDOT en cada distancia; <strong className="text-ink/65">Riegel</strong> escala

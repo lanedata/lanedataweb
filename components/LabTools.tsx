@@ -171,18 +171,18 @@ export function LabTools() {
               onClick={() => select(t.id)}
               onKeyDown={e => onKeyDown(e, i)}
               className={`
-                group shrink-0 snap-start text-left rounded-2xl border
+                group shrink-0 snap-start text-left border
                 px-3.5 py-3 lg:w-full lg:px-3.5 lg:py-2.5
-                transition-[background-color,border-color,box-shadow,transform] duration-200
+                transition-colors duration-150
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint/60
                 ${on
-                  ? 'border-ink bg-ink shadow-[0_6px_20px_rgba(13,42,20,0.16)]'
-                  : 'border-ink/[0.1] bg-paper hover:border-ink/25 hover:bg-cream/50 lg:hover:translate-x-0.5'}
+                  ? 'border-ink bg-ink'
+                  : 'border-ink/[0.14] bg-paper hover:border-ink/30 hover:bg-cream'}
               `}
             >
               <span className="flex items-center gap-2.5">
-                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors ${
-                  on ? 'bg-mint text-ink' : 'bg-mint/20 text-ink/70 group-hover:bg-mint/35'
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center transition-colors ${
+                  on ? 'bg-mint text-ink' : 'bg-mint/20 text-ink/70 group-hover:bg-mint/40'
                 }`}>
                   {t.icon}
                 </span>
@@ -218,7 +218,7 @@ export function LabTools() {
                   {t.name}
                 </h2>
                 {t.badge && (
-                  <span className="rounded-full bg-ink/[0.06] px-2.5 py-1 font-mono text-[0.52rem] tracking-[0.18em] uppercase text-ink/50">
+                  <span className="bg-ink/[0.06] px-2.5 py-1 font-mono text-[0.52rem] tracking-[0.18em] uppercase text-ink/50">
                     {t.badge}
                   </span>
                 )}

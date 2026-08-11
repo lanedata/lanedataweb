@@ -166,7 +166,7 @@ export default async function ArticlePage({ params }: Props) {
             <span className="label-mono text-ink/35">{minutes} min de lectura</span>
           </div>
 
-          <h1 className="font-brand text-3xl font-extrabold tracking-brand text-ink leading-[1.1] sm:text-4xl md:text-5xl">
+          <h1 className="font-brand text-3xl font-extrabold tracking-[-0.045em] text-ink leading-[1.02] sm:text-4xl md:text-5xl">
             {article.title}
           </h1>
 
@@ -176,7 +176,7 @@ export default async function ArticlePage({ params }: Props) {
             </p>
           )}
 
-          <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-ink/[0.1] pt-5">
+          <div className="mt-6 flex flex-wrap items-center gap-4 border-t border-ink/[0.14] pt-5">
             {article.published_at && (
               <time dateTime={isoDate(article.published_at)} className="label-mono text-ink/45">
                 {formatDateEs(article.published_at)}
@@ -190,7 +190,7 @@ export default async function ArticlePage({ params }: Props) {
 
         {article.cover_image_url && (
           <div className="mx-auto max-w-6xl px-4 sm:px-6 mb-10">
-            <div className="relative aspect-[21/9] w-full overflow-hidden rounded-2xl bg-cream">
+            <div className="relative aspect-[21/9] w-full overflow-hidden bg-ink">
               <Image src={article.cover_image_url} alt={article.title} fill
                 className="object-cover" priority unoptimized
                 sizes="(max-width: 1200px) 100vw, 1200px" />
@@ -209,7 +209,7 @@ export default async function ArticlePage({ params }: Props) {
           </div>
         </div>
 
-        <div className="border-t border-ink/[0.1] bg-cream/40">
+        <div className="border-t border-ink/[0.14] bg-cream/40">
           <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 flex items-center justify-between">
             <Link href="/"
               className="inline-flex items-center gap-2 label-mono text-ink/50 hover:text-ink transition-colors">

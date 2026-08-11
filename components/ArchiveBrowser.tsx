@@ -45,13 +45,13 @@ export function ArchiveBrowser({ articles }: { articles: ArticlePreview[] }) {
           onChange={e => setQ(e.target.value)}
           placeholder="Buscar por título, prueba o categoría…"
           aria-label="Buscar en el archivo"
-          className="w-full rounded-full border border-ink/[0.15] bg-cream/60 pl-11 pr-11 py-3 text-sm text-ink placeholder:text-ink/40 focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40 transition-colors"
+          className="w-full border border-ink/[0.14] bg-cream/60 pl-11 pr-11 py-3 text-sm text-ink placeholder:text-ink/40 focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40 transition-colors"
         />
         {q && (
           <button
             onClick={() => setQ('')}
             aria-label="Limpiar búsqueda"
-            className="absolute right-3 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-full text-ink/40 hover:bg-ink/[0.06] hover:text-ink transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center text-ink/40 hover:bg-ink/[0.06] hover:text-ink transition-colors"
           >
             <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
               <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
@@ -68,12 +68,8 @@ export function ArchiveBrowser({ articles }: { articles: ArticlePreview[] }) {
       ) : query ? (
         /* ── Search results: flat grid ── */
         <>
-          <div className="mb-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-ink/[0.1]" />
-            <span className="label-mono text-ink/40">
-              {filtered.length} resultado{filtered.length !== 1 ? 's' : ''} para &ldquo;{q.trim()}&rdquo;
-            </span>
-            <div className="h-px flex-1 bg-ink/[0.1]" />
+          <div className="section-label mb-8">
+            {filtered.length} resultado{filtered.length !== 1 ? 's' : ''} para &ldquo;{q.trim()}&rdquo;
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map(a => <ArticleCard key={a.id} article={a} />)}
@@ -84,12 +80,11 @@ export function ArchiveBrowser({ articles }: { articles: ArticlePreview[] }) {
         <div className="space-y-16">
           {years.map(year => (
             <section key={year}>
-              <div className="flex items-center gap-4 mb-8">
-                <span className="font-brand text-3xl font-extrabold tracking-brand text-ink/15 select-none">
+              <div className="flex items-baseline justify-between gap-4 mb-8 border-b border-ink/[0.14] pb-4">
+                <span className="font-brand text-3xl font-extrabold tracking-brand text-ink select-none">
                   {year}
                 </span>
-                <div className="h-px flex-1 bg-ink/[0.07]" />
-                <span className="label-mono text-ink/30">
+                <span className="label-mono text-ink/40">
                   {byYear[year].length} análisis
                 </span>
               </div>

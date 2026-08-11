@@ -86,10 +86,10 @@ function MonthPicker({ months, active, onChange }: { months: number[]; active: n
               <button key={i} onClick={() => has && onChange(i)} disabled={!has}
                 style={{ width: ITEM_W, opacity, transform: `scale(${scale})`, transition: 'transform 300ms cubic-bezier(0.23,1,0.32,1), opacity 300ms ease' }}
                 className="flex-none flex flex-col items-center gap-1.5 cursor-pointer disabled:cursor-default">
-                <span className={`rounded-full px-3.5 py-1 font-brand font-bold text-sm whitespace-nowrap transition-colors ${on ? 'bg-mint text-ink' : 'text-ink/55'}`}>
+                <span className={`px-3.5 py-1 font-brand font-bold text-sm whitespace-nowrap transition-colors ${on ? 'bg-mint text-ink' : 'text-ink/55'}`}>
                   {on ? name : SHORT_MONTHS[i]}
                 </span>
-                <span className={`w-1 h-1 rounded-full ${on ? 'bg-mint' : 'bg-transparent'}`} />
+                <span className={`w-1.5 h-1.5 ${on ? 'bg-mint' : 'bg-transparent'}`} />
               </button>
             )
           })}
@@ -108,18 +108,18 @@ function CompCard({ c, onOpen }: { c: RfeaCompeticion; onOpen: () => void }) {
   const n = pruebasUnicas(c.pruebas).length
   const pasada = esPasada(c)
   return (
-    <button onClick={onOpen} className={`group text-left flex flex-col gap-2 rounded-xl border border-ink/[0.08] px-4 py-3.5 transition-[transform,box-shadow] duration-200 hover:-translate-y-px hover:shadow-[0_4px_18px_rgba(13,42,20,0.08)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint ${pasada ? 'bg-cream/40 opacity-80' : 'bg-paper'}`}>
+    <button onClick={onOpen} className={`group text-left flex flex-col gap-2 border border-ink/[0.14] px-4 py-3.5 transition-colors duration-150 hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint ${pasada ? 'bg-cream/40 opacity-80' : 'bg-paper'}`}>
       <div className="flex items-center gap-2">
         <span className="font-mono text-[0.7rem] font-semibold tabular-nums text-ink/60">{fmtFecha(c.fecha_inicio, c.fecha_fin)}</span>
         {dot && c.disciplina && (
           <span className="flex items-center gap-1 text-ink/45">
-            <span className={`w-[5px] h-[5px] rounded-full ${dot}`} />
+            <span className={`w-[5px] h-[5px] ${dot}`} />
             <span className="font-mono text-[0.55rem] tracking-widest uppercase">{c.disciplina}</span>
           </span>
         )}
         {pasada
           ? <span className="ml-auto font-mono text-[0.52rem] tracking-widest uppercase text-ink/30">Finalizada</span>
-          : c.inscripcion?.abierta && <span className="ml-auto rounded-full bg-mint/20 px-2 py-0.5 font-mono text-[0.52rem] tracking-widest uppercase text-ink/60">Inscripción abierta</span>}
+          : c.inscripcion?.abierta && <span className="ml-auto bg-mint/25 px-2 py-0.5 font-mono text-[0.52rem] tracking-widest uppercase text-ink/60">Inscripción abierta</span>}
       </div>
       <p className="text-[0.85rem] font-semibold text-ink leading-snug">{c.nombre}</p>
       <div className="flex items-center justify-between gap-2">
@@ -134,7 +134,7 @@ function CompCard({ c, onOpen }: { c: RfeaCompeticion; onOpen: () => void }) {
 function LinkRow({ href, label, sub, icon }: { href: string; label: string; sub?: string; icon?: React.ReactNode }) {
   return (
     <a href={href} target="_blank" rel="noopener noreferrer"
-      className="flex items-center gap-3 rounded-xl border border-ink/[0.1] bg-paper px-4 py-3 hover:border-ink/25 hover:bg-cream/40 transition-colors">
+      className="flex items-center gap-3 border border-ink/[0.14] bg-paper px-4 py-3 hover:border-ink/30 hover:bg-cream transition-colors duration-150">
       {icon && <span className="shrink-0 text-ink/40">{icon}</span>}
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-ink">{label}</p>
@@ -160,13 +160,13 @@ function Modal({ c, onClose }: { c: RfeaCompeticion; onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6" onClick={onClose}>
       <div className="absolute inset-0 bg-ink/50 backdrop-blur-sm" aria-hidden="true" />
       <div onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={c.nombre}
-        className="relative w-full sm:max-w-lg max-h-[88vh] overflow-auto rounded-t-2xl sm:rounded-2xl bg-paper shadow-[0_24px_60px_rgba(13,42,20,0.25)]">
+        className="relative w-full sm:max-w-lg max-h-[88vh] overflow-auto bg-paper shadow-[0_24px_60px_rgba(13,42,20,0.25)]">
         <div className="sticky top-0 bg-ink px-5 pt-5 pb-4 z-10">
           <div className="flex items-start justify-between gap-3 mb-3">
             <p className="font-mono text-[0.6rem] tracking-widest uppercase text-mint/70">
               {fmtFecha(c.fecha_inicio, c.fecha_fin)}{c.disciplina ? ` · ${c.disciplina}` : ''}
             </p>
-            <button onClick={onClose} aria-label="Cerrar" className="flex h-7 w-7 items-center justify-center rounded-full text-cream/40 hover:text-cream hover:bg-cream/10 transition-colors">
+            <button onClick={onClose} aria-label="Cerrar" className="flex h-7 w-7 items-center justify-center text-cream/40 hover:text-cream hover:bg-cream/10 transition-colors">
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
             </button>
           </div>
@@ -179,9 +179,9 @@ function Modal({ c, onClose }: { c: RfeaCompeticion; onClose: () => void }) {
             <section>
               <p className="font-mono text-[0.58rem] tracking-widest uppercase text-ink/35 mb-2">Inscripción</p>
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                {insc.abierta && <span className="rounded-full bg-mint/20 px-2.5 py-0.5 font-mono text-[0.56rem] tracking-widest uppercase text-ink/65">Abierta</span>}
+                {insc.abierta && <span className="bg-mint/25 px-2.5 py-1 font-mono text-[0.56rem] tracking-widest uppercase text-ink/65">Abierta</span>}
                 {insc.fecha_limite && (
-                  <span className="rounded-full border border-ink/15 px-2.5 py-0.5 font-mono text-[0.56rem] tracking-widest uppercase text-ink/60">Hasta {fmtFechaLarga(insc.fecha_limite)}</span>
+                  <span className="border border-ink/15 px-2.5 py-1 font-mono text-[0.56rem] tracking-widest uppercase text-ink/60">Hasta {fmtFechaLarga(insc.fecha_limite)}</span>
                 )}
               </div>
               {insc.instrucciones && <p className="text-xs text-ink/50 leading-relaxed mb-2">{insc.instrucciones}</p>}
@@ -195,7 +195,7 @@ function Modal({ c, onClose }: { c: RfeaCompeticion; onClose: () => void }) {
             </p>
             {eventos.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
-                {eventos.map(e => <span key={e} className="rounded-lg border border-ink/[0.1] bg-cream/40 px-2 py-1 font-mono text-[0.6rem] text-ink/70">{e}</span>)}
+                {eventos.map(e => <span key={e} className="border border-ink/[0.14] bg-cream/40 px-2 py-1 font-mono text-[0.6rem] text-ink/70">{e}</span>)}
               </div>
             ) : (
               <p className="text-xs text-ink/40">Aún sin publicar. Consulta la ficha de la federación.</p>
@@ -289,10 +289,10 @@ function SmartSearch({ competiciones, onPick }: { competiciones: RfeaCompeticion
     <>
       {/* Trigger atractivo */}
       <button onClick={() => setOpen(true)}
-        className="group fixed bottom-5 right-5 z-40 inline-flex items-center gap-2.5 rounded-full bg-ink pl-4 pr-5 py-3.5 text-cream shadow-[0_8px_28px_rgba(13,42,20,0.3)] hover:scale-[1.03] active:scale-95 transition-transform">
+        className="group fixed bottom-5 right-5 z-40 inline-flex items-center gap-2.5 bg-ink pl-4 pr-5 py-3.5 text-cream shadow-[0_8px_28px_rgba(13,42,20,0.3)] transition-colors duration-150 hover:bg-mint hover:text-ink">
         <span className="relative flex h-2.5 w-2.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint opacity-60" />
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-mint" />
+          <span className="absolute inline-flex h-full w-full animate-ping bg-mint opacity-60 group-hover:bg-ink" />
+          <span className="relative inline-flex h-2.5 w-2.5 bg-mint group-hover:bg-ink" />
         </span>
         <span className="font-brand text-sm font-bold tracking-tight">Encuentra tu competición</span>
         <svg width="16" height="16" viewBox="0 0 14 14" fill="none" className="opacity-80"><circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" strokeWidth="1.4" /><path d="M9 9l3.5 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
@@ -304,19 +304,19 @@ function SmartSearch({ competiciones, onPick }: { competiciones: RfeaCompeticion
           <div onClick={e => e.stopPropagation()}
             className="dropdown-enter absolute right-0 top-0 h-full w-full sm:w-[440px] bg-paper shadow-[-12px_0_40px_rgba(13,42,20,0.2)] flex flex-col">
             {/* Cabecera */}
-            <div className="flex items-center justify-between border-b border-ink/[0.1] px-5 py-4">
+            <div className="flex items-center justify-between border-b border-ink/[0.14] px-5 py-4">
               <div>
                 <p className="label-mono text-ink/40">Buscador</p>
                 <h3 className="font-brand text-lg font-extrabold tracking-brand text-ink leading-none mt-0.5">Encuentra tu competición</h3>
               </div>
-              <button onClick={() => setOpen(false)} aria-label="Cerrar" className="flex h-8 w-8 items-center justify-center rounded-full text-ink/40 hover:text-ink hover:bg-ink/[0.05] transition-colors">
+              <button onClick={() => setOpen(false)} aria-label="Cerrar" className="flex h-8 w-8 items-center justify-center text-ink/40 hover:text-ink hover:bg-ink/[0.05] transition-colors">
                 <svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
               </button>
             </div>
 
             <div className="flex-1 overflow-auto">
               {/* Filtros */}
-              <div className="px-5 py-4 flex flex-col gap-5 border-b border-ink/[0.08]">
+              <div className="px-5 py-4 flex flex-col gap-5 border-b border-ink/[0.14]">
                 {/* Pruebas */}
                 <div>
                   <p className="font-mono text-[0.6rem] tracking-widest uppercase text-ink/40 mb-2">¿Qué pruebas quieres hacer?</p>
@@ -325,7 +325,7 @@ function SmartSearch({ competiciones, onPick }: { competiciones: RfeaCompeticion
                       const on = eventos.has(e)
                       return (
                         <button key={e} onClick={() => toggleEvento(e)}
-                          className={`rounded-full px-2.5 py-1 font-mono text-[0.62rem] transition-colors ${on ? 'bg-ink text-cream' : 'border border-ink/15 text-ink/60 hover:border-ink/30'}`}>
+                          className={`px-2.5 py-1 font-mono text-[0.62rem] transition-colors ${on ? 'bg-ink text-cream' : 'border border-ink/15 text-ink/60 hover:border-ink/30'}`}>
                           {e}
                         </button>
                       )
@@ -338,7 +338,7 @@ function SmartSearch({ competiciones, onPick }: { competiciones: RfeaCompeticion
                 <div>
                   <p className="font-mono text-[0.6rem] tracking-widest uppercase text-ink/40 mb-2">¿De dónde eres?</p>
                   <select value={origen} onChange={e => setOrigen(e.target.value)}
-                    className="w-full rounded-xl border border-ink/[0.15] bg-cream/60 px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-mint/40">
+                    className="w-full border border-ink/[0.15] bg-cream/60 px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-mint/40">
                     <option value="">Toda España</option>
                     {COMUNIDADES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
@@ -351,7 +351,7 @@ function SmartSearch({ competiciones, onPick }: { competiciones: RfeaCompeticion
                     <div className="grid grid-cols-3 gap-1.5">
                       {([['comunidad', 'Mi comunidad'], ['cercanas', 'Cercanas'], ['nacional', 'Toda España']] as [Radio, string][]).map(([v, l]) => (
                         <button key={v} onClick={() => setRadio(v)}
-                          className={`rounded-xl px-2 py-2 font-mono text-[0.6rem] tracking-wide uppercase transition-colors ${radio === v ? 'bg-mint text-ink' : 'border border-ink/15 text-ink/55 hover:text-ink'}`}>
+                          className={`px-2 py-2 font-mono text-[0.6rem] tracking-wide uppercase transition-colors ${radio === v ? 'bg-mint text-ink' : 'border border-ink/15 text-ink/55 hover:text-ink'}`}>
                           {l}
                         </button>
                       ))}
@@ -369,7 +369,7 @@ function SmartSearch({ competiciones, onPick }: { competiciones: RfeaCompeticion
                     const match = pr.filter(e => eventos.has(e))
                     return (
                       <button key={c.id ?? i} onClick={() => { onPick(c); setOpen(false) }}
-                        className="text-left rounded-xl border border-ink/[0.08] bg-paper px-3.5 py-3 hover:border-ink/25 hover:bg-cream/40 transition-colors">
+                        className="text-left border border-ink/[0.14] bg-paper px-3.5 py-3 hover:border-ink/30 hover:bg-cream transition-colors duration-150">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-mono text-[0.6rem] font-semibold tabular-nums text-ink/55">{fmtFecha(c.fecha_inicio, c.fecha_fin)}</span>
                           {c.comunidad && <span className="font-mono text-[0.55rem] tracking-wide text-ink/35 uppercase truncate">· {c.lugar || c.comunidad}</span>}
@@ -377,7 +377,7 @@ function SmartSearch({ competiciones, onPick }: { competiciones: RfeaCompeticion
                         <p className="text-[0.82rem] font-semibold text-ink leading-snug">{c.nombre}</p>
                         {match.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1.5">
-                            {match.slice(0, 5).map(e => <span key={e} className="rounded bg-mint/20 px-1.5 py-0.5 font-mono text-[0.55rem] text-ink/60">{e}</span>)}
+                            {match.slice(0, 5).map(e => <span key={e} className="bg-mint/25 px-1.5 py-0.5 font-mono text-[0.55rem] text-ink/60">{e}</span>)}
                           </div>
                         )}
                       </button>
@@ -428,11 +428,11 @@ export function RfeaCalendar({ competiciones }: { competiciones: RfeaCompeticion
 
       <MonthPicker months={meses} active={mes} onChange={setMes} />
 
-      <div className="flex items-center gap-3 mb-5">
+      <div className="flex items-center gap-3 mb-5 border-b border-ink/[0.14] pb-4">
         <h2 className="font-brand text-2xl font-extrabold tracking-brand text-ink">{ALL_MONTHS[mes]}</h2>
-        <span className="font-mono text-[0.6rem] tracking-widest text-ink/28 uppercase">{filtered.length} competiciones</span>
+        <span className="font-mono text-[0.6rem] tracking-widest text-ink/40 uppercase">{filtered.length} competiciones</span>
         <input value={q} onChange={e => setQ(e.target.value)} type="search" placeholder="Filtrar mes…"
-          className="ml-auto w-36 sm:w-52 rounded-full border border-ink/[0.15] bg-cream/60 px-3.5 py-1.5 text-xs text-ink placeholder:text-ink/35 focus:outline-none focus:ring-2 focus:ring-mint/40" />
+          className="ml-auto w-36 sm:w-52 border border-ink/[0.15] bg-cream/60 px-3.5 py-1.5 text-xs text-ink placeholder:text-ink/35 focus:outline-none focus:ring-2 focus:ring-mint/40" />
       </div>
 
       {filtered.length > 0 ? (
@@ -440,7 +440,7 @@ export function RfeaCalendar({ competiciones }: { competiciones: RfeaCompeticion
           {filtered.map((c, i) => <CompCard key={c.id ?? i} c={c} onOpen={() => setOpen(c)} />)}
         </div>
       ) : (
-        <div className="flex items-center justify-center rounded-xl border border-ink/[0.08] bg-cream/40 py-16">
+        <div className="flex items-center justify-center border border-ink/[0.14] bg-cream/40 py-16">
           <p className="font-mono text-sm text-ink/30">Sin competiciones este mes</p>
         </div>
       )}

@@ -12,16 +12,16 @@ export function ArticleCard({ article }: Props) {
   const href = `/articulo/${article.slug}`
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-xl border border-ink/[0.1] bg-paper transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(13,42,20,0.08)]">
+    <article className="group flex flex-col overflow-hidden border border-ink/[0.14] bg-paper transition-colors duration-150 hover:bg-cream">
       {/* Cover image */}
       <Link href={href} className="block overflow-hidden" tabIndex={-1} aria-hidden="true">
-        <div className="relative aspect-[16/9] w-full overflow-hidden bg-cream">
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-ink">
           {article.cover_image_url ? (
             <Image
               src={article.cover_image_url}
               alt=""
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              className="object-cover"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
             />
           ) : (
@@ -55,7 +55,7 @@ export function ArticleCard({ article }: Props) {
 
         <Link
           href={href}
-          className="group/cta mt-auto flex items-center justify-between border-t border-ink/[0.07] pt-4 label-mono text-ink/50 hover:text-ink transition-colors duration-150"
+          className="group/cta mt-auto flex items-center justify-between border-t border-ink/[0.14] pt-4 label-mono text-ink/50 hover:text-ink transition-colors duration-150"
           aria-label={`Leer: ${article.title}`}
         >
           Leer análisis

@@ -65,8 +65,8 @@ export function WindCalculator() {
   const unit = ev.kind === 'field' ? ' m' : ''
 
   return (
-    <div className="rounded-2xl border border-ink/[0.1] bg-paper">
-      <div className="p-5 sm:p-7 flex flex-col gap-5 rounded-t-2xl">
+    <div className="border border-ink/[0.14] bg-paper">
+      <div className="p-5 sm:p-7 flex flex-col gap-5">
         <div className={`grid gap-3 ${ev.mureika ? 'sm:grid-cols-4' : 'sm:grid-cols-3'}`}>
           <LabField label="Prueba">
             <select value={eventId} onChange={e => setEventId(e.target.value)} className={inputCls}>
@@ -88,7 +88,7 @@ export function WindCalculator() {
       </div>
 
       {/* Result */}
-      <div className={`border-t border-ink/[0.08] bg-ink px-5 sm:px-7 py-6 ${calc ? '' : 'rounded-b-2xl'}`}>
+      <div className="border-t border-ink/[0.14] bg-ink px-5 sm:px-7 py-6">
         {calc ? (
           <div className="flex flex-wrap gap-x-10 gap-y-5 items-center">
             <Metric primary value={`${f2(calc.equiv)}${unit}`} label={ev.mureika ? 'equivalente viento nulo · nivel del mar' : 'equivalente viento nulo'} />
@@ -96,7 +96,7 @@ export function WindCalculator() {
               value={`${calc.help >= 0 ? '+' : '−'}${f2(Math.abs(calc.help))}${unit}`}
               label={calc.help >= 0 ? 'te ayudó el viento' : 'te perjudicó el viento'}
             />
-            <span className={`rounded-full px-3 py-1 font-mono text-[0.58rem] tracking-widest uppercase border ${
+            <span className={`px-3 py-1 font-mono text-[0.58rem] tracking-widest uppercase border ${
               calc.legal ? 'bg-mint/15 border-mint/30 text-mint' : 'bg-rose-400/20 border-rose-300/30 text-rose-200'
             }`}>
               {calc.legal ? 'Viento legal (≤ +2.0)' : 'Viento > +2.0 · no homologable'}
@@ -108,7 +108,7 @@ export function WindCalculator() {
       </div>
 
       {/* Model note */}
-      <div className="border-t border-ink/[0.08] px-5 sm:px-7 py-4 rounded-b-2xl">
+      <div className="border-t border-ink/[0.14] px-5 sm:px-7 py-4">
         <p className="text-[0.7rem] text-ink/45 leading-relaxed">
           {ev.mureika ? (
             <>Modelo de <strong className="text-ink/65">Mureika (2001)</strong> para el 100 m (incluye altitud). </>

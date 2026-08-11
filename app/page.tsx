@@ -51,20 +51,18 @@ export default async function HomePage() {
       <main className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
 
         {/* ── Featured article ── */}
-        {featured ? (
-          <HeroArticle article={featured} />
-        ) : (
-          <EmptyState />
-        )}
+        <section>
+          <div className="section-label">01 · último análisis</div>
+          <div className="mt-6">
+            {featured ? <HeroArticle article={featured} /> : <EmptyState />}
+          </div>
+        </section>
 
         {/* ── More articles (max 3) ── */}
         {rest.length > 0 && (
-          <section className="mt-16">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="h-px flex-1 bg-ink/[0.1]" />
-              <span className="label-mono text-ink/40">Más análisis</span>
-              <div className="h-px flex-1 bg-ink/[0.1]" />
-            </div>
+          <section className="mt-20">
+            <div className="section-label">02 · más análisis</div>
+            <h2 className="section-title mb-8">El resto del archivo reciente</h2>
 
             <div className="article-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {rest.map((article) => (
@@ -72,10 +70,10 @@ export default async function HomePage() {
               ))}
             </div>
 
-            <div className="mt-10 flex justify-center">
+            <div className="mt-10">
               <Link
                 href="/archivo"
-                className="inline-flex items-center gap-2 rounded-full border border-ink/[0.15] px-5 py-2.5 label-mono text-ink/55 hover:text-ink hover:border-ink/30 transition-colors duration-150"
+                className="inline-flex items-center gap-2 border border-ink/[0.14] px-6 py-3 label-mono text-ink/55 hover:bg-ink hover:text-mint hover:border-ink transition-colors duration-150"
               >
                 Ver todos los análisis
                 <svg width="12" height="9" viewBox="0 0 14 10" fill="none" aria-hidden="true">
@@ -95,7 +93,7 @@ export default async function HomePage() {
 
 function EmptyState() {
   return (
-    <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-ink/[0.1] bg-cream/40 text-center p-12">
+    <div className="flex min-h-[320px] flex-col items-center justify-center border border-ink/[0.14] bg-cream/40 text-center p-12">
       <svg viewBox="0 0 200 200" className="w-16 h-16 mb-6 opacity-20" aria-hidden="true">
         <circle cx="100" cy="100" r="100" fill="#9FE88D" />
         <ellipse cx="74" cy="100" rx="14" ry="22" fill="#0D2A14" />

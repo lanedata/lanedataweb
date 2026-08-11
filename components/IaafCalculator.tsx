@@ -149,7 +149,7 @@ export function IaafCalculator() {
   const hasEquiv = equivalences.length > 0
 
   return (
-    <div className="rounded-2xl border border-ink/[0.1] bg-paper">
+    <div className="border border-ink/[0.14] bg-paper">
       <div className="p-5 sm:p-7 flex flex-col gap-4">
 
         {/* Género · entorno */}
@@ -190,7 +190,7 @@ export function IaafCalculator() {
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder={placeholder}
-              className="h-[46px] rounded-xl border border-ink/[0.15] bg-cream/60 px-4 text-sm text-ink placeholder:text-ink/30 focus:outline-none focus:ring-2 focus:ring-mint/40 focus:border-ink/30 tabular-nums"
+              className="h-[46px] border border-ink/[0.15] bg-cream/60 px-4 text-sm text-ink placeholder:text-ink/30 focus:outline-none focus:ring-2 focus:ring-mint/40 focus:border-ink/30 tabular-nums"
             />
           </label>
         </div>
@@ -204,7 +204,7 @@ export function IaafCalculator() {
       </div>
 
       {/* Resultado */}
-      <div className={`border-t border-ink/[0.08] bg-ink px-5 sm:px-7 py-6 ${crossEnv || hasEquiv ? '' : 'rounded-b-2xl'}`}>
+      <div className="border-t border-ink/[0.14] bg-ink px-5 sm:px-7 py-6">
         {result ? (
           <div className="flex items-baseline gap-3 flex-wrap">
             <span className="font-brand text-5xl sm:text-6xl font-extrabold tracking-brand text-mint leading-none tabular-nums">
@@ -215,7 +215,7 @@ export function IaafCalculator() {
                 ? <>puntos<br />World Athletics</>
                 : <>marca para<br />{input || '—'} pts</>}
             </span>
-            <span className="ml-auto rounded-full border border-cream/15 bg-cream/[0.06] px-3 py-1 font-mono text-[0.55rem] tracking-widest uppercase text-cream/55">
+            <span className="ml-auto border border-cream/15 bg-cream/[0.06] px-3 py-1 font-mono text-[0.55rem] tracking-widest uppercase text-cream/55">
               {eventLabel(event, gender)} · {ENV_SHORT[env]}
             </span>
           </div>
@@ -232,7 +232,7 @@ export function IaafCalculator() {
 
       {/* AL ⇄ PC — el mismo tiempo no vale lo mismo bajo techo */}
       {crossEnv && (
-        <div className={`border-t border-ink/[0.08] bg-mint/[0.09] px-5 sm:px-7 py-4 ${hasEquiv ? '' : 'rounded-b-2xl'}`}>
+        <div className="border-t border-ink/[0.14] bg-mint/[0.09] px-5 sm:px-7 py-4">
           <p className={`${MONO} text-ink/45 mb-2.5`}>
             Equivalencia {ENV_SHORT[env]} → {ENV_SHORT[otherEnv]}
           </p>
@@ -258,13 +258,13 @@ export function IaafCalculator() {
 
       {/* Marcas equivalentes */}
       {hasEquiv && (
-        <div className="border-t border-ink/[0.08] px-5 sm:px-7 py-5 rounded-b-2xl">
+        <div className="border-t border-ink/[0.14] px-5 sm:px-7 py-5">
           <p className={`${MONO} text-ink/40 mb-3`}>
             Marcas equivalentes · {result && result.kind === 'points' ? result.value : 0} pts · {ENV_SHORT[env]}
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
             {equivalences.map(({ event: e, mark }) => (
-              <div key={e.id} className="rounded-xl border border-ink/[0.08] bg-cream/40 px-3 py-2.5">
+              <div key={e.id} className="border border-ink/[0.14] bg-cream/40 px-3 py-2.5">
                 <p className="font-mono text-[0.56rem] tracking-wider text-ink/40 uppercase truncate">{eventLabel(e, gender)}</p>
                 <p className="text-sm font-semibold text-ink tabular-nums mt-0.5">{formatMark(mark, e)}</p>
               </div>
@@ -336,7 +336,7 @@ function EventSelect({
         onClick={() => setOpen(o => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className={`flex h-[46px] w-full items-center justify-between rounded-xl border bg-cream/60 px-4 text-sm text-ink transition-colors ${
+        className={`flex h-[46px] w-full items-center justify-between border bg-cream/60 px-4 text-sm text-ink transition-colors ${
           open ? 'border-ink/30 ring-2 ring-mint/40' : 'border-ink/[0.15] hover:border-ink/25'
         }`}
       >
@@ -352,15 +352,15 @@ function EventSelect({
       {open && (
         <div
           role="listbox"
-          className="dropdown-enter absolute z-40 mt-2 w-full rounded-xl border border-ink/[0.12] bg-paper shadow-[0_12px_32px_rgba(13,42,20,0.14)]"
+          className="dropdown-enter absolute z-40 mt-2 w-full border border-ink/[0.14] bg-paper"
         >
-          <div className="border-b border-ink/[0.08] p-2">
+          <div className="border-b border-ink/[0.14] p-2">
             <input
               ref={searchRef}
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Buscar prueba…"
-              className="h-9 w-full rounded-lg border border-ink/[0.12] bg-cream/50 px-3 text-sm text-ink placeholder:text-ink/30 focus:outline-none focus:ring-2 focus:ring-mint/40"
+              className="h-9 w-full border border-ink/[0.14] bg-cream/50 px-3 text-sm text-ink placeholder:text-ink/30 focus:outline-none focus:ring-2 focus:ring-mint/40"
             />
           </div>
           <div className="max-h-64 overflow-auto p-1.5">
@@ -381,7 +381,7 @@ function EventSelect({
                         role="option"
                         aria-selected={active}
                         onClick={() => pick(e.id)}
-                        className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors ${
+                        className={`flex w-full items-center justify-between px-3 py-2 text-sm transition-colors ${
                           active ? 'bg-mint/20 text-ink font-semibold' : 'text-ink/70 hover:bg-ink/[0.04] hover:text-ink'
                         }`}
                       >

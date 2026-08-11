@@ -30,18 +30,17 @@ export default function CalendarioPage() {
         <section className="mb-10">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <p className="label-mono text-ink/40 mb-2">Actualizado a diario · RFEA + federaciones</p>
-              <h1 className="font-brand text-4xl sm:text-5xl font-extrabold tracking-brand text-ink leading-none">
+              <div className="section-label">Actualizado a diario · RFEA + federaciones</div>
+              <h1 className="section-title text-ink">
                 Calendario
               </h1>
-              <p className="mt-3 text-sm text-ink/55 max-w-lg leading-relaxed">
+              <p className="mt-4 text-sm text-ink/55 max-w-lg leading-relaxed">
                 Competiciones del atletismo español —pasadas y por venir— con sus pruebas, inscripción,
                 reglamento y resultados. Se actualiza cada día desde la RFEA y las federaciones autonómicas.
                 Usa <span className="font-semibold text-ink/70">«Encuentra tu competición»</span> para filtrar por prueba y cercanía.
               </p>
             </div>
           </div>
-          <div className="mt-8 h-px bg-ink/[0.1]" />
         </section>
 
         {competiciones.length > 0 ? (
@@ -58,7 +57,7 @@ export default function CalendarioPage() {
 
 function EmptyState() {
   return (
-    <div className="flex min-h-[280px] flex-col items-center justify-center rounded-2xl border border-ink/[0.1] bg-cream/40 text-center p-12">
+    <div className="flex min-h-[280px] flex-col items-center justify-center border border-ink/[0.14] bg-cream/40 text-center p-12">
       <p className="font-brand text-xl font-bold text-ink/40">Calendario no disponible</p>
       <p className="mt-2 text-sm text-ink/30">El próximo despliegue cargará las competiciones desde la RFEA.</p>
     </div>

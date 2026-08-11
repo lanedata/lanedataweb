@@ -39,18 +39,17 @@ export default async function ArchivoPage() {
 
         {/* Header */}
         <section className="mb-10">
-          <p className="label-mono text-ink/40 mb-2">lanedata</p>
-          <h1 className="font-brand text-4xl sm:text-5xl font-extrabold tracking-brand text-ink leading-none">
+          <div className="section-label">lanedata · archivo</div>
+          <h1 className="section-title text-ink">
             Archivo
           </h1>
-          <p className="mt-3 text-sm text-ink/50">
+          <p className="mt-4 text-sm text-ink/50">
             {articles.length} {articles.length === 1 ? 'análisis publicado' : 'análisis publicados'} · busca y explora todo el archivo
           </p>
-          <div className="mt-8 h-px bg-ink/[0.1]" />
         </section>
 
         {articles.length === 0 ? (
-          <div className="flex min-h-[240px] items-center justify-center rounded-2xl border border-ink/[0.1] bg-cream/40 text-center p-12">
+          <div className="flex min-h-[240px] items-center justify-center border border-ink/[0.14] bg-cream/40 text-center p-12">
             <p className="font-brand text-xl font-bold text-ink/35">Aún no hay análisis publicados</p>
           </div>
         ) : (

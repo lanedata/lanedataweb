@@ -139,11 +139,11 @@ export default function LaneLabPage() {
       <main className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-16">
 
         <header className="mb-9">
-          <p className="label-mono text-ink/40 mb-2">lanedata · herramientas</p>
-          <h1 className="font-brand text-4xl sm:text-5xl font-extrabold tracking-brand text-ink leading-none">
+          <div className="section-label">lanedata · herramientas</div>
+          <h1 className="section-title text-ink">
             LaneLab
           </h1>
-          <p className="mt-3 text-sm text-ink/55 max-w-xl leading-relaxed">
+          <p className="mt-4 text-sm text-ink/55 max-w-xl leading-relaxed">
             Calculadoras gratuitas para atletas, entrenadores y aficionados: puntos World Athletics
             (aire libre y pista cubierta), ritmo de carrera, predictor de marcas, pruebas combinadas
             y categorías RFEA. Elige una herramienta.

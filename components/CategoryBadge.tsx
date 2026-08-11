@@ -16,7 +16,7 @@ export function CategoryBadge({ category, variant = 'mint' }: Props) {
 
   return (
     <span
-      className={`inline-block rounded-full px-2.5 py-0.5 label-mono text-[0.625rem] font-semibold ${styles[variant]}`}
+      className={`inline-block px-2.5 py-1 label-mono text-[0.625rem] font-semibold ${styles[variant]}`}
     >
       {categoryLabel(category)}
     </span>

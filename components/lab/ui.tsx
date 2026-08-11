@@ -5,7 +5,7 @@ import type { ReactNode } from 'react'
 export const MONO = 'font-mono text-[0.62rem] tracking-[0.18em] uppercase'
 
 export const inputCls =
-  'h-[46px] w-full rounded-xl border border-ink/[0.15] bg-cream/60 px-4 text-sm text-ink placeholder:text-ink/30 focus:outline-none focus:ring-2 focus:ring-mint/40 focus:border-ink/30 tabular-nums'
+  'h-[46px] w-full border border-ink/[0.15] bg-cream/60 px-4 text-sm text-ink placeholder:text-ink/30 focus:outline-none focus:ring-2 focus:ring-mint/40 focus:border-ink/30 tabular-nums'
 
 export function LabField({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -24,7 +24,7 @@ export function Segmented({
   onChange: (v: string) => void
 }) {
   return (
-    <div className="inline-flex rounded-full border border-ink/[0.12] bg-cream/60 p-1 w-full">
+    <div className="inline-flex border border-ink/[0.14] bg-cream/60 p-1 w-full">
       {options.map(o => {
         const active = value === o.v
         return (
@@ -32,8 +32,8 @@ export function Segmented({
             key={o.v}
             type="button"
             onClick={() => onChange(o.v)}
-            className={`flex-1 rounded-full px-3 py-1.5 font-mono text-[0.62rem] tracking-[0.14em] uppercase transition-colors duration-150 ${
-              active ? 'bg-ink text-cream shadow-[0_1px_4px_rgba(13,42,20,0.18)]' : 'text-ink/55 hover:text-ink'
+            className={`flex-1 px-3 py-1.5 font-mono text-[0.62rem] tracking-[0.14em] uppercase transition-colors duration-150 ${
+              active ? 'bg-ink text-cream' : 'text-ink/55 hover:text-ink'
             }`}
           >
             {o.l}

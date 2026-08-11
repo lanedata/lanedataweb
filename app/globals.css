@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 /* ─── Fonts ─────────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+/* Se cargan con next/font en app/layout.tsx y llegan aquí como
+   --font-brand (Bricolage Grotesque) y --font-mono (IBM Plex Mono).
+   No pongas un @import de Google Fonts en este fichero: al ir después de
+   las directivas @tailwind, el navegador lo descarta y no carga nada. */
 
 /* ─── CSS custom properties ─────────────────────────────────────────────── */
 :root {
@@ -11,7 +14,7 @@
   --mint:       #9FE88D;
   --cream:      #F4F1EA;
   --paper:      #FBFAF6;
-  --rule:       rgba(13, 42, 20, 0.12);
+  --rule:       rgba(13, 42, 20, 0.14);
 
   /* Easing curves — Emil Kowalski / animations.dev */
   --ease-out:     cubic-bezier(0.23, 1, 0.32, 1);
@@ -30,17 +33,38 @@ html {
 body {
   background-color: var(--paper);
   color: var(--ink);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-brand), system-ui, sans-serif;
   min-height: 100dvh;
 }
 
 /* ─── Reusable label style ───────────────────────────────────────────────── */
 .label-mono {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.6875rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(13, 42, 20, 0.55);
+}
+
+/* ─── Encabezado de sección editorial ────────────────────────────────────── */
+.section-label {
+  display: block;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(13, 42, 20, 0.5);
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(13, 42, 20, 0.14);
+}
+
+.section-title {
+  font-family: var(--font-brand), sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  font-size: clamp(30px, 4.5vw, 48px);
+  margin-top: 1.25rem;
 }
 
 /* ─── Mobile menu enter animation ───────────────────────────────────────── */
@@ -122,7 +146,7 @@ body {
 .article-body h4,
 .article-body h5,
 .article-body h6 {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: var(--font-brand), sans-serif;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -166,18 +190,18 @@ body {
 }
 
 .article-body code {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.875em;
   background: rgba(13, 42, 20, 0.07);
   padding: 0.1em 0.35em;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .article-body pre {
   background: var(--ink);
   color: var(--mint);
   padding: 1.25rem 1.5rem;
-  border-radius: 12px;
+  border-radius: 0;
   overflow-x: auto;
   margin-bottom: 1.75rem;
   font-size: 0.875rem;
@@ -192,11 +216,11 @@ body {
 .article-body img {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: 0;
 }
 .article-body figure { margin: 2rem 0; }
 .article-body figcaption {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.75rem;
   letter-spacing: 0.06em;
   color: rgba(13, 42, 20, 0.5);
@@ -211,7 +235,7 @@ body {
   font-size: 0.9375rem;
 }
 .article-body th {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -237,12 +261,12 @@ body {
   background: var(--mint);
   color: var(--ink);
   padding: 0 0.15em;
-  border-radius: 2px;
+  border-radius: 0;
 }
 
 .article-body details {
   border: 1px solid var(--rule);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 0.875rem 1.125rem;
   margin-bottom: 1.5rem;
 }
@@ -267,12 +291,12 @@ body {
 .article-body .ld-claves {
   background: var(--cream);
   border-left: 3px solid var(--mint);
-  border-radius: 0 12px 12px 0;
+  border-radius: 0;
   padding: 1.125rem 1.5rem;
   margin: 0 0 2.25rem;
 }
 .article-body .ld-claves > .ld-claves-titulo {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.6875rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
@@ -290,7 +314,7 @@ body {
   gap: 1px;
   background: var(--rule);
   border: 1px solid var(--rule);
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
   margin: 2rem 0;
 }
@@ -299,7 +323,7 @@ body {
   padding: 1.125rem 1.25rem;
 }
 .article-body .ld-dato .ld-dato-cifra {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: var(--font-brand), sans-serif;
   font-weight: 800;
   font-size: 1.875rem;
   letter-spacing: -0.03em;
@@ -307,7 +331,7 @@ body {
   color: var(--ink);
 }
 .article-body .ld-dato .ld-dato-label {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -324,7 +348,7 @@ body {
   font-style: normal;
 }
 .article-body .ld-cita p {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: var(--font-brand), sans-serif;
   font-weight: 700;
   font-size: 1.5rem;
   line-height: 1.3;
@@ -334,7 +358,7 @@ body {
 }
 .article-body .ld-cita p mark { background: var(--mint); padding: 0 0.12em; }
 .article-body .ld-cita cite {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.6875rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -348,13 +372,13 @@ body {
   grid-template-columns: max-content 1fr;
   gap: 0.5rem 1.5rem;
   background: var(--cream);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 1.125rem 1.5rem;
   margin: 0 0 2rem;
   font-size: 0.9375rem;
 }
 .article-body .ld-ficha dt {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -373,7 +397,7 @@ body {
   margin-top: 2.5rem;
 }
 .article-body .ld-nota strong {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.625rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -386,7 +410,7 @@ body {
   align-items: center;
   gap: 0.75rem;
   margin-top: 2.5rem;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono), monospace;
   font-size: 0.6875rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -397,5 +421,5 @@ body {
   width: 2rem;
   height: 3px;
   background: var(--mint);
-  border-radius: 2px;
+  border-radius: 0;
 }

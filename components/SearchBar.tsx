@@ -39,12 +39,12 @@ export function SearchBar({ defaultValue = '', autoFocus = false }: Props) {
         onChange={(e) => setValue(e.target.value)}
         placeholder="Buscar análisis por…"
         autoFocus={autoFocus}
-        className="w-full rounded-full border border-ink/[0.15] bg-cream/60 px-5 py-3 pr-12 text-sm text-ink placeholder:text-ink/40 focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40 transition-colors"
+        className="w-full border border-ink/[0.14] bg-cream/60 px-5 py-3 pr-14 text-sm text-ink placeholder:text-ink/40 focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40 transition-colors"
       />
       <button
         type="submit"
         aria-label="Buscar"
-        className="absolute right-3 flex h-8 w-8 items-center justify-center rounded-full bg-ink text-cream transition-transform hover:scale-105"
+        className="absolute right-2 flex h-9 w-9 items-center justify-center bg-ink text-cream transition-colors duration-150 hover:bg-mint hover:text-ink"
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" strokeWidth="1.4"/>

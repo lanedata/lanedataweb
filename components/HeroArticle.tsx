@@ -12,7 +12,7 @@ export function HeroArticle({ article }: Props) {
   const href = `/articulo/${article.slug}`
 
   return (
-    <article className="group relative overflow-hidden rounded-2xl bg-ink">
+    <article className="group relative overflow-hidden bg-ink">
       {/* Background image */}
       {article.cover_image_url ? (
         <div className="absolute inset-0">
@@ -20,7 +20,7 @@ export function HeroArticle({ article }: Props) {
             src={article.cover_image_url}
             alt=""
             fill
-            className="object-cover opacity-30 transition-opacity duration-500 group-hover:opacity-35"
+            className="object-cover opacity-30"
             sizes="(max-width: 768px) 100vw, 1200px"
             priority
           />
@@ -45,7 +45,7 @@ export function HeroArticle({ article }: Props) {
 
         {/* Title */}
         <Link href={href} className="mt-8 block">
-          <h2 className="font-brand text-3xl font-extrabold tracking-brand text-cream sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.1]">
+          <h2 className="font-brand text-3xl font-extrabold tracking-[-0.045em] text-cream sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.02]">
             {article.title}
           </h2>
         </Link>
@@ -70,7 +70,7 @@ export function HeroArticle({ article }: Props) {
 
           <Link
             href={href}
-            className="inline-flex items-center gap-2 rounded-full bg-mint px-5 py-2.5 font-brand text-sm font-bold tracking-tight text-ink transition-transform duration-150 hover:-translate-y-0.5 active:scale-[0.97]"
+            className="inline-flex items-center gap-2 bg-mint px-6 py-3 font-brand text-sm font-bold tracking-tight text-ink transition-colors duration-150 hover:bg-cream"
           >
             Leer análisis
             <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">

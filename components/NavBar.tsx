@@ -55,7 +55,7 @@ export function NavBar() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink/[0.1] bg-paper/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-ink/[0.14] bg-paper/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
 
         {/* Logo */}
@@ -80,7 +80,7 @@ export function NavBar() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Ranking: Mundo Atletismo"
-            className="inline-flex items-center gap-1.5 rounded-full border border-ink/[0.15] bg-mint/20 px-2.5 sm:px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
+            className="inline-flex items-center gap-1.5 border border-ink/[0.15] bg-mint/20 px-2.5 sm:px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
           >
             <TrackIcon size={13} />
             <span className="sm:hidden">MA: Ranking</span>
@@ -93,14 +93,14 @@ export function NavBar() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram de lanedata"
-            className="flex h-9 w-9 items-center justify-center rounded-full text-ink/45 hover:text-ink hover:bg-ink/[0.05] transition-colors"
+            className="flex h-9 w-9 items-center justify-center text-ink/45 hover:text-ink hover:bg-ink/[0.05] transition-colors"
           >
             <InstagramIcon />
           </a>
 
           {/* Hamburger */}
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-full text-ink hover:bg-ink/[0.05] transition-colors"
+            className="flex h-9 w-9 items-center justify-center text-ink hover:bg-ink/[0.05] transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
             aria-expanded={menuOpen}
@@ -125,7 +125,7 @@ export function NavBar() {
 
       {/* ── Menú desplegable editorial ─────────────────────────────────────── */}
       {menuOpen && (
-        <div className="mobile-menu-enter border-t border-ink/[0.1] bg-paper">
+        <div className="mobile-menu-enter border-t border-ink/[0.14] bg-paper">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 py-7 sm:py-9">
             <nav aria-label="Navegación principal">
               {NAV_LINKS.map((link, i) => {
@@ -136,7 +136,7 @@ export function NavBar() {
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
                     style={{ animationDelay: `${i * 45}ms` }}
-                    className={`menu-item group flex items-center gap-4 sm:gap-6 border-b border-ink/[0.07] py-3.5 sm:py-4 transition-colors ${
+                    className={`menu-item group flex items-center gap-4 sm:gap-6 border-b border-ink/[0.14] py-3.5 sm:py-4 transition-colors ${
                       active ? 'text-ink' : 'text-ink/70 hover:text-ink'
                     }`}
                   >
@@ -154,7 +154,7 @@ export function NavBar() {
 
                     {/* Punto activo / flecha */}
                     {active ? (
-                      <span className="ml-auto h-2 w-2 rounded-full bg-mint shrink-0" aria-hidden="true" />
+                      <span className="ml-auto h-2 w-2 bg-mint shrink-0" aria-hidden="true" />
                     ) : (
                       <svg width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true"
                         className="ml-auto shrink-0 text-ink/20 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200">
@@ -175,7 +175,7 @@ export function NavBar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setMenuOpen(false)}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-ink/[0.15] bg-mint/20 px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
+                  className="inline-flex items-center gap-1.5 border border-ink/[0.15] bg-mint/20 px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
                 >
                   <TrackIcon size={13} />
                   Mundo Atletismo
@@ -186,7 +186,7 @@ export function NavBar() {
                   rel="noopener noreferrer"
                   onClick={() => setMenuOpen(false)}
                   aria-label="Instagram de lanedata"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/[0.15] text-ink/55 hover:text-ink hover:border-ink/30 transition-colors"
+                  className="flex h-9 w-9 items-center justify-center border border-ink/[0.15] text-ink/55 hover:text-ink hover:border-ink/30 transition-colors"
                 >
                   <InstagramIcon size={16} />
                 </a>

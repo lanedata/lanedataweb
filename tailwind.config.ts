@@ -15,9 +15,9 @@ const config: Config = {
         paper: '#FBFAF6',
       },
       fontFamily: {
-        brand: ['Bricolage Grotesque', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        mono: ['IBM Plex Mono', 'ui-monospace', 'monospace'],
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        brand: ['var(--font-brand)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
+        sans: ['var(--font-brand)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       letterSpacing: {
         brand: '-0.04em',

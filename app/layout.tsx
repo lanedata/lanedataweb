@@ -1,6 +1,24 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
+import { Bricolage_Grotesque, IBM_Plex_Mono } from 'next/font/google'
 import './globals.css'
+
+// Se auto-alojan en el build: sin petición a Google en runtime y sin el
+// @import dentro de globals.css, que el navegador descartaba por ir después
+// de las reglas de Tailwind (un @import solo vale al principio de la hoja).
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  display: 'swap',
+  axes: ['opsz'],
+  variable: '--font-brand',
+})
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  display: 'swap',
+  variable: '--font-mono',
+})
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'  // custom domain
 
@@ -99,7 +117,7 @@ const GA_ID = 'G-S0941EEQ3L'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="es" className={`${bricolage.variable} ${plexMono.variable}`}>
       <body>
         {children}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />

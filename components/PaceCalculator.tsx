@@ -59,8 +59,8 @@ export function PaceCalculator() {
   }, [distance, mode, timeInput, paceInput])
 
   return (
-    <div className="rounded-2xl border border-ink/[0.1] bg-paper">
-      <div className="p-5 sm:p-7 flex flex-col gap-5 rounded-t-2xl">
+    <div className="border border-ink/[0.14] bg-paper">
+      <div className="p-5 sm:p-7 flex flex-col gap-5">
         <Segmented
           options={[{ v: 'time', l: 'Tengo el tiempo' }, { v: 'pace', l: 'Tengo el ritmo' }]}
           value={mode}
@@ -107,7 +107,7 @@ export function PaceCalculator() {
       </div>
 
       {/* Result */}
-      <div className={`border-t border-ink/[0.08] bg-ink px-5 sm:px-7 py-6 ${calc ? '' : 'rounded-b-2xl'}`}>
+      <div className="border-t border-ink/[0.14] bg-ink px-5 sm:px-7 py-6">
         {calc ? (
           <div className="flex flex-wrap gap-x-10 gap-y-5">
             <Metric primary value={formatPace(calc.secPerKm)} label="min / km" />
@@ -123,11 +123,11 @@ export function PaceCalculator() {
 
       {/* Splits */}
       {calc && calc.splits.length > 1 && (
-        <div className="border-t border-ink/[0.08] px-5 sm:px-7 py-5 rounded-b-2xl">
+        <div className="border-t border-ink/[0.14] px-5 sm:px-7 py-5">
           <p className={`${MONO} text-ink/40 mb-3`}>Parciales acumulados</p>
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
             {calc.splits.map(s => (
-              <div key={s.km} className="rounded-xl border border-ink/[0.08] bg-cream/40 px-3 py-2">
+              <div key={s.km} className="border border-ink/[0.14] bg-cream/40 px-3 py-2">
                 <p className="font-mono text-[0.56rem] tracking-wider text-ink/40 uppercase">{s.km % 1 === 0 ? `${s.km} km` : `${s.km.toFixed(1)} km`}</p>
                 <p className="text-sm font-semibold text-ink tabular-nums mt-0.5">{s.t}</p>
               </div>

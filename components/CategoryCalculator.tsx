@@ -48,7 +48,7 @@ export function CategoryCalculator() {
   const prefix = sexo === 'M' ? 'M' : 'F'
 
   return (
-    <div className="rounded-2xl border border-ink/[0.1] bg-paper">
+    <div className="border border-ink/[0.14] bg-paper">
       <div className="p-5 sm:p-7 flex flex-col gap-4">
         <div className="grid gap-3 sm:grid-cols-3">
           <LabField label="Fecha de nacimiento">
@@ -79,7 +79,7 @@ export function CategoryCalculator() {
       </div>
 
       {/* Resultado */}
-      <div className={`border-t border-ink/[0.08] bg-ink px-5 sm:px-7 py-6 ${calc ? '' : 'rounded-b-2xl'}`}>
+      <div className="border-t border-ink/[0.14] bg-ink px-5 sm:px-7 py-6">
         {calc ? (
           <div className="flex flex-wrap gap-x-10 gap-y-5 items-end">
             <Metric primary value={calc.cat.label} label={`categoría RFEA · temporada ${season}`} />
@@ -106,7 +106,7 @@ export function CategoryCalculator() {
         <>
           {/* Cambio de grupo máster a mitad de temporada */}
           {calc.master.despues && calc.master.despues !== calc.master.antes && (
-            <div className="border-t border-ink/[0.08] bg-mint/[0.09] px-5 sm:px-7 py-4">
+            <div className="border-t border-ink/[0.14] bg-mint/[0.09] px-5 sm:px-7 py-4">
               <p className="text-sm text-ink/70">
                 {calc.master.antes ? (
                   <>Pasas de <strong className="font-semibold text-ink">{prefix}{calc.master.antes}</strong> a </>
@@ -122,7 +122,7 @@ export function CategoryCalculator() {
           )}
 
           {/* Trayectoria */}
-          <div className="border-t border-ink/[0.08] px-5 sm:px-7 py-5 rounded-b-2xl">
+          <div className="border-t border-ink/[0.14] px-5 sm:px-7 py-5">
             <p className={`${MONO} text-ink/40 mb-3`}>Tu recorrido por categorías · nacido en {calc.birthYear}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
               {calc.tray.map(({ cat, desde, hasta }) => {
@@ -131,12 +131,12 @@ export function CategoryCalculator() {
                 return (
                   <div
                     key={cat.id}
-                    className={`rounded-xl border px-3 py-2.5 transition-colors ${
+                    className={`border px-3 py-2.5 transition-colors ${
                       on
                         ? 'border-ink bg-ink'
                         : past
                           ? 'border-ink/[0.06] bg-cream/25 opacity-55'
-                          : 'border-ink/[0.08] bg-cream/40'
+                          : 'border-ink/[0.14] bg-cream/40'
                     }`}
                   >
                     <p className={`font-mono text-[0.56rem] tracking-wider uppercase ${on ? 'text-mint' : 'text-ink/40'}`}>

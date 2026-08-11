@@ -57,7 +57,7 @@ export function TableOfContents({ html }: Props) {
   return (
     <nav aria-label="Tabla de contenidos" className="sticky top-20 hidden xl:block">
       <p className="label-mono mb-3 text-ink/40">Contenidos</p>
-      <ul className="space-y-1.5 border-l border-ink/[0.1]">
+      <ul className="space-y-1.5 border-l border-ink/[0.14]">
         {headings.map(({ id, text, level }) => (
           <li key={id}>
             <a

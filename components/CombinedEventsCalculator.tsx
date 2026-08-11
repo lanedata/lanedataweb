@@ -54,7 +54,7 @@ export function CombinedEventsCalculator() {
   }
 
   return (
-    <div className="rounded-2xl border border-ink/[0.1] bg-paper">
+    <div className="border border-ink/[0.14] bg-paper">
       <div className="p-5 sm:p-7 flex flex-col gap-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <Segmented
@@ -78,7 +78,7 @@ export function CombinedEventsCalculator() {
 
         <div className="grid gap-2 sm:grid-cols-2">
           {rows.map(({ ev, pts }, i) => (
-            <div key={ev.id} className="flex items-center gap-3 rounded-xl border border-ink/[0.08] bg-cream/30 px-3 py-2">
+            <div key={ev.id} className="flex items-center gap-3 border border-ink/[0.14] bg-cream/30 px-3 py-2">
               <span className="font-mono text-[0.6rem] text-ink/30 tabular-nums w-5 shrink-0">{String(i + 1).padStart(2, '0')}</span>
               <div className="min-w-0 flex-1">
                 <p className="text-[0.8rem] font-semibold text-ink leading-tight truncate">{ev.label}</p>
@@ -89,7 +89,7 @@ export function CombinedEventsCalculator() {
                 onChange={e => setMarks(prev => ({ ...prev, [ev.id]: e.target.value }))}
                 placeholder={ev.ph}
                 inputMode="decimal"
-                className="h-9 w-[5.5rem] shrink-0 rounded-lg border border-ink/[0.15] bg-paper px-2.5 text-sm text-ink text-right placeholder:text-ink/25 focus:outline-none focus:ring-2 focus:ring-mint/40 tabular-nums"
+                className="h-9 w-[5.5rem] shrink-0 border border-ink/[0.15] bg-paper px-2.5 text-sm text-ink text-right placeholder:text-ink/25 focus:outline-none focus:ring-2 focus:ring-mint/40 tabular-nums"
               />
               <span className="w-12 shrink-0 text-right font-brand text-base font-bold text-ink tabular-nums">
                 {pts ?? '—'}
@@ -100,7 +100,7 @@ export function CombinedEventsCalculator() {
       </div>
 
       {/* Total */}
-      <div className={`border-t border-ink/[0.08] bg-ink px-5 sm:px-7 py-6 flex items-baseline justify-between gap-4 ${waPoints ? '' : 'rounded-b-2xl'}`}>
+      <div className="border-t border-ink/[0.14] bg-ink px-5 sm:px-7 py-6 flex items-baseline justify-between gap-4">
         <span className={`${MONO} text-cream/45`}>Puntuación total</span>
         <span className="font-brand text-5xl sm:text-6xl font-extrabold tracking-brand text-mint leading-none tabular-nums">
           {total}
@@ -108,7 +108,7 @@ export function CombinedEventsCalculator() {
       </div>
 
       {waPoints && (
-        <div className="border-t border-ink/[0.08] bg-mint/[0.09] px-5 sm:px-7 py-4 rounded-b-2xl">
+        <div className="border-t border-ink/[0.14] bg-mint/[0.09] px-5 sm:px-7 py-4">
           <p className="text-sm text-ink/70">
             Esos {total} puntos de {discipline.label.toLowerCase()} equivalen a{' '}
             <strong className="font-semibold text-ink tabular-nums">{waPoints} puntos World Athletics</strong>,

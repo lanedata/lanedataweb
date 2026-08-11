@@ -23,7 +23,7 @@ export function ShareButton({ title, url }: Props) {
   return (
     <button
       onClick={share}
-      className="inline-flex items-center gap-2 rounded-full border border-ink/[0.15] px-4 py-2 label-mono text-ink/60 transition-colors hover:border-ink/30 hover:text-ink"
+      className="inline-flex items-center gap-2 border border-ink/[0.14] px-4 py-2.5 label-mono text-ink/60 transition-colors duration-150 hover:bg-ink hover:text-mint hover:border-ink"
     >
       {copied ? (
         <>

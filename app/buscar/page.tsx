@@ -46,13 +46,11 @@ function SearchResults() {
     <main className="mx-auto max-w-6xl px-4 pb-20 sm:px-6">
       {/* Header */}
       <section className="py-10 sm:py-14">
-        <div className="flex flex-col gap-2 mb-8">
-          <h1 className="font-brand text-4xl font-extrabold tracking-brand text-ink">
+        <div className="mb-8">
+          <div className="section-label">Archivo completo de análisis de atletismo español</div>
+          <h1 className="section-title text-ink">
             Buscar
           </h1>
-          <p className="label-mono text-ink/40">
-            Archivo completo de análisis de atletismo español
-          </p>
         </div>
         <SearchBar defaultValue={query} autoFocus={!query} />
       </section>
@@ -67,13 +65,13 @@ function SearchResults() {
       {!loading && searched && (
         <>
           <div className="mb-6 flex items-center gap-3">
-            <div className="h-px flex-1 bg-ink/[0.1]" />
+            <div className="h-px flex-1 bg-ink/[0.14]" />
             <span className="label-mono text-ink/40">
               {articles.length === 0
                 ? `Sin resultados para "${query}"`
                 : `${articles.length} resultado${articles.length !== 1 ? 's' : ''} para "${query}"`}
             </span>
-            <div className="h-px flex-1 bg-ink/[0.1]" />
+            <div className="h-px flex-1 bg-ink/[0.14]" />
           </div>
 
           {articles.length > 0 ? (
