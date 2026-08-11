@@ -6,7 +6,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-12",
     "fecha_fin": "2026-06-12",
-    "lugar": "Granada - Estadio de la juventud",
+    "lugar": "Granada, Estadio de la juventud, Granada",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -33,7 +33,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-12",
     "fecha_fin": "2026-06-12",
-    "lugar": "Cádiz",
+    "lugar": "Cádiz, Cádiz",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -249,7 +249,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-13",
     "fecha_fin": "2026-06-13",
-    "lugar": "Málaga",
+    "lugar": "Málaga, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -330,7 +330,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-13",
     "fecha_fin": "2026-06-13",
-    "lugar": "Huelva",
+    "lugar": "Huelva, Huelva",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -438,7 +438,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-13",
     "fecha_fin": "2026-06-13",
-    "lugar": "Marmolejo - Jaén",
+    "lugar": "Marmolejo, Jaén",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -465,7 +465,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-13",
     "fecha_fin": "2026-06-13",
-    "lugar": "San Fernando - Cádiz",
+    "lugar": "San Fernando, Cádiz",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -546,7 +546,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-14",
     "fecha_fin": "2026-06-14",
-    "lugar": "PISTA ANEXA ESTADIO MEDITERRÁNEO - Almería",
+    "lugar": "PISTA ANEXA ESTADIO MEDITERRÁNEO, Almería",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -600,7 +600,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-18",
     "fecha_fin": "2026-06-18",
-    "lugar": "Málaga - Estadio Ciudad de Málaga",
+    "lugar": "Málaga, Estadio Ciudad de Málaga, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -654,7 +654,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-19",
     "fecha_fin": "2026-06-19",
-    "lugar": "Jerez de la Frontera, Cádiz - Pista Chapín",
+    "lugar": "Jerez de la Frontera, Pista Chapín, Cádiz",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -816,7 +816,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-20",
     "fecha_fin": "2026-06-20",
-    "lugar": "Sevilla - Cartuja, Sevilla - Anexo La Cartuja",
+    "lugar": "Sevilla - Cartuja, Anexo La Cartuja, Sevilla",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -924,7 +924,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-21",
     "fecha_fin": "2026-06-21",
-    "lugar": "Sevilla - San Pablo, Sevilla - San Pablo",
+    "lugar": "Sevilla - San Pablo, San Pablo, Sevilla",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1221,7 +1221,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-27",
     "fecha_fin": "2026-06-27",
-    "lugar": "Logroño",
+    "lugar": "Logroño, Logroño",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1248,7 +1248,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-28",
     "fecha_fin": "2026-06-28",
-    "lugar": "Logroño",
+    "lugar": "Logroño, Logroño",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1275,7 +1275,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-06-28",
     "fecha_fin": "2026-06-28",
-    "lugar": "Jódar - Jaén",
+    "lugar": "Jódar, Jaén",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1383,7 +1383,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-04",
     "fecha_fin": "2026-07-05",
-    "lugar": "Castellón",
+    "lugar": "Castellón, Castellón",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1545,7 +1545,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-10",
     "fecha_fin": "2026-07-10",
-    "lugar": "Granada - Pista Atletismo María Pérez",
+    "lugar": "Pista Atletismo María Pérez, Granada",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1707,7 +1707,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-11",
     "fecha_fin": "2026-07-11",
-    "lugar": "Jaén - La salobreja",
+    "lugar": "La salobreja, Jaén",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1815,7 +1815,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-17",
     "fecha_fin": "2026-07-17",
-    "lugar": "Madrid",
+    "lugar": "Madrid, Madrid",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -1950,7 +1950,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-18",
     "fecha_fin": "2026-07-18",
-    "lugar": "Cártama - Málaga",
+    "lugar": "Cártama, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2004,7 +2004,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-19",
     "fecha_fin": "2026-07-19",
-    "lugar": "Vélez-Málaga, Málaga - Polideportivo Fernando Ruiz Hierro",
+    "lugar": "Polideportivo Fernando Ruiz Hierro, Vélez-Málaga, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2058,7 +2058,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-07-24",
     "fecha_fin": "2026-07-26",
-    "lugar": "Málaga - Estadio Ciudad de Málaga",
+    "lugar": "Estadio Ciudad de Málaga, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2247,7 +2247,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-02",
     "fecha_fin": "2026-08-02",
-    "lugar": "Bedmar - Jaén",
+    "lugar": "Bedmar, Jaén",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2274,7 +2274,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-04",
     "fecha_fin": "2026-08-09",
-    "lugar": "Eugene - Estados Unidos",
+    "lugar": "Eugene, Estados Unidos",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2301,7 +2301,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-04",
     "fecha_fin": "2026-08-04",
-    "lugar": "Córdoba - Aguilar de la Frontera",
+    "lugar": "Aguilar de la Frontera, Córdoba",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2409,7 +2409,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-08",
     "fecha_fin": "2026-08-08",
-    "lugar": "Martos - Jaén",
+    "lugar": "Martos, Jaén",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2463,7 +2463,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-08-09",
     "fecha_fin": "2026-08-09",
-    "lugar": "Granada - Granada",
+    "lugar": "Granada, Granada",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2895,7 +2895,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-09-04",
     "fecha_fin": "2026-09-04",
-    "lugar": "Málaga - Nerja",
+    "lugar": "Nerja, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3246,7 +3246,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-09-19",
     "fecha_fin": "2026-09-19",
-    "lugar": "Cádiz - Palmones",
+    "lugar": "Palmones, Cádiz",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3516,7 +3516,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-09-26",
     "fecha_fin": "2026-09-26",
-    "lugar": "Cordoba - El Fontanar",
+    "lugar": "Cordoba, El Fontanar, Cordoba",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3543,7 +3543,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-09-26",
     "fecha_fin": "2026-09-26",
-    "lugar": "Cordoba - El Fontanar",
+    "lugar": "El Fontanar, Cordoba",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3597,7 +3597,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-09-26",
     "fecha_fin": "2026-09-26",
-    "lugar": "Almería",
+    "lugar": "Almería, Almería",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -3705,7 +3705,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-09-27",
     "fecha_fin": "2026-09-27",
-    "lugar": "Cádiz",
+    "lugar": "Cádiz, Cádiz",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4056,7 +4056,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-10",
     "fecha_fin": "2026-10-11",
-    "lugar": "Varias sedes",
+    "lugar": "Varias sedes, Varias sedes",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4083,7 +4083,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-10",
     "fecha_fin": "2026-10-10",
-    "lugar": "Balanegra - Almería",
+    "lugar": "Balanegra, Almería",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4110,7 +4110,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-10",
     "fecha_fin": "2026-10-10",
-    "lugar": "Málaga - Carranque",
+    "lugar": "Málaga, Carranque, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4434,7 +4434,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-17",
     "fecha_fin": "2026-10-17",
-    "lugar": "Cádiz",
+    "lugar": "Cádiz, Cádiz",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4677,7 +4677,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-24",
     "fecha_fin": "2026-10-24",
-    "lugar": "A designar",
+    "lugar": "A designar, A designar",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4704,7 +4704,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-24",
     "fecha_fin": "2026-10-25",
-    "lugar": "Varias sedes",
+    "lugar": "Varias sedes, Varias sedes",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -4866,7 +4866,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-25",
     "fecha_fin": "2026-10-25",
-    "lugar": "A designar",
+    "lugar": "A designar, A designar",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5028,7 +5028,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-10-31",
     "fecha_fin": "2026-10-31",
-    "lugar": "Málaga",
+    "lugar": "Málaga, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5109,7 +5109,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-01",
     "fecha_fin": "2026-11-01",
-    "lugar": "Huelva",
+    "lugar": "Huelva, Huelva",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5136,7 +5136,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-02",
     "fecha_fin": "2026-11-02",
-    "lugar": "Nerja - Málaga",
+    "lugar": "Nerja, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5325,7 +5325,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-14",
     "fecha_fin": "2026-11-14",
-    "lugar": "Málaga",
+    "lugar": "Málaga, Málaga",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5676,7 +5676,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-22",
     "fecha_fin": "2026-11-22",
-    "lugar": "A designar",
+    "lugar": "A designar, A designar",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5757,7 +5757,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-22",
     "fecha_fin": "2026-11-22",
-    "lugar": "Almería",
+    "lugar": "Almería, Almería",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -5865,7 +5865,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-11-28",
     "fecha_fin": "2026-11-29",
-    "lugar": "A designar",
+    "lugar": "A designar, A designar",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6000,7 +6000,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-12-05",
     "fecha_fin": "2026-12-05",
-    "lugar": "A designar",
+    "lugar": "A designar, A designar",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6297,7 +6297,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-12-13",
     "fecha_fin": "2026-12-13",
-    "lugar": "A designar",
+    "lugar": "A designar, A designar",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -6378,7 +6378,7 @@
     "disciplina": null,
     "fecha_inicio": "2026-12-20",
     "fecha_fin": "2026-12-20",
-    "lugar": "A designar",
+    "lugar": "A designar, A designar",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
