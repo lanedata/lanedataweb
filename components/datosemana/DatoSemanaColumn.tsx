@@ -4,9 +4,10 @@
 // /public/dato-semana.csv, elige el dato de la semana en curso (visible desde
 // el miércoles) y lo pinta en la estética editorial de lanedata.
 //
-// El bloque se adapta a cualquier tipo de dato: si hay un valor destacado se
-// muestra en grande; si hay foto, aparece a un lado; si no, el titular ocupa
-// todo el ancho.
+// Tratamiento deliberadamente ligero: es una columna recurrente, no un titular.
+// Fondo crema con borde recto (reserva la tinta para el hero del artículo), el
+// año como textura recortada y la menta sólo como acento en el dato destacado.
+// Se adapta a cualquier tipo de dato: el valor grande sólo aparece si existe.
 
 import { useEffect, useState } from 'react'
 import { parseCsv, pickActive } from '@/lib/datosemana/csv'
@@ -33,69 +34,63 @@ export function DatoSemanaColumn({ csvUrl = CSV_URL }: { csvUrl?: string }) {
   }, [csvUrl])
 
   if (state === 'loading') {
-    return (
-      <div className="border border-ink/[0.14] bg-cream/40 p-8 min-h-[220px] animate-pulse" aria-hidden="true" />
-    )
+    return <div className="border border-ink/[0.14] bg-cream/50 h-[160px] animate-pulse" aria-hidden="true" />
   }
   if (state === 'empty' || !dato) return null
 
   return (
-    <article className="relative overflow-hidden border border-ink/[0.14] bg-ink text-cream">
-      {/* Año como marca de agua tenue */}
+    <article className="relative overflow-hidden border border-ink/[0.14] bg-cream/50">
+      {/* Año como textura recortada (no se sale: el contenedor recorta) */}
       {dato.anio && (
         <span
           aria-hidden="true"
-          className="pointer-events-none absolute -right-4 -top-10 select-none font-brand font-extrabold leading-none text-mint/[0.07]"
-          style={{ fontSize: '13rem', letterSpacing: '-0.05em' }}
+          className="pointer-events-none absolute right-4 bottom-[-2.5rem] select-none font-brand font-extrabold leading-none text-ink/[0.05]"
+          style={{ fontSize: '9rem', letterSpacing: '-0.05em' }}
         >
           {dato.anio}
         </span>
       )}
 
-      <div className="relative grid gap-8 p-7 sm:p-10 md:grid-cols-[1fr_auto] md:items-center">
-        <div>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="label-mono text-mint">{dato.kicker}</span>
+      <div className="relative flex flex-col gap-6 p-6 sm:p-8 md:flex-row md:items-center md:justify-between md:gap-10">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="label-mono text-ink/55">{dato.kicker}</span>
             {dato.categoria && (
-              <span className="border border-cream/25 px-2.5 py-1 label-mono text-cream/70">
-                {dato.categoria}
-              </span>
+              <span className="border border-ink/20 px-2 py-0.5 label-mono text-ink/55">{dato.categoria}</span>
             )}
           </div>
 
           <h3
-            className="mt-5 font-brand font-extrabold leading-[1.05] tracking-brand text-cream"
-            style={{ fontSize: 'clamp(24px, 3.4vw, 40px)' }}
+            className="mt-3.5 font-brand font-extrabold leading-[1.08] tracking-brand text-ink"
+            style={{ fontSize: 'clamp(20px, 2.6vw, 30px)' }}
           >
             {dato.titular}
           </h3>
 
           {dato.contexto && (
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-cream/65">{dato.contexto}</p>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink/60">{dato.contexto}</p>
           )}
 
-          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2">
-            {dato.fechaHistorica && (
-              <span className="label-mono text-cream/45">{dato.fechaHistorica}</span>
-            )}
-            <span className="inline-flex items-center gap-2 label-mono text-cream/45">
-              <TrackIcon size={13} />
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            {dato.fechaHistorica && <span className="label-mono text-ink/40">{dato.fechaHistorica}</span>}
+            <span className="inline-flex items-center gap-1.5 label-mono text-ink/40">
+              <TrackIcon size={12} />
               vía {dato.fuente}
             </span>
           </div>
         </div>
 
-        {/* Valor destacado, si lo hay */}
+        {/* Dato destacado: único acento menta, compacto y sin desbordar */}
         {dato.destacado && (
-          <div className="border-t border-cream/15 pt-6 md:border-l md:border-t-0 md:pl-10 md:pt-0">
+          <div className="shrink-0 self-start bg-mint/25 px-5 py-4 md:self-auto md:text-right">
             <div
-              className="font-brand font-extrabold leading-none tracking-brand text-mint"
-              style={{ fontSize: 'clamp(52px, 8vw, 92px)' }}
+              className="font-brand font-extrabold leading-none tracking-brand text-ink whitespace-nowrap"
+              style={{ fontSize: 'clamp(38px, 5vw, 58px)' }}
             >
               {dato.destacado}
             </div>
             {dato.destacadoLabel && (
-              <div className="mt-3 label-mono text-cream/55">{dato.destacadoLabel}</div>
+              <div className="mt-2 label-mono text-ink/60">{dato.destacadoLabel}</div>
             )}
           </div>
         )}

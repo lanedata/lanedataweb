@@ -111,26 +111,26 @@ function Sandbox() {
       </div>
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
-        {/* ── El dato de la semana ── */}
+        {/* ── Featured article (mantiene el protagonismo) ── */}
         <section>
-          <div className="section-label">00 · el dato de la semana</div>
-          <div className="mt-6">
-            <DatoSemanaColumn />
-          </div>
-        </section>
-
-        {/* ── Featured article ── */}
-        <section className="mt-20">
           <div className="section-label">01 · último análisis</div>
           <div className="mt-6">
             {featured ? <HeroArticle article={featured} /> : <EmptyState />}
           </div>
         </section>
 
+        {/* ── El dato de la semana (columna recurrente, secundaria) ── */}
+        <section className="mt-20">
+          <div className="section-label">02 · el dato de la semana</div>
+          <div className="mt-6">
+            <DatoSemanaColumn />
+          </div>
+        </section>
+
         {/* ── More articles ── */}
         {rest.length > 0 && (
           <section className="mt-20">
-            <div className="section-label">02 · más análisis</div>
+            <div className="section-label">03 · más análisis</div>
             <h2 className="section-title mb-8">El resto del archivo reciente</h2>
             <div className="article-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {rest.map((article) => (
