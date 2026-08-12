@@ -244,15 +244,13 @@ export interface FeatCardProps {
   /** Refs imperativas: la foto se mueve sin re-renderizar la tarjeta. */
   imgRef: (el: HTMLImageElement | null) => void
   placeholderRef: (el: HTMLDivElement | null) => void
-  /** Capa de arrastre; sólo captura eventos en modo encuadre. */
-  framing: boolean
   onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void
   onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => void
   onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => void
 }
 
 export function FeatCard({
-  id, fecha, feat: f, imgRef, placeholderRef, framing,
+  id, fecha, feat: f, imgRef, placeholderRef,
   onPointerDown, onPointerMove, onPointerUp,
 }: FeatCardProps) {
   const medal = (color: string, value: number) => (
@@ -365,11 +363,13 @@ export function FeatCard({
       </div>
 
       {/*
-        Capa de arrastre. Va por encima de TODO (zIndex 9) para que el ratón no
-        choque con los textos, pero sólo captura eventos en modo encuadre; al
-        volver a modo texto se aparta con pointerEvents:none y los
-        contentEditable vuelven a ser clicables. `touchAction:none` evita que el
-        gesto se lo lleve el scroll de la página en móvil.
+        Capa de arrastre. Va por encima de todo (zIndex 9) para que el gesto
+        de arrastrar sirva en cualquier zona de la tarjeta (los textos ocupan
+        casi todo el cartel y si no atrapasen los eventos aquí, el arrastre
+        sólo funcionaría en tiras estrechas). Un clic sin movimiento se
+        reenvía al elemento de debajo en el handler de pointerup, así que los
+        textos siguen siendo editables. `touchAction:none` evita que el
+        scroll de la página se lleve el gesto en móvil.
       */}
       <div
         onPointerDown={onPointerDown}
@@ -378,8 +378,6 @@ export function FeatCard({
         onPointerCancel={onPointerUp}
         style={{
           position: 'absolute', inset: 0, zIndex: 9,
-          pointerEvents: framing ? 'auto' : 'none',
-          cursor: framing ? 'grab' : 'default',
           touchAction: 'none',
         }}
       />

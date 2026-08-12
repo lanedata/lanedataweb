@@ -57,27 +57,26 @@ export function HeroArticle({ article }: Props) {
           </p>
         )}
 
-        {/* Meta + CTA */}
-        <div className="mt-6 flex flex-wrap items-center gap-6">
-          {article.published_at && (
-            <time
-              dateTime={article.published_at}
-              className="label-mono text-cream/40"
-            >
-              {formatDateEs(article.published_at)}
-            </time>
-          )}
-
-          <Link
-            href={href}
-            className="inline-flex items-center gap-2 bg-mint px-6 py-3 font-brand text-sm font-bold tracking-tight text-ink transition-colors duration-150 hover:bg-cream"
+        {/* Meta */}
+        {article.published_at && (
+          <time
+            dateTime={article.published_at}
+            className="mt-6 block label-mono text-cream/40"
           >
-            Leer análisis
-            <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
-              <path d="M1 5h12M9 1l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </Link>
-        </div>
+            {formatDateEs(article.published_at)}
+          </time>
+        )}
+
+        {/* CTA — en su propia línea, a ras del borde izquierdo del contenido */}
+        <Link
+          href={href}
+          className="mt-5 self-start inline-flex items-center gap-2 bg-mint px-6 py-3 font-brand text-sm font-bold tracking-tight text-ink transition-colors duration-150 hover:bg-cream"
+        >
+          Leer análisis
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+            <path d="M1 5h12M9 1l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </Link>
       </div>
     </article>
   )

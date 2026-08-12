@@ -14,6 +14,10 @@ const PREVIEW = 0.3
 const CARD_W = Math.round(STORY_W * PREVIEW)
 const CARD_H = Math.round(STORY_H * PREVIEW)
 
+/** Píxeles que hay que mover antes de considerar que es un arrastre y no un
+ *  clic. Por debajo del umbral el gesto se reenvía al texto que haya debajo. */
+const DRAG_THRESHOLD = 4
+
 interface DragState {
   id: string
   pointerId: number
@@ -21,12 +25,38 @@ interface DragState {
   sy: number
   ox: number
   oy: number
+  /** El puntero ya se ha movido más que el umbral: pasamos a modo arrastre. */
+  dragged: boolean
+  /** Si no hay foto, el gesto sólo sirve para reenviar el clic al texto. */
+  hasPhoto: boolean
+}
+
+type CaretDoc = Document & {
+  caretRangeFromPoint?: (x: number, y: number) => Range | null
+  caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null
+}
+
+/** Devuelve un Range en el punto de pantalla indicado, cubriendo las dos APIs
+ *  vivas (WebKit/Chromium y Firefox). Se usa para colocar el cursor donde se
+ *  ha hecho clic al reenviar el foco a un texto. */
+function caretFromPoint(x: number, y: number): Range | null {
+  const doc = document as CaretDoc
+  if (doc.caretRangeFromPoint) return doc.caretRangeFromPoint(x, y)
+  if (doc.caretPositionFromPoint) {
+    const pos = doc.caretPositionFromPoint(x, y)
+    if (pos) {
+      const r = document.createRange()
+      r.setStart(pos.offsetNode, pos.offset)
+      r.setEnd(pos.offsetNode, pos.offset)
+      return r
+    }
+  }
+  return null
 }
 
 export function Historias() {
   const [data, setData] = useState<StoryData>(DEFAULT_DATA)
   const [status, setStatus] = useState('Sin CSV cargado · se muestran los datos de ejemplo')
-  const [framing, setFraming] = useState(true)
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   // Fuerza a React a recrear las tarjetas al cargar un CSV, descartando las
@@ -70,34 +100,70 @@ export function Historias() {
   }, [])
 
   // ── Arrastre ───────────────────────────────────────────────────────────────
-  // Con Pointer Events + setPointerCapture: un solo camino para ratón, dedo y
-  // lápiz, y el gesto sigue vivo aunque el puntero salga de la tarjeta.
+  // La capa de arrastre está encima de todo. Un simple clic se reenvía al
+  // texto que haya debajo con elementFromPoint, así que arrastrar la foto y
+  // editar los textos conviven sin necesidad de un modo aparte. Se usan
+  // Pointer Events con setPointerCapture para un solo camino de ratón, dedo y
+  // lápiz, y el gesto sobrevive aunque el puntero salga de la tarjeta.
   const onPointerDown = useCallback((id: string) => (e: React.PointerEvent<HTMLDivElement>) => {
     const p = photos.current[id]
-    if (!p?.src) return
     e.currentTarget.setPointerCapture(e.pointerId)
-    drag.current = { id, pointerId: e.pointerId, sx: e.clientX, sy: e.clientY, ox: p.x, oy: p.y }
-    e.currentTarget.style.cursor = 'grabbing'
-    e.preventDefault()
+    drag.current = {
+      id, pointerId: e.pointerId,
+      sx: e.clientX, sy: e.clientY,
+      ox: p?.x ?? 0, oy: p?.y ?? 0,
+      dragged: false,
+      hasPhoto: !!p?.src,
+    }
+    // preventDefault se aplaza a pointermove: si no llega a haber arrastre,
+    // el pointerup podrá reenviar el clic al texto de debajo.
   }, [])
 
   const onPointerMove = useCallback((id: string) => (e: React.PointerEvent<HTMLDivElement>) => {
     const d = drag.current
     if (!d || d.id !== id || d.pointerId !== e.pointerId) return
+    const dx = e.clientX - d.sx
+    const dy = e.clientY - d.sy
+    if (!d.dragged) {
+      if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return
+      d.dragged = true
+      if (d.hasPhoto) e.currentTarget.style.cursor = 'grabbing'
+    }
+    if (!d.hasPhoto) return
     const p = photos.current[id]
     if (!p) return
-    p.x = d.ox + (e.clientX - d.sx) / PREVIEW
-    p.y = d.oy + (e.clientY - d.sy) / PREVIEW
+    p.x = d.ox + dx / PREVIEW
+    p.y = d.oy + dy / PREVIEW
     apply(id)
     e.preventDefault()
   }, [apply])
 
   const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    if (drag.current?.pointerId === e.pointerId) {
-      e.currentTarget.releasePointerCapture?.(e.pointerId)
+    const d = drag.current
+    if (!d || d.pointerId !== e.pointerId) return
+    e.currentTarget.releasePointerCapture?.(e.pointerId)
+    e.currentTarget.style.cursor = ''
+
+    // Si no ha llegado a haber arrastre, el gesto es un clic: se enmascara la
+    // capa un instante para que elementFromPoint devuelva lo que hay detrás,
+    // se enfoca si es editable y se coloca el caret donde se pinchó.
+    if (!d.dragged) {
+      const layer = e.currentTarget
+      const prev = layer.style.pointerEvents
+      layer.style.pointerEvents = 'none'
+      const el = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null
+      layer.style.pointerEvents = prev
+      if (el?.isContentEditable) {
+        el.focus()
+        const range = caretFromPoint(e.clientX, e.clientY)
+        if (range) {
+          const sel = window.getSelection()
+          sel?.removeAllRanges()
+          sel?.addRange(range)
+        }
+      }
     }
     drag.current = null
-    e.currentTarget.style.cursor = 'grab'
   }, [])
 
   // ── Foto ───────────────────────────────────────────────────────────────────
@@ -219,32 +285,14 @@ export function Historias() {
         >
           {busy ? 'Exportando…' : 'Exportar todas'}
         </button>
-
-        <div className="ml-auto flex items-center gap-2">
-          <span className="label-mono text-ink/40">Modo</span>
-          <div className="inline-flex border border-ink/[0.14]">
-            <button
-              onClick={() => setFraming(true)}
-              className={`px-3 py-2 label-mono transition-colors ${framing ? 'bg-ink text-mint' : 'text-ink/50 hover:text-ink'}`}
-            >
-              Encuadrar foto
-            </button>
-            <button
-              onClick={() => setFraming(false)}
-              className={`px-3 py-2 label-mono transition-colors ${!framing ? 'bg-ink text-mint' : 'text-ink/50 hover:text-ink'}`}
-            >
-              Editar texto
-            </button>
-          </div>
-        </div>
       </div>
 
       <p className="mb-2 label-mono text-ink/45">{status}</p>
       <p className="mb-8 max-w-3xl text-sm text-ink/55 leading-relaxed">
         El CSV admite <b className="text-ink/75">;</b> o <b className="text-ink/75">,</b> como separador. La columna{' '}
         <b className="text-ink/75">tipo</b> decide la historia: GLOBAL, PORTADA, SECCION, RECORD, TOP5, MINIMA y
-        DESTACADO. En <b className="text-ink/75">Editar texto</b> puedes cambiar cualquier texto haciendo clic encima;
-        en <b className="text-ink/75">Encuadrar foto</b> arrastras la imagen y ajustas el zoom sin perder esas ediciones.
+        DESTACADO. <b className="text-ink/75">Haz clic</b> en cualquier texto para editarlo y{' '}
+        <b className="text-ink/75">arrastra</b> la foto para encuadrarla; los cambios sobreviven a los ajustes de zoom.
       </p>
 
       {error && (
@@ -296,7 +344,6 @@ export function Historias() {
                   id={`card-${f.id}`}
                   fecha={data.fecha}
                   feat={f}
-                  framing={framing}
                   imgRef={(el) => { imgEls.current[f.id] = el; if (el) apply(f.id) }}
                   placeholderRef={(el) => { phEls.current[f.id] = el; if (el) apply(f.id) }}
                   onPointerDown={onPointerDown(f.id)}
