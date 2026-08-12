@@ -60,6 +60,14 @@ export default function AdminDashboard() {
       meta: 'Formato story · 9:16',
       cta: 'Abrir generador',
     },
+    {
+      href: '/admin/dato',
+      n: '05',
+      title: 'Dato de la semana',
+      desc: 'La efeméride de la semana: columna en la web y story 1080×1920 con foto y 4 variantes.',
+      meta: 'Formato story · 9:16',
+      cta: 'Abrir generador',
+    },
   ]
 
   return (
