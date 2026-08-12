@@ -1,8 +1,8 @@
 // Lectura del CSV de "El Dato de la Semana" y selección de la semana activa.
 //
 // El CSV vive en /public/dato-semana.csv. La web lo descarga en cliente, elige
-// el dato de la semana en curso (visible desde el miércoles) y lo pinta. Desde
-// el admin se carga el mismo CSV para generar la story.
+// el dato de la semana en curso (visible toda la semana lun–dom) y lo pinta.
+// Desde el admin se carga el mismo CSV para generar la story.
 
 import type { DatoSemana } from './types'
 
@@ -13,7 +13,6 @@ export const COLUMNS = [
 ] as const
 
 const DEFAULT_KICKER = 'El dato de la semana'
-const DEFAULT_FUENTE = 'mundo atletismo'
 
 /** Parte el CSV en filas. Acepta `;` o `,` y respeta las comillas dobles. */
 function splitCsv(text: string): string[][] {
@@ -69,7 +68,7 @@ export function parseCsv(text: string): DatoSemana[] {
       anio: get(r, 'anio') || undefined,
       fechaHistorica: get(r, 'fecha_historica') || undefined,
       categoria: get(r, 'categoria') || undefined,
-      fuente: get(r, 'fuente') || DEFAULT_FUENTE,
+      fuente: get(r, 'fuente'),
       foto: get(r, 'foto') || undefined,
       variante,
     })
@@ -77,13 +76,12 @@ export function parseCsv(text: string): DatoSemana[] {
   return out
 }
 
-/** Fecha (a medianoche local) en la que un dato pasa a estar visible. */
+/** Fecha (a medianoche local) en la que un dato pasa a estar visible: por
+ *  defecto el lunes de su semana (`desde`), así se ve toda la semana lun–dom.
+ *  Se puede adelantar/atrasar por fila con la columna `publicar`. */
 function goLiveDate(d: DatoSemana): Date | null {
   if (d.publicar) return parseDate(d.publicar)
-  const from = parseDate(d.desde)
-  if (!from) return null
-  from.setDate(from.getDate() + 2) // miércoles de esa semana
-  return from
+  return parseDate(d.desde)
 }
 
 function parseDate(s?: string): Date | null {
@@ -95,9 +93,9 @@ function parseDate(s?: string): Date | null {
 
 /**
  * Devuelve el dato activo para `now`: el más reciente cuya fecha de publicación
- * (miércoles de su semana, o `publicar`) ya haya pasado. Así el dato nuevo
- * aparece automáticamente el miércoles. Si ninguno ha llegado aún, devuelve el
- * más antiguo (para no dejar la columna vacía en la primera semana).
+ * (lunes de su semana, o `publicar`) ya haya pasado. Así el dato de la semana en
+ * curso aparece automáticamente. Si ninguno ha llegado aún, devuelve el más
+ * antiguo (para no dejar la columna vacía en la primera semana).
  */
 export function pickActive(datos: DatoSemana[], now: Date = new Date()): DatoSemana | null {
   if (!datos.length) return null

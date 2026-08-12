@@ -10,8 +10,8 @@ export default function DatoPage() {
         <div className="section-label">05 · redes</div>
         <h1 className="section-title text-ink">El dato de la semana</h1>
         <p className="mt-4 max-w-xl text-sm text-ink/55 leading-relaxed">
-          Carga el CSV semanal (o el del sitio), elige la semana, ajusta la variante visual y la
-          foto, retoca los textos y exporta la story 1080×1920 con la estética de lanedata.
+          Carga el CSV semanal (o el del sitio), elige la semana, sube la foto, ajusta la variante
+          y el encuadre, retoca los textos y exporta la story 1080×1920 con la estética de lanedata.
         </p>
       </div>
       <DatoStudio />

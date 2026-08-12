@@ -1,12 +1,15 @@
 'use client'
 
 // Story de "El dato de la semana" a 1080×1920. Misma estética de marca que las
-// Historias, pero con 4 variantes visuales para que no salga siempre igual:
+// Historias, pensada para llevar SIEMPRE una foto de fondo (con degradado para
+// legibilidad); si no hay foto, cae a un fondo tinta y muestra el hueco.
 //
-//   1 · Aniversario   — año como marca de agua, titular abajo, pill destacado.
-//   2 · Número         — el valor destacado GIGANTE en el centro.
-//   3 · Editorial claro — fondo menta, tinta oscura, aire de portada.
-//   4 · Foto            — foto a sangre con el titular sobreimpreso.
+// 4 variantes visuales para que no salga siempre igual:
+//
+//   1 · Aniversario — foto a sangre, año de marca de agua, pills abajo.
+//   2 · Número       — foto a sangre + el valor destacado GIGANTE abajo.
+//   3 · Postal       — foto arriba, banda menta abajo con el texto.
+//   4 · Foto          — foto protagonista, texto mínimo abajo.
 //
 // Todo va en estilos inline: el exportador serializa el nodo dentro de un
 // <svg><foreignObject>, donde las clases CSS del documento no llegan. Los
@@ -81,9 +84,10 @@ function Header({ right, dark = true }: { right?: string; dark?: boolean }) {
         <Ed
           tag="span"
           style={{
-            border: `1.5px solid ${dark ? 'rgba(238,237,224,0.32)' : 'rgba(12,42,24,0.35)'}`,
+            border: `1.5px solid ${dark ? 'rgba(238,237,224,0.4)' : 'rgba(12,42,24,0.35)'}`,
             padding: '14px 30px', fontSize: 24, letterSpacing: 4, whiteSpace: 'nowrap',
             color: dark ? CREAM : INK,
+            background: dark ? 'rgba(7,24,16,0.28)' : 'transparent',
           }}
         >
           {right}
@@ -96,15 +100,23 @@ function Header({ right, dark = true }: { right?: string; dark?: boolean }) {
 function Footer({ dark = true }: { dark?: boolean }) {
   return (
     <div style={{ position: 'absolute', left: 72, right: 72, bottom: 56, zIndex: 3 }}>
-      <div style={{ height: 1, background: dark ? 'rgba(238,237,224,0.18)' : 'rgba(12,42,24,0.25)', marginBottom: 32 }} />
+      <div style={{ height: 1, background: dark ? 'rgba(238,237,224,0.22)' : 'rgba(12,42,24,0.25)', marginBottom: 32 }} />
       <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
         <div style={{ width: 64, height: 64, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <MundoAtletismoMark />
         </div>
-        <span style={{ fontSize: 22, letterSpacing: 5, color: dark ? '#7fa98c' : '#3f6a4d' }}>POWERED BY</span>
+        <span style={{ fontSize: 22, letterSpacing: 5, color: dark ? '#a7c6b0' : '#3f6a4d' }}>POWERED BY</span>
         <span style={{ fontFamily: BRAND, fontWeight: 700, fontSize: 30, color: dark ? CREAM : INK }}>mundo atletismo</span>
       </div>
     </div>
+  )
+}
+
+function Kicker({ text, color = MINT, dark = true }: { text: string; color?: string; dark?: boolean }) {
+  return (
+    <Ed style={{ fontSize: 30, letterSpacing: 8, color: dark ? color : INK, marginBottom: 24 }}>
+      {(text || '').toUpperCase()}
+    </Ed>
   )
 }
 
@@ -120,10 +132,10 @@ export interface DatoCardProps {
   onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => void
 }
 
-/** Capa de foto + placeholder + capa de arrastre, común a las variantes con foto. */
+/** Capa de foto + placeholder (hueco cuando no hay foto). */
 function PhotoLayer({
-  imgRef, placeholderRef, overlay, showPlaceholder,
-}: Pick<DatoCardProps, 'imgRef' | 'placeholderRef'> & { overlay: string; showPlaceholder: boolean }) {
+  imgRef, placeholderRef, overlay, placeholderTop = '30%',
+}: Pick<DatoCardProps, 'imgRef' | 'placeholderRef'> & { overlay: string; placeholderTop?: string }) {
   return (
     <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -137,19 +149,17 @@ function PhotoLayer({
         }}
       />
       <div style={{ position: 'absolute', inset: 0, background: overlay }} />
-      {showPlaceholder && (
-        <div
-          ref={placeholderRef}
-          style={{
-            position: 'absolute', top: '32%', left: '50%', transform: 'translate(-50%,-50%)',
-            border: '2px dashed rgba(238,237,224,0.35)', padding: '40px 56px',
-            textAlign: 'center', color: '#bcd6c3', zIndex: 2,
-          }}
-        >
-          <div style={{ fontSize: 34, letterSpacing: 2 }}>Sube una foto</div>
-          <div style={{ fontSize: 24, color: '#84a98f', marginTop: 12 }}>y arrástrala para encuadrar</div>
-        </div>
-      )}
+      <div
+        ref={placeholderRef}
+        style={{
+          position: 'absolute', top: placeholderTop, left: '50%', transform: 'translate(-50%,-50%)',
+          border: '2px dashed rgba(238,237,224,0.35)', padding: '40px 56px',
+          textAlign: 'center', color: '#bcd6c3', zIndex: 2,
+        }}
+      >
+        <div style={{ fontSize: 34, letterSpacing: 2 }}>Sube una foto</div>
+        <div style={{ fontSize: 24, color: '#84a98f', marginTop: 12 }}>y arrástrala para encuadrar</div>
+      </div>
     </>
   )
 }
@@ -166,85 +176,102 @@ function DragLayer({ onPointerDown, onPointerMove, onPointerUp }: Pick<DatoCardP
   )
 }
 
-function Kicker({ text, color = MINT, dark = true }: { text: string; color?: string; dark?: boolean }) {
-  return (
-    <Ed style={{ fontSize: 30, letterSpacing: 8, color: dark ? color : INK, marginBottom: 26 }}>
-      {(text || '').toUpperCase()}
-    </Ed>
-  )
+/** Tamaño del valor destacado gigante (variante 2) según su longitud. */
+function bigMarkSize(v: string): number {
+  const n = String(v || '').length
+  if (n <= 2) return 300
+  if (n <= 4) return 232
+  if (n <= 6) return 184
+  if (n <= 9) return 140
+  return 112
 }
 
 export function DatoCard(props: DatoCardProps) {
   const { id, dato: d, variant } = props
   const right = d.categoria || d.fechaHistorica || undefined
 
-  // ─── Variante 3 · Editorial claro (fondo menta) ───────────────────────────
+  // ─── Variante 3 · Postal (foto arriba, banda menta abajo) ──────────────────
   if (variant === 3) {
     return (
-      <div id={id} style={{ ...cardBase, background: '#93E393', color: INK }}>
-        <Header right={right} dark={false} />
-        <div style={{ position: 'absolute', left: 72, right: 72, top: 300 }}>
+      <div id={id} style={{ ...cardBase, background: DARK_BG }}>
+        <PhotoLayer
+          imgRef={props.imgRef}
+          placeholderRef={props.placeholderRef}
+          placeholderTop="26%"
+          overlay="linear-gradient(to bottom, rgba(7,24,16,0.55) 0%, rgba(7,24,16,0.12) 18%, rgba(7,24,16,0) 34%, rgba(7,24,16,0) 46%, #93E393 52%)"
+        />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+          <Header right={right} />
+        </div>
+        {/* Banda menta */}
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 900, background: '#93E393', color: INK, padding: '72px 72px 0' }}>
           <Kicker text={d.kicker} dark={false} />
-          <Ed style={{ fontFamily: BRAND, fontWeight: 800, lineHeight: 0.98, letterSpacing: '-3px', color: INK, fontSize: titularSize(d.titular) + 10 }}>
+          <Ed style={{ fontFamily: BRAND, fontWeight: 800, lineHeight: 0.98, letterSpacing: '-2px', color: INK, fontSize: titularSize(d.titular) }}>
             {d.titular}
           </Ed>
           {d.contexto && (
-            <Ed style={{ fontSize: 30, lineHeight: 1.4, color: 'rgba(12,42,24,0.72)', marginTop: 34, maxWidth: 820 }}>
-              {d.contexto}
-            </Ed>
+            <Ed style={{ fontSize: 28, lineHeight: 1.42, color: 'rgba(12,42,24,0.72)', marginTop: 26, maxWidth: 900 }}>{d.contexto}</Ed>
           )}
           {d.destacado && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 24, marginTop: 52, background: INK, color: CREAM, padding: '26px 46px' }}>
-              <Ed tag="span" style={{ fontFamily: BRAND, fontWeight: 800, fontSize: 72, lineHeight: 1, color: MINT }}>{d.destacado}</Ed>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 22, marginTop: 44, background: INK, color: CREAM, padding: '24px 42px' }}>
+              <Ed tag="span" style={{ fontFamily: BRAND, fontWeight: 800, fontSize: 68, lineHeight: 1, color: MINT }}>{d.destacado}</Ed>
               {d.destacadoLabel && (
-                <Ed tag="span" style={{ fontSize: 24, letterSpacing: 4, color: '#9fb9a6', maxWidth: 300 }}>{(d.destacadoLabel || '').toUpperCase()}</Ed>
+                <Ed tag="span" style={{ fontSize: 24, letterSpacing: 4, color: '#9fb9a6', maxWidth: 320 }}>{(d.destacadoLabel || '').toUpperCase()}</Ed>
               )}
             </div>
           )}
         </div>
         <Footer dark={false} />
+        <DragLayer {...props} />
       </div>
     )
   }
 
-  // ─── Variante 2 · Número gigante ───────────────────────────────────────────
+  // ─── Variante 2 · Número gigante sobre foto ────────────────────────────────
   if (variant === 2) {
     return (
-      <div id={id} style={{ ...cardBase, background: DARK_BG }}>
-        <Header right={right} />
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '0 72px' }}>
+      <div id={id} style={{ ...cardBase, background: DARK_BG, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+        <PhotoLayer
+          imgRef={props.imgRef}
+          placeholderRef={props.placeholderRef}
+          overlay="linear-gradient(to top, #061912 6%, rgba(6,25,18,0.94) 30%, rgba(6,25,18,0.55) 56%, rgba(6,25,18,0.2) 80%, rgba(6,25,18,0.4) 100%)"
+        />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+          <Header right={right} />
+        </div>
+        <div style={{ position: 'relative', zIndex: 3, margin: '0 72px 150px' }}>
           <Kicker text={d.kicker} />
           {d.destacado && (
-            <Ed style={{ fontFamily: BRAND, fontWeight: 800, lineHeight: 0.82, letterSpacing: '-6px', color: MINT, fontSize: 380 }}>
+            <Ed style={{ fontFamily: BRAND, fontWeight: 800, lineHeight: 0.82, letterSpacing: '-5px', color: MINT, fontSize: bigMarkSize(d.destacado) }}>
               {d.destacado}
             </Ed>
           )}
           {d.destacadoLabel && (
-            <Ed style={{ fontSize: 34, letterSpacing: 8, color: '#9fc7a8', marginTop: 8, marginBottom: 44 }}>
+            <Ed style={{ fontSize: 32, letterSpacing: 7, color: '#bcd6c3', marginTop: 6, marginBottom: 34 }}>
               {(d.destacadoLabel || '').toUpperCase()}
             </Ed>
           )}
-          <Ed style={{ fontFamily: BRAND, fontWeight: 700, lineHeight: 1.02, letterSpacing: '-1.5px', color: '#f0efe3', fontSize: Math.min(72, titularSize(d.titular)), maxWidth: 860 }}>
+          <Ed style={{ fontFamily: BRAND, fontWeight: 700, lineHeight: 1.02, letterSpacing: '-1.5px', color: '#f0efe3', fontSize: Math.min(72, titularSize(d.titular)), maxWidth: 900 }}>
             {d.titular}
           </Ed>
           {d.contexto && (
-            <Ed style={{ fontSize: 28, lineHeight: 1.45, color: '#9fb9a6', marginTop: 30, maxWidth: 780 }}>{d.contexto}</Ed>
+            <Ed style={{ fontSize: 27, lineHeight: 1.42, color: '#d5e4d9', marginTop: 22, maxWidth: 860 }}>{d.contexto}</Ed>
           )}
         </div>
         <Footer />
+        <DragLayer {...props} />
       </div>
     )
   }
 
-  // ─── Variante 4 · Foto protagonista ────────────────────────────────────────
+  // ─── Variante 4 · Foto protagonista (texto mínimo) ─────────────────────────
   if (variant === 4) {
     return (
       <div id={id} style={{ ...cardBase, background: DARK_BG, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
         <PhotoLayer
           imgRef={props.imgRef}
           placeholderRef={props.placeholderRef}
-          showPlaceholder
-          overlay="linear-gradient(to top, #0a2416 4%, rgba(10,36,22,0.92) 26%, rgba(10,36,22,0.35) 52%, rgba(10,36,22,0.12) 74%, rgba(10,36,22,0.28) 100%)"
+          overlay="linear-gradient(to top, #0a2416 4%, rgba(10,36,22,0.9) 24%, rgba(10,36,22,0.3) 50%, rgba(10,36,22,0.08) 72%, rgba(10,36,22,0.28) 100%)"
         />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
           <Header right={right} />
@@ -263,7 +290,7 @@ export function DatoCard(props: DatoCardProps) {
             {d.titular}
           </Ed>
           {d.contexto && (
-            <Ed style={{ fontSize: 28, lineHeight: 1.45, color: '#d5e4d9', marginTop: 26, maxWidth: 820 }}>{d.contexto}</Ed>
+            <Ed style={{ fontSize: 28, lineHeight: 1.42, color: '#d5e4d9', marginTop: 24, maxWidth: 860 }}>{d.contexto}</Ed>
           )}
         </div>
         <Footer />
@@ -278,12 +305,11 @@ export function DatoCard(props: DatoCardProps) {
       <PhotoLayer
         imgRef={props.imgRef}
         placeholderRef={props.placeholderRef}
-        showPlaceholder={false}
-        overlay="linear-gradient(to top, #0a2416 6%, rgba(10,36,22,0.9) 30%, rgba(10,36,22,0.55) 60%, rgba(10,36,22,0.4) 100%)"
+        overlay="linear-gradient(to top, #0a2416 6%, rgba(10,36,22,0.9) 30%, rgba(10,36,22,0.5) 60%, rgba(10,36,22,0.32) 100%)"
       />
       {/* Año como marca de agua */}
       {d.anio && (
-        <span style={{ position: 'absolute', top: 300, right: 40, fontFamily: BRAND, fontWeight: 800, fontSize: 460, lineHeight: 1, letterSpacing: '-10px', color: 'rgba(143,227,143,0.09)', zIndex: 1, pointerEvents: 'none' }}>
+        <span style={{ position: 'absolute', top: 300, right: 40, fontFamily: BRAND, fontWeight: 800, fontSize: 460, lineHeight: 1, letterSpacing: '-10px', color: 'rgba(143,227,143,0.1)', zIndex: 1, pointerEvents: 'none' }}>
           {d.anio}
         </span>
       )}
@@ -296,16 +322,16 @@ export function DatoCard(props: DatoCardProps) {
           {d.titular}
         </Ed>
         {d.contexto && (
-          <Ed style={{ fontSize: 29, lineHeight: 1.45, color: '#d5e4d9', marginTop: 28, maxWidth: 820 }}>{d.contexto}</Ed>
+          <Ed style={{ fontSize: 29, lineHeight: 1.42, color: '#d5e4d9', marginTop: 26, maxWidth: 860 }}>{d.contexto}</Ed>
         )}
-        <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap', marginTop: 40 }}>
+        <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap', marginTop: 38 }}>
           {d.fechaHistorica && (
             <Ed tag="span" style={{ background: MINT, color: INK, padding: '14px 30px', fontSize: 26, letterSpacing: 3, fontWeight: 700 }}>
               {(d.fechaHistorica || '').toUpperCase()}
             </Ed>
           )}
           {d.destacado && (
-            <Ed tag="span" style={{ border: '1.5px solid rgba(238,237,224,0.45)', padding: '14px 30px', fontSize: 26, letterSpacing: 2, color: '#e2ecdf' }}>
+            <Ed tag="span" style={{ border: '1.5px solid rgba(238,237,224,0.5)', padding: '14px 30px', fontSize: 26, letterSpacing: 2, color: '#e2ecdf', background: 'rgba(7,24,16,0.3)' }}>
               {d.destacado}{d.destacadoLabel ? ` · ${d.destacadoLabel}` : ''}
             </Ed>
           )}

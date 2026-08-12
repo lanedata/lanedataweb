@@ -1,8 +1,8 @@
 // Modelo de "El Dato de la Semana".
 //
 // Cada fila del CSV es el dato de una semana. La columna `desde` (lunes de esa
-// semana, YYYY-MM-DD) fija a qué semana pertenece; el dato se publica en la web
-// el miércoles de esa semana (desde + 2 días) salvo que se indique `publicar`.
+// semana, YYYY-MM-DD) fija a qué semana pertenece; el dato se ve toda esa semana
+// (lun–dom) salvo que se adelante/atrase con `publicar`.
 //
 // El dato es deliberadamente flexible: sirve para un aniversario ("un día como
 // hoy en 2012…"), una racha ("el récord lleva 18 años sin batirse") o una
@@ -39,7 +39,7 @@ export interface DatoSemana {
   /** Categoría/prueba: "SALTO DE ALTURA", "100 M". */
   categoria?: string
 
-  /** Fuente del dato. Por defecto "mundo atletismo". */
+  /** Fuente del dato (ej. "mundo atletismo"). Vacío = no se muestra el "vía…". */
   fuente: string
   /** URL o data: URI de foto opcional. */
   foto?: string

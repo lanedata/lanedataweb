@@ -1,8 +1,8 @@
 'use client'
 
 // Columna fija "El dato de la semana" para la web pública. Descarga el CSV de
-// /public/dato-semana.csv, elige el dato de la semana en curso (visible desde
-// el miércoles) y lo pinta en la estética editorial de lanedata.
+// /public/dato-semana.csv, elige el dato de la semana en curso (visible toda la
+// semana lun–dom) y lo pinta en la estética editorial de lanedata.
 //
 // Tratamiento deliberadamente ligero: es una columna recurrente, no un titular.
 // Fondo crema con borde recto (reserva la tinta para el hero del artículo), el
@@ -71,13 +71,17 @@ export function DatoSemanaColumn({ csvUrl = CSV_URL }: { csvUrl?: string }) {
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink/60">{dato.contexto}</p>
           )}
 
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5">
-            {dato.fechaHistorica && <span className="label-mono text-ink/40">{dato.fechaHistorica}</span>}
-            <span className="inline-flex items-center gap-1.5 label-mono text-ink/40">
-              <TrackIcon size={12} />
-              vía {dato.fuente}
-            </span>
-          </div>
+          {(dato.fechaHistorica || dato.fuente) && (
+            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+              {dato.fechaHistorica && <span className="label-mono text-ink/40">{dato.fechaHistorica}</span>}
+              {dato.fuente && (
+                <span className="inline-flex items-center gap-1.5 label-mono text-ink/40">
+                  <TrackIcon size={12} />
+                  vía {dato.fuente}
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Dato destacado: único acento menta, compacto y sin desbordar */}

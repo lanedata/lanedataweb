@@ -18,7 +18,7 @@ const CARD_H = Math.round(STORY_H * PREVIEW)
 const DRAG_THRESHOLD = 4
 
 const VARIANT_NAMES: Record<number, string> = {
-  1: 'Aniversario', 2: 'Número gigante', 3: 'Editorial claro', 4: 'Foto',
+  1: 'Aniversario', 2: 'Número gigante', 3: 'Postal', 4: 'Foto',
 }
 
 interface Photo { src: string | null; x: number; y: number; z: number }
@@ -26,7 +26,7 @@ interface Photo { src: string | null; x: number; y: number; z: number }
 const EMPTY_DATO: DatoSemana = {
   desde: '', kicker: 'El dato de la semana',
   titular: 'Escribe aquí el dato de la semana',
-  fuente: 'mundo atletismo', variante: 'auto',
+  fuente: '', variante: 'auto',
 }
 
 type CaretDoc = Document & {
@@ -259,7 +259,7 @@ export function DatoStudio() {
             <Field label="Año"><Input value={dato.anio ?? ''} onChange={(v) => set('anio', v || undefined)} placeholder="2012" /></Field>
             <Field label="Categoría"><Input value={dato.categoria ?? ''} onChange={(v) => set('categoria', v || undefined)} placeholder="SALTO DE ALTURA" /></Field>
           </div>
-          <Field label="Fecha histórica"><Input value={dato.fechaHistorica ?? ''} onChange={(v) => set('fechaHistorica', v || undefined)} placeholder="12 AGO 2012 / UN DÍA COMO HOY" /></Field>
+          <Field label="Fecha histórica"><Input value={dato.fechaHistorica ?? ''} onChange={(v) => set('fechaHistorica', v || undefined)} placeholder="AGOSTO 2012 / DESDE 2005" /></Field>
 
           {/* Foto */}
           <Field label="Foto (opcional)">
@@ -283,7 +283,7 @@ export function DatoStudio() {
               />
               <span className="label-mono tabular-nums text-ink/40">{photo.current.z.toFixed(2)}×</span>
             </label>
-            <p className="mt-1 label-mono text-ink/35">La foto sólo se ve en las variantes 1 y 4. Arrástrala sobre la tarjeta para encuadrar.</p>
+            <p className="mt-1 label-mono text-ink/35">Las 4 variantes llevan foto de fondo. Arrástrala sobre la tarjeta para encuadrar.</p>
           </Field>
         </div>
 
