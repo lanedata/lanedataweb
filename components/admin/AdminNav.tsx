@@ -13,6 +13,7 @@ const SECTIONS = [
   { href: '/admin/calendario', label: 'Calendario', match: ['/admin/calendario'] },
   { href: '/admin/estudio', label: 'Estudio IG', match: ['/admin/estudio'] },
   { href: '/admin/historias', label: 'Historias', match: ['/admin/historias'] },
+  { href: '/admin/dato', label: 'Dato semana', match: ['/admin/dato'] },
 ]
 
 export function AdminNav() {

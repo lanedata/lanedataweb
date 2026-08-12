@@ -12,7 +12,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         // /calendario y /calendarapp existen y funcionan, pero no son secciones
         // públicas: no se enlazan ni se indexan (ver app/calendario/page.tsx).
-        disallow: ['/admin', '/login', '/calendario', '/calendarapp'],
+        disallow: ['/admin', '/login', '/calendario', '/calendarapp', '/test', '/devhistorias'],
       },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,

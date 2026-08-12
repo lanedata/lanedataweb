@@ -53,6 +53,20 @@ function LogoMark({ size = 68 }: { size?: number }) {
   )
 }
 
+/** Logo oficial de Mundo Atletismo: tres pistas concéntricas, la interior en
+ *  verde. Coincide con identidad_mundoatletismo/logos/icon-pista-verde.svg. */
+function MundoAtletismoMark({ size = 40 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden="true">
+      <g fill="none" strokeLinejoin="round">
+        <rect x="10" y="18" width="80" height="64" rx="32" stroke="#12331C" strokeWidth="3.4" />
+        <rect x="20" y="28" width="60" height="44" rx="22" stroke="#12331C" strokeWidth="3.4" />
+        <rect x="30" y="38" width="40" height="24" rx="12" stroke="#34804A" strokeWidth="3.8" />
+      </g>
+    </svg>
+  )
+}
+
 /** Cabecera: marca a la izquierda, fecha editable a la derecha. */
 function Header({ fecha, dark = true }: { fecha: string; dark?: boolean }) {
   return (
@@ -82,12 +96,7 @@ function Footer({ dark = true }: { dark?: boolean }) {
       <div style={{ height: 1, background: dark ? 'rgba(238,237,224,0.18)' : 'rgba(12,42,24,0.25)', marginBottom: 32 }} />
       <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
         <div style={{ width: 64, height: 64, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width="40" height="40" viewBox="0 0 100 100" aria-hidden="true">
-            <g fill="none" stroke="#0c2a18" strokeWidth="9">
-              <rect x="14" y="28" width="72" height="44" rx="22" />
-              <rect x="32" y="40" width="36" height="20" rx="10" />
-            </g>
-          </svg>
+          <MundoAtletismoMark />
         </div>
         <span style={{ fontSize: 22, letterSpacing: 5, color: dark ? '#7fa98c' : '#3f6a4d' }}>POWERED BY</span>
         <span style={{ fontFamily: BRAND, fontWeight: 700, fontSize: 30, color: dark ? CREAM : '#0c2a18' }}>
@@ -350,12 +359,7 @@ export function FeatCard({
         <div style={{ height: 1, background: 'rgba(238,237,224,0.18)', marginBottom: 32 }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
           <div style={{ width: 64, height: 64, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="40" height="40" viewBox="0 0 100 100" aria-hidden="true">
-              <g fill="none" stroke="#0c2a18" strokeWidth="9">
-                <rect x="14" y="28" width="72" height="44" rx="22" />
-                <rect x="32" y="40" width="36" height="20" rx="10" />
-              </g>
-            </svg>
+            <MundoAtletismoMark />
           </div>
           <span style={{ fontSize: 22, letterSpacing: 5, color: '#9bbfa5' }}>POWERED BY</span>
           <span style={{ fontFamily: BRAND, fontWeight: 700, fontSize: 30, color: CREAM }}>mundo atletismo</span>
