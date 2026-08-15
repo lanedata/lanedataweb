@@ -2,6 +2,7 @@ import { NavBar } from '@/components/NavBar'
 import { Footer } from '@/components/Footer'
 import { HeroArticle } from '@/components/HeroArticle'
 import { ArticleCard } from '@/components/ArticleCard'
+import { DatoSemanaColumn } from '@/components/datosemana/DatoSemanaColumn'
 import { createStaticClient } from '@/lib/supabase/static'
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -58,10 +59,18 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {/* ── El dato de la semana (columna recurrente) ── */}
+        <section className="mt-20">
+          <div className="section-label">02 · el dato de la semana</div>
+          <div className="mt-6">
+            <DatoSemanaColumn />
+          </div>
+        </section>
+
         {/* ── More articles (max 3) ── */}
         {rest.length > 0 && (
           <section className="mt-20">
-            <div className="section-label">02 · más análisis</div>
+            <div className="section-label">03 · más análisis</div>
             <h2 className="section-title mb-8">El resto del archivo reciente</h2>
 
             <div className="article-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -40,17 +40,6 @@ export function DatoSemanaColumn({ csvUrl = CSV_URL }: { csvUrl?: string }) {
 
   return (
     <article className="relative overflow-hidden border border-ink/[0.14] bg-cream/50">
-      {/* Año como textura recortada (no se sale: el contenedor recorta) */}
-      {dato.anio && (
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute right-4 bottom-[-2.5rem] select-none font-brand font-extrabold leading-none text-ink/[0.05]"
-          style={{ fontSize: '9rem', letterSpacing: '-0.05em' }}
-        >
-          {dato.anio}
-        </span>
-      )}
-
       <div className="relative flex flex-col gap-6 p-6 sm:p-8 md:flex-row md:items-center md:justify-between md:gap-10">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2.5">
