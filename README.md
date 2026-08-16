@@ -200,12 +200,27 @@ Configura las variables de entorno en Netlify > Site configuration > Environment
 
 ---
 
+## Errores y analíticas
+
+La web registra sus propios errores y mide su audiencia sin cookies ni terceros.
+Los paneles están en `/admin/analiticas` y `/admin/errores`; este último exporta
+los fallos a CSV para poder pasárselos a quien los tenga que corregir.
+
+Para dejarlo operativo hay que **ejecutar `supabase/telemetry-schema.sql` en el
+SQL Editor de Supabase**. Detalle completo en
+**[docs/telemetria.md](docs/telemetria.md)**.
+
+---
+
 ## Seguridad
 
 - El panel `/admin` está protegido por middleware de Supabase Auth.
 - El HTML subido se sanea con `sanitize-html` antes de guardarse: se eliminan `<script>`, iframes y event handlers (`onclick`, `onerror`, etc.), pero se preserva todo el CSS, tablas, imágenes y estructura de maquetación.
 - Row Level Security de Supabase: los visitantes solo pueden leer artículos publicados; solo usuarios autenticados pueden escribir.
 - Las rutas de API no exponen la Service Role Key al navegador.
+- Las tablas de telemetría solo aceptan escrituras anónimas: leerlas o borrarlas
+  exige estar autenticado, y los agregados del panel son funciones `SECURITY
+  DEFINER` que anon no puede ejecutar.
 
 ---
 
