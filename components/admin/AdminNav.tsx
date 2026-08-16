@@ -14,6 +14,8 @@ const SECTIONS = [
   { href: '/admin/estudio', label: 'Estudio IG', icon: 'grid', match: ['/admin/estudio'] },
   { href: '/admin/historias', label: 'Historias', icon: 'story', match: ['/admin/historias'] },
   { href: '/admin/dato', label: 'Dato semana', icon: 'star', match: ['/admin/dato'] },
+  { href: '/admin/analiticas', label: 'Analíticas', icon: 'chart', match: ['/admin/analiticas'] },
+  { href: '/admin/errores', label: 'Errores', icon: 'bug', match: ['/admin/errores'] },
 ] as const
 
 function SectionIcon({ name, size = 16 }: { name: string; size?: number }) {
@@ -29,6 +31,10 @@ function SectionIcon({ name, size = 16 }: { name: string; size?: number }) {
       return <svg {...p}><rect x="7" y="3" width="10" height="18" rx="1.5" /><path d="M12 8v8M9 12h6" /></svg>
     case 'star':
       return <svg {...p}><path d="M12 4l2.2 4.8L19 9.6l-3.5 3.4.9 5L12 15.6 7.6 18l.9-5L5 9.6l4.8-.8z" /></svg>
+    case 'chart':
+      return <svg {...p}><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
+    case 'bug':
+      return <svg {...p}><rect x="8" y="7" width="8" height="12" rx="4" /><path d="M8 11H4M20 11h-4M8 16H4.5M20 16h-3.5M9.5 7L8 4M14.5 7L16 4" /></svg>
     default:
       return null
   }

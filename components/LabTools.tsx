@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { EVENTS, trackEvent } from '@/lib/telemetry/analytics'
 import { IaafCalculator } from './IaafCalculator'
 import { PaceCalculator } from './PaceCalculator'
 import { PredictorCalculator } from './PredictorCalculator'
@@ -126,6 +127,7 @@ export function LabTools() {
 
   const select = useCallback((id: string) => {
     setActive(id)
+    trackEvent(EVENTS.labTool, id)
     if (typeof window !== 'undefined') {
       window.history.replaceState(null, '', id === DEFAULT_TOOL ? window.location.pathname : `#${id}`)
     }

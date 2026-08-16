@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { CookiePrefsButton } from '@/components/legal/CookiePrefsButton'
+import { DOCUMENTOS } from '@/lib/legal'
 
 const monoBase = 'font-mono text-[0.6875rem] tracking-[0.22em] uppercase'
 
@@ -57,7 +59,23 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-cream/[0.15] pt-6">
-          <p className={`${monoBase} text-cream/50`}>
+          <nav
+            aria-label="Información legal"
+            className="flex flex-wrap items-center gap-x-6 gap-y-3"
+          >
+            {DOCUMENTOS.map((d) => (
+              <Link
+                key={d.href}
+                href={d.href}
+                className={`${monoBase} text-cream/70 hover:text-cream transition-colors`}
+              >
+                {d.titulo}
+              </Link>
+            ))}
+            <CookiePrefsButton variant="enlace">Preferencias de cookies</CookiePrefsButton>
+          </nav>
+
+          <p className={`${monoBase} mt-6 text-cream/50`}>
             © {year} lanedata · Todos los derechos reservados
           </p>
         </div>

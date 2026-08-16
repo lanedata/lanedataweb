@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import { Bricolage_Grotesque, IBM_Plex_Mono } from 'next/font/google'
+import { Telemetry } from '@/components/telemetry/Telemetry'
+import { CookieBanner } from '@/components/telemetry/CookieBanner'
+import { GoogleAnalytics } from '@/components/telemetry/GoogleAnalytics'
 import './globals.css'
 
 // Se auto-alojan en el build: sin petición a Google en runtime y sin el
@@ -122,18 +124,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_ID}');
-          `}
-        </Script>
+
+        {/* Medición propia y registro de errores: primera parte, sin cookies. */}
+        <Telemetry />
+
+        {/* GA solo se descarga si hay consentimiento (ver components/telemetry). */}
+        <GoogleAnalytics gaId={GA_ID} />
+
+        <CookieBanner />
       </body>
     </html>
   )

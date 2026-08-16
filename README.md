@@ -200,12 +200,32 @@ Configura las variables de entorno en Netlify > Site configuration > Environment
 
 ---
 
+## Errores, analíticas y legal
+
+La web registra sus propios errores, mide su audiencia sin cookies ni terceros y
+publica los cuatro documentos legales obligatorios en España.
+
+Para dejarlo operativo hay **dos pasos manuales**:
+
+1. Ejecutar `supabase/telemetry-schema.sql` en el SQL Editor de Supabase.
+2. Rellenar los datos del titular en `lib/legal.ts` (nombre, NIF y domicilio).
+
+Los paneles quedan en `/admin/analiticas` y `/admin/errores`; este último exporta
+los fallos a CSV para poder pasárselos a quien los tenga que corregir.
+
+Todo el detalle está en **[docs/telemetria-y-legal.md](docs/telemetria-y-legal.md)**.
+
+---
+
 ## Seguridad
 
 - El panel `/admin` está protegido por middleware de Supabase Auth.
 - El HTML subido se sanea con `sanitize-html` antes de guardarse: se eliminan `<script>`, iframes y event handlers (`onclick`, `onerror`, etc.), pero se preserva todo el CSS, tablas, imágenes y estructura de maquetación.
 - Row Level Security de Supabase: los visitantes solo pueden leer artículos publicados; solo usuarios autenticados pueden escribir.
 - Las rutas de API no exponen la Service Role Key al navegador.
+- Las tablas de telemetría solo aceptan escrituras anónimas: leerlas o borrarlas
+  exige estar autenticado, y los agregados del panel son funciones `SECURITY
+  DEFINER` que anon no puede ejecutar.
 
 ---
 
