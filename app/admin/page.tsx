@@ -11,6 +11,7 @@ interface Counts {
 
 export default function AdminDashboard() {
   const [counts, setCounts] = useState<Counts | null>(null)
+  const [erroresNuevos, setErroresNuevos] = useState<number | null>(null)
 
   useEffect(() => {
     createClient()
@@ -22,6 +23,18 @@ export default function AdminDashboard() {
           published: rows.filter((r) => r.status === 'published').length,
           drafts: rows.filter((r) => r.status === 'draft').length,
         })
+      })
+  }, [])
+
+  // Si la tabla aún no existe (esquema sin aplicar), se queda en null y la
+  // tarjeta simplemente no muestra contador.
+  useEffect(() => {
+    createClient()
+      .from('error_logs')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'nuevo')
+      .then(({ count, error }) => {
+        if (!error) setErroresNuevos(count ?? 0)
       })
   }, [])
 
@@ -67,6 +80,27 @@ export default function AdminDashboard() {
       desc: 'La efeméride de la semana: columna en la web y story 1080×1920 con foto y 4 variantes.',
       meta: 'Formato story · 9:16',
       cta: 'Abrir generador',
+    },
+    {
+      href: '/admin/analiticas',
+      n: '06',
+      title: 'Analíticas',
+      desc: 'Cuánta gente entra, de qué países, qué lee, cuánto se queda y qué calculadoras usa.',
+      meta: 'Medición propia · sin cookies',
+      cta: 'Ver audiencia',
+    },
+    {
+      href: '/admin/errores',
+      n: '07',
+      title: 'Errores',
+      desc: 'Todo lo que falla en el navegador de quien visita la web, agrupado y exportable a CSV.',
+      meta:
+        erroresNuevos === null
+          ? 'Exportable a CSV'
+          : erroresNuevos === 0
+            ? 'Nada sin revisar'
+            : `${erroresNuevos} sin revisar`,
+      cta: 'Revisar errores',
     },
   ]
 

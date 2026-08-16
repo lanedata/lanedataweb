@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { EVENTS, trackEvent } from '@/lib/telemetry/analytics'
+import { logError } from '@/lib/telemetry/errors'
 
 interface Props {
   title: string
@@ -11,13 +13,21 @@ export function ShareButton({ title, url }: Props) {
   const [copied, setCopied] = useState(false)
 
   async function share() {
-    if (navigator.share) {
-      await navigator.share({ title, url })
-      return
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, url })
+        trackEvent(EVENTS.share, 'nativo')
+        return
+      }
+      await navigator.clipboard.writeText(url)
+      trackEvent(EVENTS.share, 'copiar enlace')
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (e) {
+      // Cancelar el diálogo del sistema lanza AbortError: no es un fallo.
+      if (e instanceof DOMException && e.name === 'AbortError') return
+      logError({ error: e, action: 'compartir un artículo', context: { url } })
     }
-    await navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
   }
 
   return (

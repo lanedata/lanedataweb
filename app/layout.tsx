@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Bricolage_Grotesque, IBM_Plex_Mono } from 'next/font/google'
+import { Telemetry } from '@/components/telemetry/Telemetry'
 import './globals.css'
 
 // Se auto-alojan en el build: sin petición a Google en runtime y sin el
@@ -122,6 +123,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {children}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteLd) }} />
+
+        {/* Medición propia y registro de errores: primera parte, sin cookies. */}
+        <Telemetry />
+
+        {/* GA se carga siempre, como hasta ahora. Cuando entren los textos
+            legales pasará a depender del consentimiento del banner. */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
           strategy="afterInteractive"

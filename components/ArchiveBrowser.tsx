@@ -1,12 +1,21 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ArticleCard } from './ArticleCard'
+import { EVENTS, trackEvent } from '@/lib/telemetry/analytics'
 import type { ArticlePreview } from '@/types'
 
 export function ArchiveBrowser({ articles }: { articles: ArticlePreview[] }) {
   const [q, setQ] = useState('')
   const query = q.trim().toLowerCase()
+
+  // Se registra la búsqueda cuando la persona deja de teclear, no letra a
+  // letra: si no, «katir» serían cinco búsquedas distintas en el panel.
+  useEffect(() => {
+    if (query.length < 3) return
+    const id = window.setTimeout(() => trackEvent(EVENTS.search, query), 900)
+    return () => window.clearTimeout(id)
+  }, [query])
 
   const filtered = useMemo(() => {
     if (!query) return articles

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useRef, useState, useTransition } from 'react'
+import { EVENTS, trackEvent } from '@/lib/telemetry/analytics'
 
 interface Props {
   defaultValue?: string
@@ -18,6 +19,7 @@ export function SearchBar({ defaultValue = '', autoFocus = false }: Props) {
     e.preventDefault()
     const q = value.trim()
     if (!q) return
+    trackEvent(EVENTS.search, q)
     startTransition(() => {
       router.push(`/buscar?q=${encodeURIComponent(q)}`)
     })
