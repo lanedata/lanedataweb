@@ -4,6 +4,7 @@
 // el dato de la semana en curso (visible toda la semana lun–dom) y lo pinta.
 // Desde el admin se carga el mismo CSV para generar la story.
 
+import { parseIsoDate, readCsv } from '@/lib/csv'
 import type { DatoSemana } from './types'
 
 export const COLUMNS = [
@@ -14,44 +15,13 @@ export const COLUMNS = [
 
 const DEFAULT_KICKER = 'El dato de la semana'
 
-/** Parte el CSV en filas. Acepta `;` o `,` y respeta las comillas dobles. */
-function splitCsv(text: string): string[][] {
-  const firstLine = text.split(/\r?\n/)[0] || ''
-  const sep = firstLine.split(';').length > firstLine.split(',').length ? ';' : ','
-  const rows: string[][] = []
-  let row: string[] = []
-  let cell = ''
-  let quoted = false
-
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i]
-    if (quoted) {
-      if (c === '"') {
-        if (text[i + 1] === '"') { cell += '"'; i++ } else quoted = false
-      } else cell += c
-    } else if (c === '"') quoted = true
-    else if (c === sep) { row.push(cell); cell = '' }
-    else if (c === '\n') { row.push(cell); rows.push(row); row = []; cell = '' }
-    else if (c === '\r') { /* se ignora */ }
-    else cell += c
-  }
-  if (cell.length || row.length) { row.push(cell); rows.push(row) }
-  return rows.filter((r) => r.some((c) => String(c).trim() !== ''))
-}
-
 /** Convierte una fila del CSV en un DatoSemana, con valores por defecto. */
 export function parseCsv(text: string): DatoSemana[] {
-  const rows = splitCsv(text)
+  const { rows, get } = readCsv(text)
   if (!rows.length) return []
 
-  const head = rows[0].map((h) => h.trim().toLowerCase().replace(/^﻿/, ''))
-  const get = (r: string[], k: string) => {
-    const i = head.indexOf(k)
-    return i >= 0 && r[i] != null ? String(r[i]).trim() : ''
-  }
-
   const out: DatoSemana[] = []
-  rows.slice(1).forEach((r) => {
+  rows.forEach((r) => {
     const titular = get(r, 'titular')
     if (!titular) return
     const varRaw = get(r, 'variante').toLowerCase()
@@ -80,15 +50,8 @@ export function parseCsv(text: string): DatoSemana[] {
  *  defecto el lunes de su semana (`desde`), así se ve toda la semana lun–dom.
  *  Se puede adelantar/atrasar por fila con la columna `publicar`. */
 function goLiveDate(d: DatoSemana): Date | null {
-  if (d.publicar) return parseDate(d.publicar)
-  return parseDate(d.desde)
-}
-
-function parseDate(s?: string): Date | null {
-  if (!s) return null
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(s.trim())
-  if (!m) return null
-  return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+  if (d.publicar) return parseIsoDate(d.publicar)
+  return parseIsoDate(d.desde)
 }
 
 /**

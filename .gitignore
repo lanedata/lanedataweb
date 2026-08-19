@@ -47,3 +47,6 @@ __pycache__/
 # y commitearlo crearía un gitlink roto). Lo aprovechable ya está extraído en
 # calendar_scraper/scraper-podios-extraido/.
 /calendar_scraper/scrapers/
+
+# Cache de agregados del CDN de atletismo-espana (scripts/gen_test_semanal.py)
+.cache-datos/

@@ -2,7 +2,8 @@
 
 // Subpágina /test — un duplicado de la web protegido por contraseña para
 // experimentar sin tocar la home pública. Incluye la columna "El dato de la
-// semana" para probarla en contexto. Al ser el sitio estático (GitHub Pages)
+// semana" y LaneGames (el test y el wordle semanales), que aún no salen en la
+// web pública. Al ser el sitio estático (GitHub Pages)
 // la contraseña se comprueba en cliente: es una barrera para un sandbox, no un
 // control de seguridad real. Cambia TEST_PASSWORD para actualizarla.
 
@@ -12,6 +13,7 @@ import { Footer } from '@/components/Footer'
 import { HeroArticle } from '@/components/HeroArticle'
 import { ArticleCard } from '@/components/ArticleCard'
 import { DatoSemanaColumn } from '@/components/datosemana/DatoSemanaColumn'
+import { LaneGames } from '@/components/lanegames/LaneGames'
 import { createClient } from '@/lib/supabase/client'
 import type { ArticlePreview } from '@/types'
 
@@ -127,10 +129,17 @@ function Sandbox() {
           </div>
         </section>
 
+        {/* ── LaneGames: test y wordle semanales (todavía sólo en /test) ── */}
+        <section className="mt-20">
+          <div className="section-label">03 · lanegames</div>
+          <h2 className="section-title mb-8">Los juegos de la semana</h2>
+          <LaneGames navegable />
+        </section>
+
         {/* ── More articles ── */}
         {rest.length > 0 && (
           <section className="mt-20">
-            <div className="section-label">03 · más análisis</div>
+            <div className="section-label">04 · más análisis</div>
             <h2 className="section-title mb-8">El resto del archivo reciente</h2>
             <div className="article-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {rest.map((article) => (

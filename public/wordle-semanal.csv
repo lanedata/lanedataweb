@@ -1,0 +1,54 @@
+﻿semana;fecha_lunes;solucion;longitud;letras_distintas;dificultad;categoria;intentos;pista_1;pista_2;pista_3;explicacion
+1;2026-08-24;VALLA;5;3;facil;Material;6;Se salta, pero no es un salto;Hay diez en las pruebas de 110 y 400;Si la derribas no te descalifican, pero pierdes tiempo;Obstáculo de altura reglamentada según prueba y categoría.
+2;2026-08-31;TESTIGO;7;6;facil;Material;6;Solo aparece en una familia de pruebas;Cambia de manos cuatro veces por carrera;Se pasa dentro de una zona de 30 metros;El tubo del relevo: mínimo 50 g y de 28 a 30 cm.
+3;2026-09-07;META;4;4;facil;Instalaciones;6;Todo el mundo quiere llegar ahí;Está donde acaba la carrera;Sobre ella pasa la línea que detiene el crono;"La llegada; el tiempo se toma cuando el torso la cruza."
+4;2026-09-14;TARTAN;6;4;facil;Instalaciones;6;Es una superficie;Suele ser rojiza y sintética;Una marca comercial convertida en nombre común;El pavimento sintético habitual de las pistas.
+5;2026-09-21;PERTIGA;7;7;media;Pruebas;6;Prueba de saltos;Se salta con ayuda de un implemento largo y flexible;Antes del vuelo hay que clavarla en un cajetín;Salto con pértiga: el implemento da nombre a la prueba.
+6;2026-09-28;PODIO;5;4;facil;Competición;6;Aparece al final del día;Tiene tres alturas;Solo lo pisan tres de cada prueba;El cajón de los tres primeros clasificados.
+7;2026-10-05;MARATON;7;6;facil;Pruebas;6;Se corre fuera de la pista;Dura horas, no minutos;Mide 42,195 km;La prueba de ruta más larga del programa olímpico.
+8;2026-10-12;CLAVOS;6;6;facil;Material;6;Van en los pies;Se atornillan y se cambian;Su longitud máxima la fija el reglamento;Las puntas metálicas de las zapatillas de competición.
+9;2026-10-19;LIEBRE;6;5;media;Cultura;6;Es una persona, no un animal;Corre para que otros corran mejor;Casi nunca acaba la carrera;"El atleta que marca el ritmo y se retira; en inglés, pacer."
+10;2026-10-26;JABALINA;8;6;media;Pruebas;6;Prueba de lanzamientos;El único implemento que se lanza corriendo;Pesa 800 g en categoría masculina y 600 g en femenina;Lanzamiento de jabalina, desde un pasillo y no desde un círculo.
+11;2026-11-02;SALIDA;6;5;facil;Competición;6;Es un momento, no un lugar;Puede ser nula;Los tacos solo sirven para esto;"El arranque de la carrera; por debajo de 0,100 s de reacción, nula."
+12;2026-11-09;LISTON;6;6;media;Material;6;Aparece en dos pruebas;Se apoya sobre dos soportes;Si lo tiras, es nulo;La barra que hay que superar en altura y pértiga.
+13;2026-11-16;RELEVO;6;5;facil;Pruebas;6;Es cosa de equipo;Cuatro atletas, una carrera;Sin él no hay 4x100;Prueba por equipos con entrega de testigo.
+14;2026-11-23;MARCHA;6;5;facil;Modalidades;6;Se avanza rápido pero sin correr;Tiene jueces que miran las rodillas;Exige contacto visible permanente con el suelo;La marcha atlética, con pruebas de 20 y 35 km.
+15;2026-11-30;CAJETIN;7;7;dificil;Instalaciones;6;Es un hueco en el suelo;Está al final de un pasillo;Solo lo usa una prueba de saltos;El encaje donde se clava la pértiga para el batido.
+16;2026-12-07;DORSAL;6;6;facil;Competición;6;Se lleva puesto;Lleva un número;Sin él no puedes competir;El número identificativo del atleta en competición.
+17;2026-12-14;VIENTO;6;6;media;Reglamento;6;No se toca pero se mide;Puede invalidar una marca;El límite legal es +2,0 m/s;Se mide con anemómetro en velocidad, vallas cortas y saltos horizontales.
+18;2026-12-21;CROSS;5;4;facil;Modalidades;6;No se corre en pista;Hay barro, hierba y cuestas;Su temporada es el invierno;El campo a través, sobre terreno natural.
+19;2026-12-28;ZANCADA;7;5;media;Técnica;6;Se cuenta y se mide;Cada corredor tiene la suya;Amplitud por frecuencia da la velocidad;El paso de carrera: su amplitud y su frecuencia definen el ritmo.
+20;2027-01-04;JAULA;5;4;media;Instalaciones;6;Está hecha de red;Existe por seguridad;Protege al público de dos implementos que giran;La estructura desde la que se lanza martillo y disco.
+21;2027-01-11;TRIPLE;6;6;facil;Pruebas;6;Prueba de saltos;Tiene tres apoyos;Salto, paso y salto;El triple salto: hop, step and jump.
+22;2027-01-18;MINIMA;6;4;media;Competición;6;Es una cifra, no una marca cualquiera;La publica la federación antes del campeonato;Sin ella (o sin ranking) no viajas;La marca exigida para entrar en un equipo nacional.
+23;2027-01-25;ANEMOMETRO;10;7;dificil;Material;6;Es un aparato de medida;Se coloca junto a la recta;Decide si una marca es homologable;"Mide el viento; el límite legal es +2,0 m/s."
+24;2027-02-01;SERIE;5;4;facil;Competición;6;Es una ronda;Se corre antes de la final;De ella salen los clasificados;Las eliminatorias previas de una prueba de pista.
+25;2027-02-08;BATIDA;6;5;media;Técnica;6;Es el último contacto con el suelo;Ocurre justo antes de volar;En longitud se hace sobre una tabla;El impulso final de los saltos.
+26;2027-02-15;MARTILLO;8;7;media;Pruebas;6;Prueba de lanzamientos;Bola, cable y empuñadura;Se lanza girando dentro de una jaula;Pesa 7,26 kg en categoría masculina y 4 kg en femenina.
+27;2027-02-22;CALLE;5;4;facil;Instalaciones;6;La pista está dividida en ellas;Cada una mide 1,22 m de ancho;En una final suele haber ocho;Los pasillos de la pista, numerados de dentro hacia fuera.
+28;2027-03-01;PLASTILINA;10;7;dificil;Material;6;Es blanda y se cambia entre intentos;Está en el suelo, no en las manos;Delata al que pisa de más;La banda que marca el nulo en la tabla de batida.
+29;2027-03-08;FONDO;5;4;facil;Modalidades;6;Es una manera de clasificar las pruebas;Lo contrario de la velocidad;5.000, 10.000 y más allá;Las pruebas de larga distancia.
+30;2027-03-15;CAMPANA;7;5;media;Competición;6;Suena una sola vez por carrera;Avisa a los que van en cabeza;Marca la última vuelta;El toque que anuncia la vuelta final.
+31;2027-03-22;ALTURA;6;5;facil;Pruebas;6;Prueba de saltos;Se salta de espaldas;Tres intentos por cada listón;El salto de altura, con la técnica Fosbury.
+32;2027-03-29;SECTOR;6;6;media;Instalaciones;6;Es una zona del campo interior;Tiene forma de porción de tarta;Fuera de él, el lanzamiento es nulo;El sector de caída de los lanzamientos, de 34,92º.
+33;2027-04-05;TACOS;5;5;facil;Material;6;Van en el suelo, no en el pie;Solo se usan hasta los 400 m;De ellos sale el atleta al oír el disparo;Los tacos de salida, regulables y con sensores de reacción.
+34;2027-04-12;DECATLON;8;8;media;Pruebas combinadas;6;Son varias pruebas en una;Dura dos días;Empieza con 100 m y acaba con 1.500 m;Las diez pruebas del combinado masculino al aire libre.
+35;2027-04-19;DISCO;5;5;facil;Pruebas;6;Prueba de lanzamientos;El implemento es plano y redondo;Pesa 2 kg en categoría masculina;Lanzamiento de disco, desde un círculo de 2,50 m.
+36;2027-04-26;RECORD;6;5;facil;Competición;6;Es lo que todos persiguen;Puede ser nacional, europeo o mundial;Necesita homologación para contar;La mejor marca reconocida en un ámbito y una prueba.
+37;2027-05-03;FOSO;4;3;media;Instalaciones;6;Está lleno de algo que no es tierra;Hay uno con arena y otro con agua;En obstáculos está justo detrás de una valla fija;El foso de caída de los saltos horizontales o la ría de obstáculos.
+38;2027-05-10;VELOCIDAD;9;8;facil;Modalidades;6;Es una familia de pruebas;Duran menos de un minuto;60, 100, 200 y 400;Las pruebas más cortas del programa.
+39;2027-05-17;TARJETA;7;5;media;Reglamento;6;La enseña un juez;En marcha las hay amarillas y rojas;Tres rojas y vas a la zona de penalización;El sistema de avisos y sanciones de la marcha atlética.
+40;2027-05-24;COLCHONETA;10;8;media;Material;6;Es blanda y enorme;Amortigua caídas desde varios metros;Sin ella no se puede saltar de espaldas;La zona de caída de altura y pértiga.
+41;2027-05-31;ESTAFETA;8;5;dificil;Pruebas;6;Otro nombre para una prueba conocida;Se corre por equipos;Es como se llamaba al relevo en las crónicas antiguas;Sinónimo clásico de carrera de relevos.
+42;2027-06-07;CUERDA;6;6;media;Instalaciones;6;No es una soga;Está en la calle 1;Correr a ella es hacer el recorrido más corto;El borde interior de la pista: 400 m medidos a 30 cm de él.
+43;2027-06-14;NULO;4;4;facil;Reglamento;6;Es un veredicto;Lo señala una bandera roja;El intento cuenta, pero no la marca;El intento inválido en saltos y lanzamientos.
+44;2027-06-21;CRONOMETRO;10;7;facil;Material;6;Mide, no pesa;Hoy es electrónico y va a la milésima;Lo detiene el torso al cruzar la meta;El sistema de cronometraje de la competición.
+45;2027-06-28;VALLISTA;8;6;media;Especialistas;6;Es un tipo de atleta;Corre y salta a la vez;Su prueba tiene diez obstáculos;El especialista en las pruebas de vallas.
+46;2027-07-05;MITIN;5;4;media;Competición;6;Es una cita del calendario;No es un campeonato;Los mejores van a los de la Diamond League;La reunión atlética de un día, sin fase eliminatoria.
+47;2027-07-12;OBSTACULOS;10;8;media;Pruebas;6;Prueba de fondo con extras;Hay vallas fijas y agua;Son 3.000 metros y 35 pasos;Los 3.000 m obstáculos: 28 vallas y 7 rías.
+48;2027-07-19;LONGITUD;8;8;facil;Pruebas;6;Prueba de saltos;Se mide en horizontal;Carrera, tabla, arena;El salto de longitud, con batida sobre tabla y plastilina.
+49;2027-07-26;FONDISTA;8;8;media;Especialistas;6;Es un tipo de atleta;Vive de la resistencia;Sus pruebas empiezan en los 3.000 m;El especialista en las distancias largas.
+50;2027-08-02;LANZADOR;8;7;media;Especialistas;6;Es un tipo de atleta;Trabaja con implementos;Compite dentro de un círculo o en un pasillo;El especialista en peso, disco, martillo o jabalina.
+51;2027-08-09;HEPTATLON;9;8;dificil;Pruebas combinadas;6;Son varias pruebas en una;En femenino se hace al aire libre y en masculino bajo techo;Siete pruebas, y acaba con 800 m en femenino;El combinado de siete pruebas.
+52;2027-08-16;SALTADOR;8;7;media;Especialistas;6;Es un tipo de atleta;Su objetivo es despegar;Puede ser de altura, longitud, triple o pértiga;El especialista en las pruebas de saltos.
+53;2027-08-23;HOMOLOGAR;9;7;dificil;Reglamento;6;Es un verbo, no una cosa;Sin esto una marca no cuenta para el ranking;Depende del viento, del cronometraje y de la instalación;Validar oficialmente una marca.
