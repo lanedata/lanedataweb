@@ -1,33 +1,6 @@
 [
   {
     "id": null,
-    "nombre": "Trofeo Iberico Pruebas Combinadas POR-ESP",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-06-22",
-    "fecha_fin": "2026-06-23",
-    "lugar": "Lisboa, Portugal",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
     "nombre": "XV Carrera Nocturna San Juan de Aznalfarache 2026",
     "ambito": "Andalucía",
     "disciplina": null,
@@ -2539,12 +2512,12 @@
   },
   {
     "id": null,
-    "nombre": "5º Festival de Atletismo Cordoba , carrera La Fuensanta, 5k,10k, milla y pruebas de pista.-C. prov de milla y 5k.",
+    "nombre": "5º Festival de Atletismo Córdoba, Carrera La Fuensanta, 5k 10k Milla y pruebas de pista, Campeonato Provincial de Milla y 5k",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-09-26",
     "fecha_fin": "2026-09-26",
-    "lugar": "Cordoba, El Fontanar, Cordoba",
+    "lugar": "El Fontanar, Córdoba",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
@@ -2566,7 +2539,7 @@
   },
   {
     "id": null,
-    "nombre": "Campeonato de Andalucia de 5km ,indv y equipos y Milla en Ruta solo individual",
+    "nombre": "Campeonato de Andalucía de 5K individual/equipos y Milla en Ruta individual",
     "ambito": "Andalucía",
     "disciplina": null,
     "fecha_inicio": "2026-09-26",
