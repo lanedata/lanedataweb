@@ -1,33 +1,6 @@
 [
   {
     "id": null,
-    "nombre": "VIII Carrera Nocturna Solidaria \"Corre por la Igualdad\"",
-    "ambito": "Andalucía",
-    "disciplina": null,
-    "fecha_inicio": "2026-07-03",
-    "fecha_fin": "2026-07-03",
-    "lugar": "Los Barrios, Cádiz",
-    "pruebas": [],
-    "horario": [],
-    "inscripcion": {
-      "abierta": null,
-      "fecha_limite": null,
-      "url": null,
-      "instrucciones": "Consultar la web de la Federación Andaluza."
-    },
-    "url_detalle": "https://web.faalive.com/Calendar",
-    "url_inscritos": null,
-    "url_resultados": null,
-    "url_directo": null,
-    "url_callroom": null,
-    "url_reglamento": null,
-    "url_calendario_federacion": "https://web.faalive.com/Calendar",
-    "documentos": [],
-    "comunidad": "Andalucía",
-    "fuente": "andalucia"
-  },
-  {
-    "id": null,
     "nombre": "Campeonato de Andalucía Absoluto",
     "ambito": "Andalucía",
     "disciplina": null,
@@ -6595,6 +6568,33 @@
     "fecha_inicio": "2027-01-25",
     "fecha_fin": "2027-01-25",
     "lugar": "Almería",
+    "pruebas": [],
+    "horario": [],
+    "inscripcion": {
+      "abierta": null,
+      "fecha_limite": null,
+      "url": null,
+      "instrucciones": "Consultar la web de la Federación Andaluza."
+    },
+    "url_detalle": "https://web.faalive.com/Calendar",
+    "url_inscritos": null,
+    "url_resultados": null,
+    "url_directo": null,
+    "url_callroom": null,
+    "url_reglamento": null,
+    "url_calendario_federacion": "https://web.faalive.com/Calendar",
+    "documentos": [],
+    "comunidad": "Andalucía",
+    "fuente": "andalucia"
+  },
+  {
+    "id": null,
+    "nombre": "I Control Federativo Huelva",
+    "ambito": "Andalucía",
+    "disciplina": null,
+    "fecha_inicio": "2027-01-30",
+    "fecha_fin": "2027-01-30",
+    "lugar": "Estadio Iberoamricano, Huelva",
     "pruebas": [],
     "horario": [],
     "inscripcion": {
