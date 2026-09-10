@@ -1,11 +1,10 @@
 {
-  "generado": "2026-09-09T09:27:12+00:00",
-  "total": 0,
+  "generado": "2026-09-10T09:25:14+00:00",
+  "total": 266,
   "fuentes": {
     "spa:andalucia": {
-      "ok": false,
-      "n": 0,
-      "error": "TimeoutError: Page.goto: Timeout 60000ms exceeded.\nCall log:\n  - navigating to \"https://web.faalive.com/Calendar\", waiting until \"networkidle\"\n"
+      "ok": true,
+      "n": 266
     }
   }
 }
