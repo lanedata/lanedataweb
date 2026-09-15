@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { legalIncompleto } from '@/lib/legal'
 
 interface Counts {
   published: number
@@ -113,6 +114,20 @@ export default function AdminDashboard() {
         <span className="font-semibold text-ink/75"> Publicar web </span>
         arriba a la derecha cuando quieras que los cambios lleguen al sitio.
       </p>
+
+      {legalIncompleto() && (
+        <div className="mt-8 border border-ink/20 bg-cream p-5">
+          <p className="font-brand text-base font-extrabold tracking-tight text-ink">
+            Faltan los datos del titular en los textos legales
+          </p>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink/60">
+            El aviso legal y la política de privacidad se publican con huecos entre corchetes.
+            Rellena nombre, NIF y domicilio en <code className="font-mono text-xs">lib/legal.ts</code>{' '}
+            antes de dar la web por publicada: el artículo 10 de la LSSI exige que esos datos
+            estén visibles.
+          </p>
+        </div>
+      )}
 
       <div className="mt-12 grid gap-px bg-ink/[0.14] sm:grid-cols-2">
         {SECTIONS.map((s) => (
