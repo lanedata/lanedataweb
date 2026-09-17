@@ -210,6 +210,15 @@ Para dejarlo operativo hay que **ejecutar `supabase/telemetry-schema.sql` en el
 SQL Editor de Supabase**. Detalle completo en
 **[docs/telemetria.md](docs/telemetria.md)**.
 
+## Información legal
+
+Aviso legal, política de privacidad, política de cookies y condiciones de uso en
+`/legal/`, más el banner de consentimiento que decide si se carga Google
+Analytics.
+
+Antes de publicar hay que **rellenar los datos del titular en `lib/legal.ts`**
+(nombre, NIF y domicilio). Detalle en **[docs/legal.md](docs/legal.md)**.
+
 ---
 
 ## Seguridad
