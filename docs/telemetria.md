@@ -122,18 +122,19 @@ SELECT cron.schedule('telemetry-purge', '0 4 * * 0', 'SELECT telemetry_purge()')
 
 ---
 
-## Pendiente: cookies y textos legales
+## Cookies y consentimiento
 
-Google Analytics sigue cargándose siempre, como hasta ahora. El banner de
-consentimiento y los cuatro documentos legales (aviso legal, privacidad, cookies
-y condiciones de uso) van en una entrega aparte, porque necesitan los datos
-identificativos del titular —nombre, NIF y domicilio— que exige el artículo 10 de
-la LSSI.
+Google Analytics **ya no se carga siempre**: solo se descarga si la persona lo
+acepta en el banner, y se desactiva (borrando sus cookies) si retira el permiso.
+Lo gobierna `lib/telemetry/consent.ts`.
 
-Cuando entren, `lib/telemetry/consent.ts` pasará a mandar sobre GA: ese fichero ya
-está aquí precisamente para eso. `MEDICION_REQUIERE_CONSENTIMIENTO` se queda en
-`false` mientras tanto; ponerlo en `true` ahora apagaría la medición propia del
-todo, porque sin banner nadie puede dar su permiso.
+La medición propia descrita arriba sigue funcionando sin consentimiento previo,
+apoyada en la excepción de medición de audiencia de la Guía de cookies de la
+AEPD: es de primera parte, anónima, agregada y no se comparte con nadie. Si
+prefieres la lectura estricta, pon `MEDICION_REQUIERE_CONSENTIMIENTO = true` y
+pasará a pedirse como cualquier otra categoría.
+
+El detalle de los documentos legales está en [legal.md](legal.md).
 
 ---
 
