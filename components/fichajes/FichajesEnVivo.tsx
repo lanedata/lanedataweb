@@ -265,8 +265,8 @@ function AvisoSinTabla() {
         <p className="label-mono text-ink/45">Falta un paso</p>
         <p className="mt-2.5 text-sm leading-relaxed text-ink/70">
           La tabla <Codigo>fichajes</Codigo> todavía no existe en Supabase. Ejecuta{' '}
-          <Codigo>supabase/fichajes-schema.sql</Codigo> en el SQL Editor y fija la clave de
-          colaborador con <Codigo>SELECT fichajes_set_clave(&apos;tu-clave&apos;);</Codigo>
+          <Codigo>supabase/fichajes-schema.sql</Codigo> en el SQL Editor y después pon la clave
+          de colaborador en <Codigo>/admin/fichajes</Codigo>.
         </p>
       </div>
     </Marco>

@@ -16,6 +16,8 @@ const SECTIONS = [
   { href: '/admin/dato', label: 'Dato semana', icon: 'star', match: ['/admin/dato'] },
   { href: '/admin/analiticas', label: 'Analíticas', icon: 'chart', match: ['/admin/analiticas'] },
   { href: '/admin/errores', label: 'Errores', icon: 'bug', match: ['/admin/errores'] },
+  // TEMPORAL: mercado de fichajes. Se quita cuando se cierre el mercado.
+  { href: '/admin/fichajes', label: 'Fichajes', icon: 'swap', match: ['/admin/fichajes'] },
 ] as const
 
 function SectionIcon({ name, size = 16 }: { name: string; size?: number }) {
@@ -35,6 +37,8 @@ function SectionIcon({ name, size = 16 }: { name: string; size?: number }) {
       return <svg {...p}><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
     case 'bug':
       return <svg {...p}><rect x="8" y="7" width="8" height="12" rx="4" /><path d="M8 11H4M20 11h-4M8 16H4.5M20 16h-3.5M9.5 7L8 4M14.5 7L16 4" /></svg>
+    case 'swap':
+      return <svg {...p}><path d="M4 8h13l-3.5-3.5M20 16H7l3.5 3.5" /></svg>
     default:
       return null
   }

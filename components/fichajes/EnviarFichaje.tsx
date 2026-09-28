@@ -3,7 +3,8 @@
 // TEMPORAL — Formulario de colaborador para avisar de un fichaje.
 // Se comparte el enlace /fichajes/enviar/ con quien colabore, junto a la clave.
 //
-// SOBRE LA CLAVE: no está en este fichero ni en el bundle. El navegador manda lo
+// SOBRE LA CLAVE: la pone el administrador en /admin/fichajes y se la pasa a
+// quien colabore. No está en este fichero ni en el bundle: el navegador manda lo
 // que escribe el colaborador y es Postgres quien lo compara contra un hash
 // bcrypt (función `fichajes_enviar`, SECURITY DEFINER; ver
 // supabase/fichajes-schema.sql). Si la clave fuese una constante de JavaScript

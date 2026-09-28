@@ -4,9 +4,9 @@
 -- Ejecuta este fichero ENTERO en Supabase (Dashboard > SQL Editor > New query).
 -- Es idempotente: puedes volver a lanzarlo sin romper nada.
 --
--- DESPUÉS, y solo una vez, fija la clave de colaborador (elige la tuya):
---     SELECT fichajes_set_clave('la-clave-que-quieras');
--- Hasta que la fijes, /fichajes/enviar devuelve "clave no configurada".
+-- DESPUÉS, la clave de colaborador se pone desde el panel: /admin/fichajes.
+-- La escribes ahí, se guarda hasheada y ya se la pasas a quien colabore.
+-- (Desde el SQL Editor también vale: SELECT fichajes_set_clave('...');)
 --
 -- Diseño: la web es un sitio estático (GitHub Pages), así que no hay servidor
 -- propio donde comprobar la contraseña. Por eso:
@@ -116,8 +116,22 @@ BEGIN
 END;
 $fn$;
 
+-- La llama /admin/fichajes con tu sesión de administrador; anon nunca.
 REVOKE ALL ON FUNCTION fichajes_set_clave(TEXT) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION fichajes_set_clave(TEXT) TO authenticated;
+
+
+-- Saber si hay clave puesta y de cuándo es, SIN devolver nunca el hash.
+-- Lo usa el panel para decirte si falta configurarla.
+CREATE OR REPLACE FUNCTION fichajes_clave_estado()
+RETURNS TABLE (configurada BOOLEAN, actualizado_en TIMESTAMPTZ)
+LANGUAGE sql SECURITY DEFINER SET search_path = public AS $fn$
+  SELECT EXISTS (SELECT 1 FROM fichajes_clave WHERE id = 1),
+         (SELECT c.actualizado_en FROM fichajes_clave c WHERE c.id = 1);
+$fn$;
+
+REVOKE ALL ON FUNCTION fichajes_clave_estado() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION fichajes_clave_estado() TO authenticated;
 
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -219,5 +233,6 @@ GRANT EXECUTE ON FUNCTION fichajes_enviar(
 -- Cuando el mercado se cierre y quites la sección de /test, para borrarlo todo:
 --     DROP FUNCTION IF EXISTS fichajes_enviar(TEXT,TEXT,TEXT,TEXT,TEXT,TIMESTAMPTZ,TEXT,TEXT,TEXT);
 --     DROP FUNCTION IF EXISTS fichajes_set_clave(TEXT);
+--     DROP FUNCTION IF EXISTS fichajes_clave_estado();
 --     DROP TABLE IF EXISTS fichajes_clave;
 --     DROP TABLE IF EXISTS fichajes;
