@@ -69,6 +69,10 @@ jobs:
           # Leave NEXT_PUBLIC_BASE_PATH empty if you use a custom domain (lanedata.es).
           # The default '/lanedata' is used for mateogsilvaa.github.io/lanedata.
           NEXT_PUBLIC_BASE_PATH: ${{ secrets.NEXT_PUBLIC_BASE_PATH }}
+          # Sella el build con el commit: es lo que sale en la columna "Versión"
+          # del registro de errores. Sin esto todo llegaba marcado como "dev" y
+          # no se sabía de qué despliegue venía cada fallo.
+          NEXT_PUBLIC_COMMIT_SHA: ${{ github.sha }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

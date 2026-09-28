@@ -48,6 +48,61 @@ const IGNORED = [
   /play\(\) request was interrupted/i,
 ]
 
+/**
+ * Fallos de RECURSOS que no son un problema del sitio y que nadie puede
+ * arreglar desde el código. Antes se registraban todos y ahogaban el log: de
+ * los 21 avisos del export del 28-09-2026, 20 eran de esta clase — y al
+ * comprobarlos uno a uno, los ficheros seguían devolviendo HTTP 200. No
+ * faltaban: la carga se había bloqueado o cancelado en el navegador.
+ *
+ *   · Terceros (analítica, anuncios): los bloquean las extensiones de
+ *     privacidad del visitante. 18 de los 21 avisos eran gtag.
+ *   · Bundles de /_next/static/: una pestaña abierta desde antes del último
+ *     despliegue pide un fichero cuyo hash ya cambió, o el móvil cancela la
+ *     precarga al perder cobertura. Se arregla solo al recargar (y de eso se
+ *     encarga app/error.tsx si llega a romper la navegación).
+ */
+const TERCEROS_ESPERADOS = [
+  'googletagmanager.com',
+  'google-analytics.com',
+  'analytics.google.com',
+  'doubleclick.net',
+  'googlesyndication.com',
+  'googleadservices.com',
+  'connect.facebook.net',
+  'facebook.net',
+]
+
+/** ¿El recurso lo servimos nosotros (mismo origen o nuestro Storage)? */
+function esNuestro(url: string): boolean {
+  try {
+    const u = new URL(url, window.location.href)
+    if (u.origin === window.location.origin) return true
+    const supa = process.env.NEXT_PUBLIC_SUPABASE_URL
+    return !!supa && u.origin === new URL(supa).origin
+  } catch {
+    return false
+  }
+}
+
+/** URLs ya comprobadas, para no repetir la petición de verificación. */
+const comprobadas = new Set<string>()
+
+/**
+ * Un `error` en una etiqueta no distingue "el fichero no está" de "la carga se
+ * canceló". Lo preguntamos: solo es un fallo nuestro si el servidor responde
+ * 404 o 5xx. Si no se puede comprobar (sin red), no se registra: el visitante
+ * estaba desconectado, que no es un fallo del sitio.
+ */
+async function recursoRealmenteRoto(url: string): Promise<boolean> {
+  try {
+    const r = await fetch(url, { method: 'HEAD', cache: 'no-store' })
+    return r.status === 404 || r.status >= 500
+  } catch {
+    return false
+  }
+}
+
 const sentFingerprints = new Set<string>()
 let sentCount = 0
 let installed = false
@@ -193,6 +248,7 @@ export function installErrorTracking(): () => void {
   }
 
   // Imágenes, scripts o CSS que no cargan. No burbujean, hay que capturarlos.
+  // Solo se registra lo que de verdad falta en NUESTRO servidor: ver arriba.
   const onResourceError = (event: Event) => {
     const el = event.target as HTMLElement | null
     if (!el || el === (window as unknown as HTMLElement)) return
@@ -200,11 +256,21 @@ export function installErrorTracking(): () => void {
     if (!tag || !['img', 'script', 'link', 'source', 'video'].includes(tag)) return
     const url = (el as HTMLImageElement).src || (el as HTMLLinkElement).href || ''
     if (!url) return
-    logError({
-      error: `No carga <${tag}>: ${url}`,
-      source: 'recurso',
-      severity: 'aviso',
-      context: { tag, url },
+
+    if (TERCEROS_ESPERADOS.some((host) => url.includes(host))) return
+    if (!esNuestro(url)) return
+    if (url.includes('/_next/static/')) return
+    if (comprobadas.has(url)) return
+    comprobadas.add(url)
+
+    void recursoRealmenteRoto(url).then((roto) => {
+      if (!roto) return
+      logError({
+        error: `No carga <${tag}>: ${url}`,
+        source: 'recurso',
+        severity: 'aviso',
+        context: { tag, url },
+      })
     })
   }
 

@@ -9,6 +9,17 @@ import { NavBar } from '@/components/NavBar'
 import { Footer } from '@/components/Footer'
 import { logError } from '@/lib/telemetry/errors'
 
+/**
+ * Pestaña vieja tras un despliegue: el HTML en caché pide un bundle cuyo hash
+ * ya cambió y la navegación revienta. No es un fallo que arreglar en el código
+ * —se cura recargando—, así que recargamos nosotros en vez de enseñarle al
+ * visitante una pantalla de error que no entiende ni puede resolver.
+ */
+const ERROR_DE_BUNDLE =
+  /ChunkLoadError|Loading chunk \d+ failed|Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i
+
+const YA_RECARGADO = 'lanedata-recarga-por-bundle'
+
 export default function Error({
   error,
   reset,
@@ -17,6 +28,18 @@ export default function Error({
   reset: () => void
 }) {
   useEffect(() => {
+    // Una sola vez por sesión: si tras recargar sigue fallando, es otra cosa y
+    // hay que verla de verdad (nada de bucles de recarga).
+    if (ERROR_DE_BUNDLE.test(`${error.name} ${error.message}`)) {
+      try {
+        if (!sessionStorage.getItem(YA_RECARGADO)) {
+          sessionStorage.setItem(YA_RECARGADO, '1')
+          window.location.reload()
+          return
+        }
+      } catch { /* modo privado: seguimos y mostramos la pantalla */ }
+    }
+
     logError({
       error,
       source: 'react',
