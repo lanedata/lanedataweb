@@ -14,6 +14,7 @@ import { HeroArticle } from '@/components/HeroArticle'
 import { ArticleCard } from '@/components/ArticleCard'
 import { DatoSemanaColumn } from '@/components/datosemana/DatoSemanaColumn'
 import { LaneGames } from '@/components/lanegames/LaneGames'
+import { FichajesEnVivo } from '@/components/fichajes/FichajesEnVivo'
 import { createClient } from '@/lib/supabase/client'
 import type { ArticlePreview } from '@/types'
 
@@ -129,9 +130,23 @@ function Sandbox() {
           </div>
         </section>
 
+        {/* ── TEMPORAL: mercado de fichajes en vivo ──
+            Sección de temporada: cuando el mercado se cierre, se borra este
+            bloque (y el SQL de supabase/fichajes-schema.sql limpia los datos). */}
+        <section className="mt-20">
+          <div className="section-label">03 · mercado · en vivo</div>
+          <h2 className="section-title mb-3">Últimos fichajes</h2>
+          <p className="mb-8 max-w-2xl text-sm leading-relaxed text-ink/55">
+            Todos los fichajes anunciados, con la hora a la que se informó, el club que
+            deja el atleta y el que lo ficha. Cuando se sabe que se va pero no a dónde,
+            el destino queda como una incógnita.
+          </p>
+          <FichajesEnVivo />
+        </section>
+
         {/* ── LaneGames: test y wordle semanales (todavía sólo en /test) ── */}
         <section className="mt-20">
-          <div className="section-label">03 · lanegames</div>
+          <div className="section-label">04 · lanegames</div>
           <h2 className="section-title mb-8">Los juegos de la semana</h2>
           <LaneGames navegable />
         </section>
@@ -139,7 +154,7 @@ function Sandbox() {
         {/* ── More articles ── */}
         {rest.length > 0 && (
           <section className="mt-20">
-            <div className="section-label">04 · más análisis</div>
+            <div className="section-label">05 · más análisis</div>
             <h2 className="section-title mb-8">El resto del archivo reciente</h2>
             <div className="article-grid grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {rest.map((article) => (
