@@ -1,8 +1,13 @@
-// Últimos fichajes — tipos y helpers del directo temporal de /test.
+// Mercado de fichajes — tipos y helpers compartidos (directo, formularios,
+// panel y plantillas de historias).
 //
-// Un fichaje puede tener una INCÓGNITA: se sabe que el atleta se va de su club
-// pero no a dónde (club_destino = null), o al revés (club_origen = null). El
-// esquema exige conocer al menos uno de los dos.
+// Un fichaje puede tener una INCÓGNITA: se sabe que el atleta deja su club pero
+// no a dónde va (club_destino = null), o al revés. El esquema exige conocer al
+// menos uno de los dos.
+
+export type EstadoFichaje = 'rumor' | 'confirmado'
+export type Genero = 'H' | 'M'
+export type OrigenEnvio = 'colaborador' | 'atleta' | 'admin'
 
 export interface Fichaje {
   id: string
@@ -10,31 +15,73 @@ export interface Fichaje {
   informado_en: string
   /** Nombre y apellidos. */
   atleta: string
+  estado: EstadoFichaje
+  genero: Genero | null
   club_origen: string | null
   club_destino: string | null
-  division: string | null
+  division_origen: string | null
+  division_destino: string | null
   fuente: string | null
   nota: string | null
+  origen_envio: OrigenEnvio
 }
 
-/** Columnas que pide el directo (deja fuera enviado_por y visible). */
+/** Columnas que pide el directo público (nada privado). */
 export const FICHAJE_COLUMNS =
-  'id, informado_en, atleta, club_origen, club_destino, division, fuente, nota'
+  'id, informado_en, atleta, estado, genero, club_origen, club_destino, division_origen, division_destino, fuente, nota, origen_envio'
 
-/** Divisiones que se ofrecen como sugerencia; el campo acepta cualquier texto. */
+/** Propuesta de un atleta pendiente de aprobar (solo la ve el admin). */
+export interface Propuesta {
+  id: string
+  creado_en: string
+  atleta: string
+  genero: Genero | null
+  club_origen: string | null
+  club_destino: string | null
+  division_origen: string | null
+  division_destino: string | null
+  nota: string | null
+  contacto: string | null
+}
+
+// ─── Divisiones ──────────────────────────────────────────────────────────────
+
+/** Código corto de clubes.json → nombre que se guarda y se muestra. */
+export const DIVISION_NOMBRE = {
+  DH: 'División de Honor',
+  '1D': 'Primera División',
+} as const
+export type CodigoDivision = keyof typeof DIVISION_NOMBRE
+
+/** Sugerencias del campo división; acepta cualquier texto. */
 export const DIVISIONES = [
-  'División de Honor',
-  'Primera División',
+  DIVISION_NOMBRE.DH,
+  DIVISION_NOMBRE['1D'],
   'Segunda División',
-  'División de Honor Sub-20',
-  'Primera División Sub-20',
-  'Sin división / sin confirmar',
+  'Sin división',
 ]
 
-/** Qué clase de movimiento es, para pintarlo distinto. */
+/** "División de Honor" → "DH", "Primera División" → "1ª". Para chips. */
+export function divisionCorta(division: string | null): string | null {
+  if (!division) return null
+  const d = division.toLowerCase()
+  if (d.includes('honor')) return 'DH'
+  if (d.includes('primera')) return '1ª'
+  if (d.includes('segunda')) return '2ª'
+  if (d.startsWith('sin')) return null
+  return division.length <= 6 ? division : null
+}
+
+export const ESTADO_ETIQUETA: Record<EstadoFichaje, string> = {
+  rumor: 'Rumor',
+  confirmado: 'Confirmado',
+}
+
+// ─── Clasificación y tiempos ─────────────────────────────────────────────────
+
 export type TipoFichaje = 'completo' | 'destino-incognito' | 'origen-incognito'
 
-export function tipoDe(f: Fichaje): TipoFichaje {
+export function tipoDe(f: Pick<Fichaje, 'club_origen' | 'club_destino'>): TipoFichaje {
   if (!f.club_destino) return 'destino-incognito'
   if (!f.club_origen) return 'origen-incognito'
   return 'completo'
@@ -73,4 +120,29 @@ export function haceDe(iso: string, ahora: number = Date.now()): string {
   if (h < 24) return `hace ${h} h`
   const d = Math.round(h / 24)
   return d === 1 ? 'hace 1 día' : `hace ${d} días`
+}
+
+// ─── Nombres ─────────────────────────────────────────────────────────────────
+
+/** Minúsculas y sin tildes, para buscar sin que importe cómo se escriba. */
+export function normalizar(s: string): string {
+  return s
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9ñ]+/g, ' ')
+    .trim()
+}
+
+/**
+ * Reparte un nombre completo en nombre de pila y apellidos para las historias,
+ * donde van en dos tamaños. Heurística: con 4+ palabras el nombre de pila son
+ * las dos primeras (María José, Juan Carlos); si no, la primera. En la tarjeta
+ * el texto es editable, así que si falla se corrige a mano.
+ */
+export function partirNombre(completo: string): { nombre: string; apellidos: string } {
+  const p = completo.trim().split(/\s+/)
+  if (p.length <= 1) return { nombre: '', apellidos: p[0] ?? '' }
+  const corte = p.length >= 4 ? 2 : 1
+  return { nombre: p.slice(0, corte).join(' '), apellidos: p.slice(corte).join(' ') }
 }

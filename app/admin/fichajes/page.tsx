@@ -10,9 +10,9 @@ export default function FichajesAdminPage() {
         <div className="section-label">08 · temporal</div>
         <h1 className="section-title text-ink">Mercado de fichajes</h1>
         <p className="mt-4 max-w-xl text-sm leading-relaxed text-ink/55">
-          Pon la clave que quieras y pásasela a quien vaya a avisarte de fichajes: con ella
-          podrán publicarlos desde el enlace de colaborador. Abajo tienes todo lo que ha
-          entrado al directo de /test, por si hay que ocultar o borrar algo.
+          Reparte los dos enlaces: el de colaboradores (con la clave que pongas abajo) publica al
+          momento; el de atletas llega aquí para que lo apruebes. Desde aquí cambias rumor ⇄
+          confirmado, ocultas o borras, y cada fichaje sale solo en Historias.
         </p>
       </div>
       <FichajesPanel />

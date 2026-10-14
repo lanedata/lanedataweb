@@ -1,20 +1,18 @@
 import type { Metadata } from 'next'
-import { EnviarFichaje } from '@/components/fichajes/EnviarFichaje'
+import { FormularioFichaje } from '@/components/fichajes/FormularioFichaje'
 
-// TEMPORAL — Enlace que se comparte con los colaboradores del mercado de
-// fichajes. No es una sección pública: noindex aquí y Disallow en robots.ts.
-// La clave la valida Postgres, no este código (ver componente y
-// supabase/fichajes-schema.sql).
+// TEMPORAL — Enlace de colaboradores del mercado de fichajes (con clave, se
+// publica al momento). No es una sección pública: noindex y Disallow /fichajes.
 export const metadata: Metadata = {
   title: 'Avisar de un fichaje',
-  description: 'Formulario para colaboradores de lanedata.',
+  description: 'Formulario para colaboradores del mercado de fichajes de lanedata.',
   robots: { index: false, follow: false },
 }
 
 export default function EnviarFichajePage() {
   return (
-    <main className="min-h-dvh bg-paper">
-      <EnviarFichaje />
+    <main className="min-h-dvh bg-cream/30">
+      <FormularioFichaje modo="colaborador" />
     </main>
   )
 }

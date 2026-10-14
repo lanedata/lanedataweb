@@ -1,4 +1,5 @@
 import { Historias } from '@/components/admin/historias/Historias'
+import { FichajesHistorias } from '@/components/admin/historias/FichajesHistorias'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Historias' }
@@ -14,6 +15,8 @@ export default function HistoriasPage() {
           por atleta. Carga el CSV, encuadra las fotos y exporta los PNG.
         </p>
       </div>
+      {/* TEMPORAL: historias automáticas del mercado de fichajes */}
+      <FichajesHistorias />
       <Historias />
     </div>
   )

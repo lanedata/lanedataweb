@@ -12,16 +12,16 @@ import type { CSSProperties, ReactNode } from 'react'
 import type { Cover, Feat, MinimaRow, RecordRow, SectionHead, Top5Row } from './types'
 import { STORY_H, STORY_W, lastNameSize } from './types'
 
-const BRAND = "'Bricolage Grotesque', sans-serif"
+export const BRAND = "'Bricolage Grotesque', sans-serif"
 // El nombre literal resuelve en el export (el CSS embebido lo trae) y también
 // en pantalla vía next/font; la variable queda de red por si acaso.
-const MONO = "'JetBrains Mono', var(--font-story-mono), monospace"
+export const MONO = "'JetBrains Mono', var(--font-story-mono), monospace"
 
-const CREAM = '#eae9dc'
-const MINT = '#8FE38F'
-const DARK_BG = 'radial-gradient(120% 85% at 28% 0%, #1c3d29 0%, #0d2317 46%, #071810 100%)'
+export const CREAM = '#eae9dc'
+export const MINT = '#8FE38F'
+export const DARK_BG = 'radial-gradient(120% 85% at 28% 0%, #1c3d29 0%, #0d2317 46%, #071810 100%)'
 
-const cardBase: CSSProperties = {
+export const cardBase: CSSProperties = {
   width: STORY_W,
   height: STORY_H,
   transformOrigin: 'top left',
@@ -32,7 +32,7 @@ const cardBase: CSSProperties = {
 }
 
 /** Texto editable a mano dentro de la tarjeta. */
-function Ed({ children, style, tag = 'div' }: { children: ReactNode; style?: CSSProperties; tag?: 'div' | 'span' }) {
+export function Ed({ children, style, tag = 'div' }: { children: ReactNode; style?: CSSProperties; tag?: 'div' | 'span' }) {
   const Tag = tag
   return (
     <Tag contentEditable suppressContentEditableWarning style={style}>
@@ -68,7 +68,7 @@ function MundoAtletismoMark({ size = 40 }: { size?: number }) {
 }
 
 /** Cabecera: marca a la izquierda, fecha editable a la derecha. */
-function Header({ fecha, dark = true }: { fecha: string; dark?: boolean }) {
+export function Header({ fecha, dark = true }: { fecha: string; dark?: boolean }) {
   return (
     <div style={{ padding: '64px 72px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
@@ -90,7 +90,7 @@ function Header({ fecha, dark = true }: { fecha: string; dark?: boolean }) {
   )
 }
 
-function Footer({ dark = true }: { dark?: boolean }) {
+export function Footer({ dark = true }: { dark?: boolean }) {
   return (
     <div style={{ position: 'absolute', left: 72, right: 72, bottom: 56 }}>
       <div style={{ height: 1, background: dark ? 'rgba(238,237,224,0.18)' : 'rgba(12,42,24,0.25)', marginBottom: 32 }} />
