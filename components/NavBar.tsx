@@ -80,20 +80,23 @@ export function NavBar() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Ranking: Mundo Atletismo"
-            className="inline-flex items-center gap-1.5 border border-ink/[0.15] bg-mint/20 px-2.5 sm:px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
+            className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border border-ink/[0.15] bg-mint/20 px-2.5 sm:px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
           >
             <TrackIcon size={13} />
-            <span className="sm:hidden">MA: Ranking</span>
+            {/* En móvil, "MA: Ranking" con el espaciado de label-mono partía en
+                dos líneas: basta con "Ranking", el icono ya es el de Mundo Atletismo. */}
+            <span className="sm:hidden tracking-[0.14em]">Ranking</span>
             <span className="hidden sm:inline">Mundo Atletismo</span>
           </a>
 
-          {/* Instagram */}
+          {/* Instagram — en móviles de menos de 360 px no cabe junto a "Ranking"
+              y el menú; ahí se queda solo dentro del menú desplegable. */}
           <a
             href={INSTAGRAM_URL}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram de lanedata"
-            className="flex h-9 w-9 items-center justify-center text-ink/45 hover:text-ink hover:bg-ink/[0.05] transition-colors"
+            className="flex h-9 w-9 items-center justify-center text-ink/45 hover:text-ink hover:bg-ink/[0.05] transition-colors max-[359px]:hidden"
           >
             <InstagramIcon />
           </a>
@@ -175,7 +178,7 @@ export function NavBar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setMenuOpen(false)}
-                  className="inline-flex items-center gap-1.5 border border-ink/[0.15] bg-mint/20 px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
+                  className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap border border-ink/[0.15] bg-mint/20 px-3 py-1.5 label-mono text-ink/70 hover:bg-mint/35 hover:text-ink transition-colors"
                 >
                   <TrackIcon size={13} />
                   Mundo Atletismo
