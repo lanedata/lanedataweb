@@ -1,6 +1,7 @@
 export const dynamic = 'force-static'
 
 import { createStaticClient } from '@/lib/supabase/static'
+import { DOCUMENTOS } from '@/lib/legal'
 import type { MetadataRoute } from 'next'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://lanedata.es'
@@ -26,10 +27,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
+  // Las páginas legales se indexan: Google valora que un medio las tenga a la
+  // vista, y así son localizables aunque solo se enlacen desde el pie.
+  const legalUrls: MetadataRoute.Sitemap = [
+    '/legal/',
+    ...DOCUMENTOS.map((d) => d.href),
+  ].map((href) => ({
+    url: `${siteUrl}${href}`,
+    lastModified: new Date(),
+    changeFrequency: 'yearly' as const,
+    priority: 0.3,
+  }))
+
   return [
     { url: `${siteUrl}/`, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
     { url: `${siteUrl}/lanelab/`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${siteUrl}/archivo/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.6 },
     ...articleUrls,
+    ...legalUrls,
   ]
 }
