@@ -62,16 +62,21 @@ def main() -> int:
 
     # Adapters de NAVEGADOR del motor fantasy-atletismo-engine (Valencia headless;
     # Madrid headed solo con ENGINE_HEADED=1 en local). Lanzan su propio Playwright.
+    # El motor es un añadido: si revienta, se anota y se sigue con lo propio.
     from calendar_scraper import fuentes_engine
     if fuentes_engine.disponible():
-        motor = fuentes_engine.listar(
-            desde, hasta,
-            incluir_navegador=True,
-            incluir_headed=os.environ.get("ENGINE_HEADED") == "1",
-            solo_navegador=True,
-            on_error=lambda fed, e: print(f"[spa] [!] motor:{fed}: {e}", file=sys.stderr),
-            resumen=resumen,
-        )
+        try:
+            motor = fuentes_engine.listar(
+                desde, hasta,
+                incluir_navegador=True,
+                incluir_headed=os.environ.get("ENGINE_HEADED") == "1",
+                solo_navegador=True,
+                on_error=lambda fed, e: print(f"[spa] [!] motor:{fed}: {e}", file=sys.stderr),
+                resumen=resumen,
+            )
+        except Exception as exc:
+            resumen.fallo("motor", exc)
+            motor = []
         print(f"[spa] motor(navegador): {len(motor)} competiciones", file=sys.stderr)
         if motor:
             grupos.append(motor)

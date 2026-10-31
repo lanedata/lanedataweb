@@ -128,6 +128,27 @@ def listar(
         return []
     adapters, Http = imp
 
+    # El motor vive en otro repo y el workflow clona su HEAD cada día: si allí
+    # cambia la firma de adapters(), su cliente HTTP o su configuración, la
+    # excepción NO puede tumbar el scraper entero (y con él las fuentes propias,
+    # como Andalucía). Desde el 4-10-2026 pasaba justo eso y el job fallaba a
+    # diario. Ahora cualquier fallo del motor fuera de un adapter concreto queda
+    # anotado como "motor:listado" en el resumen y se sigue sin él.
+    try:
+        return _listar_con(adapters, Http, desde, hasta, excluir=excluir,
+                           incluir_navegador=incluir_navegador,
+                           incluir_headed=incluir_headed,
+                           solo_navegador=solo_navegador,
+                           on_error=on_error, res=res)
+    except Exception as exc:
+        res.fallo("motor:listado", exc)
+        if on_error:
+            on_error("engine-listado", exc)
+        return []
+
+
+def _listar_con(adapters, Http, desde, hasta, *, excluir, incluir_navegador,
+                incluir_headed, solo_navegador, on_error, res) -> list[Competicion]:
     ads = [a for a in adapters(incluir_navegador=incluir_navegador,
                                incluir_headed=incluir_headed)
            if a.id not in (excluir or ())]
