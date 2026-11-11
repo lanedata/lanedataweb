@@ -6,6 +6,7 @@ import { DatoSemanaColumn } from '@/components/datosemana/DatoSemanaColumn'
 import { createStaticClient } from '@/lib/supabase/static'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { MercadoPortada } from '@/components/fichajes/MercadoPortada'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://lanedata.es'
 
@@ -50,6 +51,8 @@ export default async function HomePage() {
       <NavBar />
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
+        {/* TEMPORAL: mercado de fichajes. Su sitio se elige en /admin/fichajes. */}
+        <MercadoPortada hueco="arriba" />
 
         {/* ── Featured article ── */}
         <section>
@@ -58,6 +61,8 @@ export default async function HomePage() {
             {featured ? <HeroArticle article={featured} /> : <EmptyState />}
           </div>
         </section>
+
+        <MercadoPortada hueco="tras-analisis" />
 
         {/* ── El dato de la semana (columna recurrente) ── */}
         <section className="mt-20">
@@ -93,6 +98,7 @@ export default async function HomePage() {
           </section>
         )}
 
+        <MercadoPortada hueco="abajo" />
       </main>
 
       <Footer />

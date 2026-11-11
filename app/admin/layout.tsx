@@ -48,6 +48,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className={`min-h-dvh bg-paper ${jetbrains.variable}`}>
+      {/* App instalable del panel (React 19 sube estas etiquetas al <head>). */}
+      <link rel="manifest" href="/admin.webmanifest" />
+      <meta name="theme-color" content="#0D2A14" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-title" content="lanedata" />
       <AdminNav />
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">{children}</div>
     </div>

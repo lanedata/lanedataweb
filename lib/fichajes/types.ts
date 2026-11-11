@@ -24,11 +24,87 @@ export interface Fichaje {
   fuente: string | null
   nota: string | null
   origen_envio: OrigenEnvio
+  /** Fichaje bomba: lo marca el admin y se resalta en todas partes. */
+  bomba: boolean
 }
 
 /** Columnas que pide el directo público (nada privado). */
 export const FICHAJE_COLUMNS =
-  'id, informado_en, atleta, estado, genero, club_origen, club_destino, division_origen, division_destino, fuente, nota, origen_envio'
+  'id, informado_en, atleta, estado, genero, club_origen, club_destino, division_origen, division_destino, fuente, nota, origen_envio, bomba'
+
+/** Colaborador con token personal (solo admin). */
+export interface Colaborador {
+  id: string
+  creado_en: string
+  nombre: string
+  token: string
+  activo: boolean
+  revocado_en: string | null
+  ultimo_envio_en: string | null
+}
+
+/** Enlace personal: el token va tras # y no viaja a ningún servidor. */
+export function enlaceColaborador(token: string, origen = typeof window !== 'undefined' ? window.location.origin : 'https://lanedata.es'): string {
+  return `${origen}/fichajes/enviar/#t=${token}`
+}
+
+/** Token nuevo generado en el navegador (mismo formato que el default SQL). */
+export function nuevoToken(): string {
+  const b = new Uint8Array(12)
+  crypto.getRandomValues(b)
+  return 'ld' + Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('')
+}
+
+// ─── Tablón ──────────────────────────────────────────────────────────────────
+export type TipoAnuncio = 'atleta' | 'club'
+export interface Anuncio {
+  id: string
+  creado_en?: string
+  publicado_en: string | null
+  tipo: TipoAnuncio
+  estado: 'pendiente' | 'publicado' | 'cerrado'
+  autor: string
+  club_actual: string | null
+  genero: 'H' | 'M' | 'X' | null
+  pruebas: string | null
+  zona: string | null
+  texto: string
+  perfil_url: string | null
+  contacto?: string | null
+}
+export const ANUNCIO_COLUMNS_PUBLICAS =
+  'id, publicado_en, tipo, estado, autor, club_actual, genero, pruebas, zona, texto, perfil_url'
+
+export interface Interesado {
+  id: string
+  creado_en: string
+  anuncio_id: string
+  nombre: string
+  mensaje: string | null
+  contacto: string
+  atendido: boolean
+}
+
+/**
+ * Perfil de mundoatletismo.es forzado a la skin «lane» (la de lanedata). Las
+ * rutas de la web van tras el # (#/atleta/...?x=y): el parámetro se añade a la
+ * query del hash. Devuelve null si no es un enlace de mundoatletismo.es.
+ */
+export function perfilLane(url: string | null | undefined): string | null {
+  if (!url) return null
+  let u: URL
+  try { u = new URL(url.trim()) } catch { return null }
+  if (u.protocol !== 'https:' || !/^(www\.)?mundoatletismo\.es$/.test(u.hostname)) return null
+  if (u.hash.startsWith('#/')) {
+    const [ruta, q = ''] = u.hash.slice(1).split('?')
+    const p = new URLSearchParams(q)
+    p.set('skin', 'lane')
+    u.hash = `${ruta}?${p.toString()}`
+  } else {
+    u.searchParams.set('skin', 'lane')
+  }
+  return u.toString()
+}
 
 /** Propuesta de un atleta pendiente de aprobar (solo la ve el admin). */
 export interface Propuesta {

@@ -17,7 +17,7 @@ const SECTIONS = [
   { href: '/admin/analiticas', label: 'Analíticas', icon: 'chart', match: ['/admin/analiticas'] },
   { href: '/admin/errores', label: 'Errores', icon: 'bug', match: ['/admin/errores'] },
   // TEMPORAL: mercado de fichajes. Se quita cuando se cierre el mercado.
-  { href: '/admin/fichajes', label: 'Fichajes', icon: 'swap', match: ['/admin/fichajes'] },
+  { href: '/admin/fichajes', label: 'Fichajes', icon: 'swap', match: ['/admin/fichajes', '/admin/movil'] },
 ] as const
 
 function SectionIcon({ name, size = 16 }: { name: string; size?: number }) {

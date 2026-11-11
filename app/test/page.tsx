@@ -15,6 +15,7 @@ import { ArticleCard } from '@/components/ArticleCard'
 import { DatoSemanaColumn } from '@/components/datosemana/DatoSemanaColumn'
 import { LaneGames } from '@/components/lanegames/LaneGames'
 import { FichajesEnVivo } from '@/components/fichajes/FichajesEnVivo'
+import { Tablon } from '@/components/fichajes/Tablon'
 import { createClient } from '@/lib/supabase/client'
 import type { ArticlePreview } from '@/types'
 
@@ -142,6 +143,12 @@ function Sandbox() {
             el destino queda como una incógnita.
           </p>
           <FichajesEnVivo />
+        </section>
+
+        <section id="tablon" className="mt-20">
+          <div className="section-label">03b · mercado · tablón</div>
+          <h2 className="section-title mb-8">Atletas que buscan club, clubes que buscan atletas</h2>
+          <Tablon />
         </section>
 
         {/* ── LaneGames: test y wordle semanales (todavía sólo en /test) ── */}

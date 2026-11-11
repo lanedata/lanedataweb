@@ -1,0 +1,15 @@
+{
+  "name": "lanedata · mercado",
+  "short_name": "lanedata",
+  "description": "Panel móvil del mercado de fichajes de lanedata",
+  "id": "/admin/movil/",
+  "start_url": "/admin/movil/",
+  "scope": "/admin/",
+  "display": "standalone",
+  "background_color": "#FBFAF6",
+  "theme_color": "#0D2A14",
+  "icons": [
+    { "src": "/favicon-256.png", "sizes": "256x256", "type": "image/png" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

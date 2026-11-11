@@ -10,7 +10,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { FICHAJE_COLUMNS, type Fichaje } from '@/lib/fichajes/types'
 import { downloadPng, nodeToPng } from '../exportNode'
-import { FichajeCard, PLANTILLA_NOMBRE, plantillaAuto, type Plantilla } from './FichajeCards'
+import {
+  FichajeCard, PLANTILLA_NOMBRE, ResumenDiaCard, fechaHistoria, plantillaAuto,
+  type EstilosFichaje, type Plantilla,
+} from './FichajeCards'
+import { cargarEstilos, estiloDe, type EstiloClub } from '@/lib/fichajes/estilos'
 import { partirNombre } from '@/lib/fichajes/types'
 import { STORY_H, STORY_W } from './types'
 
@@ -46,7 +50,24 @@ export function FichajesHistorias() {
   const [ocupado, setOcupado] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const [estilos, setEstilos] = useState<Map<string, EstiloClub> | null>(null)
   useEffect(() => { setExportadas(leerExportadas()) }, [])
+  useEffect(() => { cargarEstilos().then(setEstilos).catch(() => {}) }, [])
+  const estilosDe = (f: Fichaje): EstilosFichaje => ({
+    origen: estiloDe(estilos, f.club_origen), destino: estiloDe(estilos, f.club_destino),
+  })
+
+  // Resumen por día (de los días con 2+ fichajes), el más reciente primero.
+  const dias = useMemo(() => {
+    const m = new Map<string, Fichaje[]>()
+    for (const f of fichajes) {
+      const k = new Date(f.informado_en).toLocaleDateString('sv-SE')
+      m.set(k, [...(m.get(k) ?? []), f])
+    }
+    return [...m.entries()].filter(([, l]) => l.length >= 2)
+  }, [fichajes])
+  const [diaResumen, setDiaResumen] = useState<string>('')
+  const resumen = dias.find(([k]) => k === diaResumen) ?? dias[0]
 
   const cargar = useCallback(async () => {
     const supabase = createClient()
@@ -144,10 +165,33 @@ export function FichajesHistorias() {
         </p>
       )}
 
+      {estado === 'listo' && resumen && (
+        <div className="mb-10 flex flex-col gap-2.5" style={{ width: CARD_W }}>
+          <div className="relative shrink-0 overflow-hidden border border-ink/[0.14] bg-ink" style={{ width: CARD_W, height: CARD_H }}>
+            <div style={{ transform: `scale(${PREVIEW})`, transformOrigin: 'top left' }}>
+              <ResumenDiaCard key={resumen[0]} id="historia-resumen-dia" dia={fechaHistoria(resumen[1][0].informado_en)} lista={resumen[1]} />
+            </div>
+            <span className="absolute left-2 top-2 bg-ink px-1.5 py-0.5 label-mono text-[0.55rem] text-mint">resumen del día</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <select value={resumen[0]} onChange={(e) => setDiaResumen(e.target.value)}
+              className="min-w-0 flex-1 border border-ink/[0.15] bg-cream/50 px-2 py-1.5 text-[0.78rem] text-ink">
+              {dias.map(([k, l]) => <option key={k} value={k}>{k} · {l.length}</option>)}
+            </select>
+            <button type="button" className="shrink-0 bg-ink px-3 py-1.5 label-mono text-mint hover:bg-mint hover:text-ink"
+              onClick={async () => {
+                const el = document.getElementById('historia-resumen-dia')
+                if (el) downloadPng(await nodeToPng(el, STORY_W, STORY_H), `fichajes-resumen-${resumen[0]}`)
+              }}>PNG</button>
+          </div>
+        </div>
+      )}
+
       {estado === 'listo' && fichajes.length > 0 && (
         <div className="flex flex-wrap items-start gap-x-6 gap-y-10">
           {fichajes.map((f) => {
-            const auto = plantillaAuto(f)
+            const est = estilosDe(f)
+            const auto = plantillaAuto(f, est)
             const plantilla = forzadas[f.id] ?? auto
             const nueva = !exportadas.has(f.id)
             return (
@@ -155,13 +199,13 @@ export function FichajesHistorias() {
                 <div className="relative shrink-0 overflow-hidden border border-ink/[0.14] bg-ink" style={{ width: CARD_W, height: CARD_H }}>
                   <div style={{ transform: `scale(${PREVIEW})`, transformOrigin: 'top left' }}>
                     {/* key: al cambiar de plantilla se vuelve a pintar entera */}
-                    <FichajeCard key={plantilla} id={`historia-fichaje-${f.id}`} f={f} plantilla={plantilla} />
+                    <FichajeCard key={plantilla} id={`historia-fichaje-${f.id}`} f={f} plantilla={plantilla} estilos={est} />
                   </div>
                   {nueva && (
                     <span className="absolute left-2 top-2 bg-mint px-1.5 py-0.5 label-mono text-[0.55rem] text-ink">nueva</span>
                   )}
                 </div>
-                <p className="truncate text-[0.8rem] font-semibold text-ink" title={f.atleta}>{f.atleta}</p>
+                <p className="truncate text-[0.8rem] font-semibold text-ink" title={f.atleta}>{f.bomba ? '💥 ' : ''}{f.atleta}</p>
                 <div className="flex items-center gap-2">
                   <select
                     value={forzadas[f.id] ?? ''}

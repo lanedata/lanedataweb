@@ -16,32 +16,38 @@ import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   FICHAJE_COLUMNS, diaDe, horaDe,
-  type EstadoFichaje, type Fichaje, type Propuesta,
+  type Colaborador, type EstadoFichaje, type Fichaje, type Propuesta,
 } from '@/lib/fichajes/types'
+import { BloqueColaboradores } from './Colaboradores'
+import { BloqueClubes, BloquePortada } from './ClubesYPortada'
+import { BloqueTablon } from './TablonAdmin'
 
 const ENLACES = [
-  { ruta: '/fichajes/enviar/', titulo: 'Colaboradores', texto: 'Con la clave. Se publica al momento.' },
   { ruta: '/fichajes/mi-fichaje/', titulo: 'Atletas', texto: 'Sin clave. Llega aquí abajo para que lo apruebes.' },
+  { ruta: '/mercado/', titulo: 'Mercado público', texto: 'Directo + tablón de atletas y clubes.' },
+  { ruta: '/admin/movil/', titulo: 'Panel móvil', texto: 'Instálalo como app y activa los avisos.' },
 ]
 
-type FichajeAdmin = Fichaje & { visible: boolean }
+type FichajeAdmin = Fichaje & { visible: boolean; colaborador_id: string | null }
 type EstadoTabla = 'cargando' | 'listo' | 'sin-tabla' | 'error'
 
 export function FichajesPanel() {
   const [estado, setEstado] = useState<EstadoTabla>('cargando')
   const [fichajes, setFichajes] = useState<FichajeAdmin[]>([])
   const [propuestas, setPropuestas] = useState<Propuesta[]>([])
+  const [colaboradores, setColaboradores] = useState<Colaborador[]>([])
   const [claveInfo, setClaveInfo] = useState<{ configurada: boolean; actualizado_en: string | null } | null>(null)
 
   const cargar = useCallback(async () => {
     const supabase = createClient()
-    const [lista, props, clave] = await Promise.all([
-      supabase.from('fichajes').select(`${FICHAJE_COLUMNS}, visible`)
-        .order('informado_en', { ascending: false }).limit(200),
+    const [lista, props, clave, colabs] = await Promise.all([
+      supabase.from('fichajes').select(`${FICHAJE_COLUMNS}, visible, colaborador_id`)
+        .order('informado_en', { ascending: false }).limit(500),
       supabase.from('fichajes_propuestas')
         .select('id, creado_en, atleta, genero, club_origen, club_destino, division_origen, division_destino, nota, contacto')
         .order('creado_en', { ascending: true }),
       supabase.rpc('fichajes_clave_estado'),
+      supabase.from('fichajes_colaboradores').select('*').order('creado_en', { ascending: true }),
     ])
 
     const fallo = lista.error ?? props.error
@@ -52,6 +58,7 @@ export function FichajesPanel() {
     }
     setFichajes((lista.data as unknown as FichajeAdmin[]) ?? [])
     setPropuestas((props.data as unknown as Propuesta[]) ?? [])
+    setColaboradores((colabs.data as Colaborador[]) ?? [])
     const fila = Array.isArray(clave.data) ? clave.data[0] : clave.data
     setClaveInfo(fila ? { configurada: !!fila.configurada, actualizado_en: fila.actualizado_en ?? null } : null)
     setEstado('listo')
@@ -71,7 +78,18 @@ export function FichajesPanel() {
     <div className="space-y-10">
       <BloqueEnlaces />
       <BloquePropuestas propuestas={propuestas} onCambio={cargar} />
-      <BloqueDirecto fichajes={fichajes} onCambio={cargar} />
+      <BloqueTablon />
+      <BloqueDirecto fichajes={fichajes} colaboradores={colaboradores} onCambio={cargar} />
+      <BloqueColaboradores
+        colaboradores={colaboradores}
+        cuentas={fichajes.reduce<Record<string, number>>((m, f) => {
+          if (f.colaborador_id) m[f.colaborador_id] = (m[f.colaborador_id] ?? 0) + 1
+          return m
+        }, {})}
+        onCambio={cargar}
+      />
+      <BloquePortada />
+      <BloqueClubes />
       <BloqueClave info={claveInfo} onCambiada={cargar} />
     </div>
   )
@@ -90,7 +108,7 @@ function BloqueEnlaces() {
   }
 
   return (
-    <section className="grid gap-px border border-ink/[0.14] bg-ink/[0.14] sm:grid-cols-2">
+    <section className="grid gap-px border border-ink/[0.14] bg-ink/[0.14] sm:grid-cols-3">
       {ENLACES.map((e) => (
         <div key={e.ruta} className="bg-paper p-5">
           <p className="font-brand text-base font-extrabold tracking-tight text-ink">{e.titulo}</p>
@@ -187,8 +205,13 @@ function BloquePropuestas({ propuestas, onCambio }: { propuestas: Propuesta[]; o
 }
 
 // ─── Directo publicado ───────────────────────────────────────────────────────
-function BloqueDirecto({ fichajes, onCambio }: { fichajes: FichajeAdmin[]; onCambio: () => void }) {
+function BloqueDirecto({
+  fichajes, colaboradores, onCambio,
+}: { fichajes: FichajeAdmin[]; colaboradores: Colaborador[]; onCambio: () => void }) {
   const [trabajando, setTrabajando] = useState<string | null>(null)
+  const [quien, setQuien] = useState<string>('')
+  const nombres: Record<string, string> = Object.fromEntries(colaboradores.map((c) => [c.id, c.nombre]))
+  const lista = quien ? fichajes.filter((f) => (quien === '-' ? !f.colaborador_id : f.colaborador_id === quien)) : fichajes
   const visibles = fichajes.filter((f) => f.visible).length
 
   async function actualizar(f: FichajeAdmin, cambios: Partial<FichajeAdmin>) {
@@ -215,13 +238,21 @@ function BloqueDirecto({ fichajes, onCambio }: { fichajes: FichajeAdmin[]; onCam
           Lo de los colaboradores se publica al momento. Cada fichaje visible sale también, ya
           maquetado, en <a href="/admin/historias" className="font-semibold text-ink underline decoration-ink/30 underline-offset-2">Historias</a>.
         </p>
+        {colaboradores.length > 0 && (
+          <select value={quien} onChange={(e) => setQuien(e.target.value)}
+            className="mt-1 border border-ink/[0.15] bg-cream/50 px-2 py-1 text-[0.78rem] text-ink">
+            <option value="">Todos los que suben</option>
+            {colaboradores.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}
+            <option value="-">Sin colaborador (clave general, atletas, tú)</option>
+          </select>
+        )}
       </header>
 
       {fichajes.length === 0 ? (
         <p className="p-5 text-sm text-ink/55">Todavía no ha llegado ningún fichaje.</p>
       ) : (
         <ul className="divide-y divide-ink/[0.09]">
-          {fichajes.map((f) => {
+          {lista.map((f) => {
             const rumor = f.estado === 'rumor'
             return (
               <li key={f.id} className={`flex flex-col gap-3 p-4 lg:flex-row lg:items-start lg:gap-5 ${f.visible ? '' : 'bg-cream/40 opacity-60'}`}>
@@ -234,7 +265,14 @@ function BloqueDirecto({ fichajes, onCambio }: { fichajes: FichajeAdmin[]; onCam
                     <span className={`px-1.5 py-0.5 label-mono text-[0.55rem] ${rumor ? 'border border-dashed border-ink/40 text-ink/60' : 'bg-ink text-mint'}`}>
                       {rumor ? 'rumor' : 'confirmado'}
                     </span>
+                    {f.bomba && <span className="bg-mint px-1.5 py-0.5 label-mono text-[0.55rem] text-ink">💥 bomba</span>}
                     {f.origen_envio === 'atleta' && <span className="label-mono text-[0.55rem] text-ink/45">lo contó el atleta</span>}
+                    {f.colaborador_id && (
+                      <span className="label-mono text-[0.55rem] text-ink/55">subido por {nombres[f.colaborador_id] ?? '¿?'}</span>
+                    )}
+                    {f.origen_envio === 'colaborador' && !f.colaborador_id && (
+                      <span className="label-mono text-[0.55rem] text-ink/35">clave general</span>
+                    )}
                     {!f.visible && <span className="label-mono text-[0.55rem] text-ink/45">oculto</span>}
                   </div>
                   <p className="mt-1.5 font-brand text-[1rem] font-extrabold leading-tight text-ink">{f.atleta}</p>
@@ -250,6 +288,9 @@ function BloqueDirecto({ fichajes, onCambio }: { fichajes: FichajeAdmin[]; onCam
                       ? 'bg-ink px-2.5 py-1.5 label-mono text-mint transition-colors hover:bg-mint hover:text-ink disabled:opacity-40'
                       : botonCls}>
                     {rumor ? 'confirmar' : 'pasar a rumor'}
+                  </button>
+                  <button type="button" disabled={trabajando === f.id} onClick={() => actualizar(f, { bomba: !f.bomba })} className={botonCls}>
+                    {f.bomba ? 'quitar bomba' : '💥 bomba'}
                   </button>
                   <button type="button" disabled={trabajando === f.id} onClick={() => actualizar(f, { visible: !f.visible })} className={botonCls}>
                     {f.visible ? 'ocultar' : 'mostrar'}
@@ -298,8 +339,20 @@ function BloqueClave({
   return (
     <section className="border border-ink/[0.14] bg-paper">
       <header className="border-b border-ink/[0.14] bg-cream/50 px-5 py-3">
-        <h2 className="font-brand text-base font-extrabold tracking-tight text-ink">Clave de colaborador</h2>
-        <p className="mt-0.5 text-[0.8rem] text-ink/50">La pones aquí y se la pasas a quien vaya a mandarte fichajes.</p>
+        <h2 className="font-brand text-base font-extrabold tracking-tight text-ink">Clave general (antigua)</h2>
+        <p className="mt-0.5 text-[0.8rem] text-ink/50">
+          La clave única de antes sigue valiendo, pero no dice quién publica. Cuando todos tengan su
+          enlace personal, bórrala.
+        </p>
+        {info?.configurada && (
+          <button type="button" className="mt-2 border border-red-300 px-2.5 py-1.5 label-mono text-red-700 hover:bg-red-50"
+            onClick={async () => {
+              if (!window.confirm('¿Borrar la clave general? Solo podrán publicar los colaboradores con enlace personal.')) return
+              await createClient().rpc('fichajes_borrar_clave'); onCambiada()
+            }}>
+            borrar clave general
+          </button>
+        )}
       </header>
       <div className="space-y-5 p-5">
         {info?.configurada ? (

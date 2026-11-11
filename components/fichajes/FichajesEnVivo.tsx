@@ -16,13 +16,16 @@ import {
   FICHAJE_COLUMNS, diaDe, divisionCorta, haceDe, horaDe, tipoDe,
   type Fichaje,
 } from '@/lib/fichajes/types'
+import { cargarEstilos, estiloDe, type EstiloClub } from '@/lib/fichajes/estilos'
 
 const REFRESCO_MS = 30_000
-const ENVIAR_URL = '/fichajes/enviar/'
+// El enlace de colaboradores NO se enseña al público: cada colaborador recibe
+// el suyo personal desde /admin/fichajes.
 const ATLETAS_URL = '/fichajes/mi-fichaje/'
+const TABLON_URL = '/mercado/#tablon'
 
 type Estado = 'cargando' | 'listo' | 'sin-tabla' | 'error'
-type Filtro = 'todos' | 'confirmado' | 'rumor'
+type Filtro = 'todos' | 'confirmado' | 'rumor' | 'bomba'
 type FiltroSexo = 'todos' | 'H' | 'M'
 
 export function FichajesEnVivo({ limite = 80 }: { limite?: number }) {
@@ -34,6 +37,9 @@ export function FichajesEnVivo({ limite = 80 }: { limite?: number }) {
   const [filtro, setFiltro] = useState<Filtro>('todos')
   const [sexo, setSexo] = useState<FiltroSexo>('todos')
   const vistos = useRef<Set<string> | null>(null)
+  const [estilos, setEstilos] = useState<Map<string, EstiloClub> | null>(null)
+
+  useEffect(() => { cargarEstilos().then(setEstilos).catch(() => {}) }, [])
 
   const cargar = useCallback(async () => {
     const supabase = createClient()
@@ -84,11 +90,12 @@ export function FichajesEnVivo({ limite = 80 }: { limite?: number }) {
     total: fichajes.length,
     confirmado: fichajes.filter((f) => f.estado === 'confirmado').length,
     rumor: fichajes.filter((f) => f.estado === 'rumor').length,
+    bomba: fichajes.filter((f) => f.bomba).length,
   }), [fichajes])
 
   const visibles = useMemo(
     () => fichajes.filter((f) =>
-      (filtro === 'todos' || f.estado === filtro) &&
+      (filtro === 'todos' || (filtro === 'bomba' ? f.bomba : f.estado === filtro)) &&
       (sexo === 'todos' || f.genero === sexo)),
     [fichajes, filtro, sexo],
   )
@@ -114,6 +121,9 @@ export function FichajesEnVivo({ limite = 80 }: { limite?: number }) {
       {fichajes.length > 0 && (
         <div className="scrollbar-none flex items-center gap-2 overflow-x-auto border-t border-ink/[0.14] px-4 py-3 sm:flex-wrap sm:overflow-visible sm:px-6">
           <Chip activo={filtro === 'todos'} onClick={() => setFiltro('todos')}>Todos · {cuenta.total}</Chip>
+          {cuenta.bomba > 0 && (
+            <Chip activo={filtro === 'bomba'} onClick={() => setFiltro('bomba')}>💥 Bombas · {cuenta.bomba}</Chip>
+          )}
           <Chip activo={filtro === 'confirmado'} onClick={() => setFiltro('confirmado')}>Confirmados · {cuenta.confirmado}</Chip>
           <Chip activo={filtro === 'rumor'} onClick={() => setFiltro('rumor')} discontinuo>Rumores · {cuenta.rumor}</Chip>
           <span className="mx-1 hidden h-4 w-px bg-ink/15 sm:block" aria-hidden="true" />
@@ -137,7 +147,7 @@ export function FichajesEnVivo({ limite = 80 }: { limite?: number }) {
             const dia = diaDe(f.informado_en)
             const abreDia = i === 0 || diaDe(visibles[i - 1].informado_en) !== dia
             return (
-              <Fila key={f.id} fichaje={f} dia={abreDia ? dia : null} nuevo={nuevos.has(f.id)} ahora={ahora} />
+              <Fila key={f.id} fichaje={f} dia={abreDia ? dia : null} nuevo={nuevos.has(f.id)} ahora={ahora} estilos={estilos} />
             )
           })}
         </ol>
@@ -206,9 +216,9 @@ function Pie() {
         <p className="font-brand text-[0.95rem] font-extrabold tracking-tight text-ink">¿Cambias de club?</p>
         <p className="mt-0.5 text-[0.78rem] text-ink/55">Cuéntanoslo tú y lo publicamos &rarr;</p>
       </a>
-      <a href={ENVIAR_URL} className="group bg-cream/50 px-4 py-4 transition-colors hover:bg-mint/30 sm:px-6">
-        <p className="font-brand text-[0.95rem] font-extrabold tracking-tight text-ink">¿Te has enterado de uno?</p>
-        <p className="mt-0.5 text-[0.78rem] text-ink/55">Colaboradores, con su clave &rarr;</p>
+      <a href={TABLON_URL} className="group bg-cream/50 px-4 py-4 transition-colors hover:bg-mint/30 sm:px-6">
+        <p className="font-brand text-[0.95rem] font-extrabold tracking-tight text-ink">¿Buscas club o atletas?</p>
+        <p className="mt-0.5 text-[0.78rem] text-ink/55">Anúnciate en el tablón del mercado &rarr;</p>
       </a>
     </footer>
   )
@@ -216,13 +226,15 @@ function Pie() {
 
 // ─── Una fila del directo ────────────────────────────────────────────────────
 function Fila({
-  fichaje, dia, nuevo, ahora,
-}: { fichaje: Fichaje; dia: string | null; nuevo: boolean; ahora: number }) {
+  fichaje, dia, nuevo, ahora, estilos,
+}: { fichaje: Fichaje; dia: string | null; nuevo: boolean; ahora: number; estilos: Map<string, EstiloClub> | null }) {
   const tipo = tipoDe(fichaje)
   const rumor = fichaje.estado === 'rumor'
+  const bomba = fichaje.bomba
 
   return (
-    <li className={`border-b border-ink/[0.09] last:border-0 transition-colors duration-1000 ${nuevo ? 'bg-mint/25' : ''}`}>
+    <li className={`border-b border-ink/[0.09] last:border-0 transition-colors duration-1000 ${
+      bomba ? 'bg-mint/30 shadow-[inset_6px_0_0_#0D2A14]' : nuevo ? 'bg-mint/25' : ''}`}>
       {dia && (
         <p className="border-b border-ink/[0.09] bg-cream/40 px-4 py-1.5 label-mono text-ink/40 sm:px-6">{dia}</p>
       )}
@@ -240,6 +252,11 @@ function Fila({
             }`}>
               {rumor ? 'Rumor' : 'Confirmado'}
             </span>
+            {bomba && (
+              <span className="bg-ink px-2 py-0.5 font-brand text-[0.72rem] font-extrabold uppercase tracking-wide text-mint">
+                💥 Bomba
+              </span>
+            )}
             {fichaje.origen_envio === 'atleta' && (
               <span className="border border-ink/20 px-1.5 py-0.5 label-mono text-[0.55rem] text-ink/50">lo cuenta el atleta</span>
             )}
@@ -249,17 +266,17 @@ function Fila({
             </time>
           </div>
 
-          <p className="mt-2 font-brand text-[1.15rem] font-extrabold leading-tight tracking-tight text-ink sm:text-[1.25rem]">
+          <p className={`mt-2 font-brand font-extrabold leading-tight tracking-tight ${bomba ? 'text-[1.5rem] uppercase text-ink sm:text-[1.9rem]' : 'text-[1.15rem] text-ink sm:text-[1.25rem]'}`}>
             {fichaje.atleta}
           </p>
 
           {/* En móvil, uno encima de otro: el nombre del club es el dato y no se corta. */}
           <div className="mt-2.5 grid grid-cols-1 items-stretch gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center sm:gap-3">
-            <Club nombre={fichaje.club_origen} division={fichaje.division_origen} rol="origen" />
+            <Club nombre={fichaje.club_origen} division={fichaje.division_origen} rol="origen" estilo={estiloDe(estilos, fichaje.club_origen)} />
             <span aria-hidden="true" className="text-center font-brand text-lg leading-none text-ink/30">
               <span className="sm:hidden">&darr;</span><span className="hidden sm:inline">&rarr;</span>
             </span>
-            <Club nombre={fichaje.club_destino} division={fichaje.division_destino} rol="destino" />
+            <Club nombre={fichaje.club_destino} division={fichaje.division_destino} rol="destino" estilo={estiloDe(estilos, fichaje.club_destino)} />
           </div>
 
           {tipo !== 'completo' && (
@@ -282,7 +299,9 @@ function Fila({
 }
 
 /** Un club con su división, o la incógnita cuando no se sabe. */
-function Club({ nombre, division, rol }: { nombre: string | null; division: string | null; rol: 'origen' | 'destino' }) {
+function Club({ nombre, division, rol, estilo }: {
+  nombre: string | null; division: string | null; rol: 'origen' | 'destino'; estilo: EstiloClub | null
+}) {
   if (!nombre) {
     return (
       <div
@@ -295,12 +314,21 @@ function Club({ nombre, division, rol }: { nombre: string | null; division: stri
   }
   const corta = divisionCorta(division)
   return (
-    <div className={`min-w-0 border px-3 py-2 ${rol === 'destino' ? 'border-ink/25 bg-cream/50' : 'border-ink/[0.12] bg-paper'}`}>
-      <p className="label-mono text-[0.58rem] text-ink/45">{rol === 'origen' ? 'Sale de' : 'Ficha por'}</p>
-      <p className={`mt-0.5 break-words text-[0.88rem] leading-snug ${rol === 'destino' ? 'font-semibold text-ink' : 'text-ink/70'}`}>
-        {nombre}
-      </p>
-      {corta && <p className="mt-0.5 label-mono text-[0.58rem] text-ink/50">{division}</p>}
+    <div
+      className={`flex min-w-0 items-center gap-2.5 border px-3 py-2 text-ink ${rol === 'destino' ? 'border-ink/25 bg-cream' : 'border-ink/[0.12] bg-paper'}`}
+      style={estilo?.color ? { borderLeft: `4px solid ${estilo.color}` } : undefined}
+    >
+      {estilo?.logo_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={estilo.logo_url} alt="" className="h-8 w-8 shrink-0 object-contain" loading="lazy" />
+      )}
+      <div className="min-w-0">
+        <p className="label-mono text-[0.58rem] text-ink/45">{rol === 'origen' ? 'Sale de' : 'Ficha por'}</p>
+        <p className={`mt-0.5 break-words text-[0.88rem] leading-snug ${rol === 'destino' ? 'font-semibold text-ink' : 'text-ink/70'}`}>
+          {nombre}
+        </p>
+        {corta && <p className="mt-0.5 label-mono text-[0.58rem] text-ink/50">{division}</p>}
+      </div>
     </div>
   )
 }

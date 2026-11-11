@@ -26,6 +26,8 @@ import {
   type EstadoFichaje, type Genero,
 } from '@/lib/fichajes/types'
 import { Autocompletar } from './Autocompletar'
+import { LectorCaptura } from './LectorCaptura'
+import type { Lectura } from '@/lib/fichajes/lector'
 
 type Modo = 'colaborador' | 'atleta'
 const CLAVE_KEY = 'lanedata-fichajes-clave'
@@ -50,6 +52,10 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
 
   const [clave, setClave] = useState('')
   const [claveRecordada, setClaveRecordada] = useState(false)
+  // Nombre del colaborador si entra con su enlace personal (token).
+  const [soy, setSoy] = useState<string | null>(null)
+  const [errorToken, setErrorToken] = useState<string | null>(null)
+  const [candidatos, setCandidatos] = useState<Atleta[]>([])
 
   const [atleta, setAtleta] = useState('')
   const [genero, setGenero] = useState<Genero | null>(null)
@@ -75,13 +81,44 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
   const [enviados, setEnviados] = useState<Enviado[]>([])
   const [clubesDivision, setClubesDivision] = useState<Club[]>([])
 
-  // Clave recordada de esta pestaña (solo colaboradores).
+  // Enlace personal (/fichajes/enviar/#t=TOKEN) o clave recordada. El token
+  // se guarda en este dispositivo para que el colaborador no tenga que volver
+  // a abrir el enlace; se quita de la barra de direcciones al momento.
   useEffect(() => {
     if (!esColab) return
-    try {
-      const guardada = sessionStorage.getItem(CLAVE_KEY)
-      if (guardada) { setClave(guardada); setClaveRecordada(true) }
-    } catch { /* modo privado */ }
+    let token: string | null = null
+    const m = window.location.hash.match(/[#&]t=([A-Za-z0-9]+)/)
+    if (m) {
+      token = m[1]
+      history.replaceState(null, '', window.location.pathname)
+      try { localStorage.setItem(CLAVE_KEY, token) } catch { /* modo privado */ }
+    } else {
+      try { token = localStorage.getItem(CLAVE_KEY) ?? sessionStorage.getItem(CLAVE_KEY) } catch { /* */ }
+    }
+    if (!token) return
+    setClave(token); setClaveRecordada(true)
+    if (token.startsWith('ld') && token.length >= 16) {
+      createClient().rpc('fichajes_quien_soy', { p_token: token }).then(({ data, error: err }) => {
+        if (err) { setErrorToken(err.message); setSoy(null) } else setSoy(data as string)
+      })
+    }
+  }, [esColab])
+
+  const aplicarLectura = useCallback((l: Lectura) => {
+    setCandidatos(l.atletas)
+    const a = l.atletas[0]
+    if (a) {
+      setAtleta(a.nombre)
+      setGenero(a.genero)
+    }
+    if (l.genero) setGenero(l.genero)
+    if (l.origen) { setOrigen(l.origen); setSinOrigen(false); setDivOrigenManual(false) }
+    else if (a?.club) { setOrigen(a.club.n); setSinOrigen(false); setDivOrigenManual(false) }
+    if (l.destino) { setDestino(l.destino); setSinDestino(false); setDivDestinoManual(false) }
+    if (esColab) {
+      if (l.estado) setEstado(l.estado)
+      if (l.fuente) setFuente((f) => f || l.fuente!)
+    }
   }, [esColab])
 
   // Clubes de DH y Primera, para elegir el destino de un toque.
@@ -129,7 +166,7 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
     setOrigen(''); setDestino(''); setSinOrigen(false); setSinDestino(false)
     setDivOrigen(''); setDivDestino(''); setDivOrigenManual(false); setDivDestinoManual(false)
     setEstado('rumor'); setInformado(ahoraLocal())
-    setFuente(''); setNota(''); setContacto('')
+    setFuente(''); setNota(''); setContacto(''); setCandidatos([])
   }
 
   async function enviar(e: React.FormEvent) {
@@ -181,7 +218,7 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
       return
     }
     if (esColab) {
-      try { sessionStorage.setItem(CLAVE_KEY, clave); setClaveRecordada(true) } catch { /* modo privado */ }
+      try { localStorage.setItem(CLAVE_KEY, clave); setClaveRecordada(true) } catch { /* modo privado */ }
     }
     registrarEnviado(base)
     limpiar()
@@ -230,16 +267,27 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
 
       {enviados.length > 0 && <Enviados lista={enviados} esColab={esColab} />}
 
+      {esColab && soy && (
+        <p className="mb-6 border-l-2 border-mint bg-mint/15 px-4 py-2.5 text-sm text-ink/80">
+          Hola, <strong className="font-semibold text-ink">{soy}</strong>. Entras con tu enlace personal: todo lo que publiques queda a tu nombre (solo lo ve lanedata).
+        </p>
+      )}
+      {esColab && errorToken && (
+        <p className="mb-6 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{errorToken}</p>
+      )}
+
+      <LectorCaptura onLectura={aplicarLectura} />
+
       <form onSubmit={enviar} className="space-y-8">
         {/* ── Clave ── */}
-        {esColab && (
+        {esColab && !soy && (
           <Bloque titulo="Clave de colaborador">
             {claveRecordada ? (
               <div className="flex items-center gap-3 border border-ink/[0.14] bg-cream/40 px-4 py-3">
-                <span className="text-sm text-ink/60">Clave recordada en esta pestaña</span>
+                <span className="text-sm text-ink/60">Clave recordada en este dispositivo</span>
                 <button
                   type="button"
-                  onClick={() => { setClaveRecordada(false); setClave(''); try { sessionStorage.removeItem(CLAVE_KEY) } catch { /* */ } }}
+                  onClick={() => { setClaveRecordada(false); setClave(''); setErrorToken(null); try { localStorage.removeItem(CLAVE_KEY); sessionStorage.removeItem(CLAVE_KEY) } catch { /* */ } }}
                   className="ml-auto label-mono text-ink/45 transition-colors hover:text-ink"
                 >
                   cambiar
@@ -275,6 +323,18 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
             placeholder="Escribe nombre o apellidos…"
             className={inputCls}
           />
+          {candidatos.length > 1 && (
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              <span className="label-mono text-[0.55rem] text-ink/45">¿Es otro?</span>
+              {candidatos.map((a) => (
+                <button key={`${a.nombre}|${a.club?.n ?? ''}`} type="button" onClick={() => elegirAtleta(a)}
+                  aria-pressed={a.nombre === atleta}
+                  className={`border px-2 py-1 text-[0.75rem] ${a.nombre === atleta ? 'border-ink bg-ink text-cream' : 'border-ink/20 text-ink/70 hover:border-ink/50'}`}>
+                  {a.nombre}{a.club ? ` · ${a.club.n}` : ''}
+                </button>
+              ))}
+            </div>
+          )}
           <p className="mt-1.5 text-[0.75rem] text-ink/40">
             Si no aparece en la lista, escríbelo completo igualmente.
           </p>
