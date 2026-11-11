@@ -23,6 +23,8 @@ export interface Atleta {
   nombre: string
   club: Club | null
   genero: Genero
+  /** Prueba principal según Mundo Atletismo (scripts/gen_fichajes_pruebas.py). */
+  prueba?: string
 }
 
 interface Indice {
@@ -39,15 +41,21 @@ let promesa: Promise<Indice> | null = null
 export function cargarDatos(): Promise<Indice> {
   if (!promesa) {
     promesa = (async () => {
-      const [clubes, crudos] = await Promise.all([
+      const [clubes, crudos, pruebas] = await Promise.all([
         fetch(`${BASE}/clubes.json`).then((r) => (r.ok ? r.json() : Promise.reject(r.status))) as Promise<Club[]>,
         fetch(`${BASE}/atletas.json`).then((r) => (r.ok ? r.json() : Promise.reject(r.status))) as Promise<[string, number, 0 | 1][]>,
+        // Opcional: si falta, el autocompletado funciona igual sin la prueba.
+        fetch(`${BASE}/pruebas.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null) as Promise<{ p: string[]; i: number[] } | null>,
       ])
-      const atletas: Atleta[] = crudos.map(([nombre, ci, g]) => ({
-        nombre,
-        club: ci >= 0 ? clubes[ci] ?? null : null,
-        genero: g === 0 ? 'H' : 'M',
-      }))
+      const atletas: Atleta[] = crudos.map(([nombre, ci, g], k) => {
+        const pi = pruebas?.i[k] ?? -1
+        return {
+          nombre,
+          club: ci >= 0 ? clubes[ci] ?? null : null,
+          genero: g === 0 ? 'H' : 'M',
+          prueba: pi >= 0 ? pruebas!.p[pi].replace(/\s+(Masc|Fem)\.?$/, '') : undefined,
+        }
+      })
       return {
         clubes,
         clubesNorm: clubes.map((c) => normalizar(c.n)),

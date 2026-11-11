@@ -5,13 +5,14 @@
 // contacto nunca se publica: quien se interesa deja sus datos y lanedata pone
 // a las dos partes en contacto.
 //
-// Los atletas pueden enlazar su perfil de mundoatletismo.es, que se ve
-// embebido con la skin «lane» (la de lanedata).
+// Al elegirse en el buscador, el atleta queda enlazado solo a su ficha de
+// mundoatletismo.es (embebida con la skin «lane») y su prueba principal se
+// rellena con los datos de Mundo Atletismo (scripts/gen_fichajes_pruebas.py).
 
 import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { buscarAtletas, buscarClubes, type Atleta, type Club } from '@/lib/fichajes/datos'
-import { ANUNCIO_COLUMNS_PUBLICAS, haceDe, perfilLane, type Anuncio, type TipoAnuncio } from '@/lib/fichajes/types'
+import { ANUNCIO_COLUMNS_PUBLICAS, haceDe, perfilLane, perfilMA, type Anuncio, type TipoAnuncio } from '@/lib/fichajes/types'
 import { Autocompletar } from './Autocompletar'
 
 const inputCls =
@@ -174,13 +175,14 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
   const [pruebas, setPruebas] = useState('')
   const [zona, setZona] = useState('')
   const [texto, setTexto] = useState('')
-  const [perfil, setPerfil] = useState('')
+  // Ficha de Mundo Atletismo: se genera sola al elegir al atleta del buscador.
+  const [perfil, setPerfil] = useState<string | null>(null)
+  const [verFicha, setVerFicha] = useState(false)
   const [contacto, setContacto] = useState('')
   const [trampa, setTrampa] = useState('')
   const [estado, setEstado] = useState<'libre' | 'enviando' | 'ok'>('libre')
   const [error, setError] = useState<string | null>(null)
 
-  const perfilOk = !perfil.trim() || !!perfilLane(perfil)
 
   async function enviar(e: React.FormEvent) {
     e.preventDefault()
@@ -189,7 +191,7 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
     const { error: err } = await createClient().rpc('mercado_anunciar', {
       p_tipo: tipo, p_autor: autor, p_texto: texto,
       p_club_actual: clubActual || null, p_genero: genero || null, p_pruebas: pruebas || null,
-      p_zona: zona || null, p_perfil_url: perfil.trim() || null, p_contacto: contacto,
+      p_zona: zona || null, p_perfil_url: perfil, p_contacto: contacto,
     })
     if (err) { setError(err.message); setEstado('libre'); return }
     setEstado('ok')
@@ -211,10 +213,20 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
         <label className="block">
           <span className="mb-1.5 block label-mono text-ink/60">{esAtleta ? 'Tu nombre y apellidos' : 'Club'} · obligatorio</span>
           {esAtleta ? (
-            <Autocompletar<Atleta> value={autor} onChange={setAutor}
-              onPick={(a) => { setAutor(a.nombre); setGenero(a.genero); if (a.club) setClubActual(a.club.n) }}
+            <Autocompletar<Atleta> value={autor}
+              onChange={(v) => { setAutor(v); setPerfil(null); setVerFicha(false) }}
+              onPick={(a) => {
+                setAutor(a.nombre); setGenero(a.genero)
+                if (a.club) setClubActual(a.club.n)
+                if (a.prueba) setPruebas((p) => p || a.prueba!)
+                setPerfil(perfilMA(a.nombre, a.club?.n))
+              }}
               buscar={buscarAtletas} clave={(a) => `${a.nombre}|${a.club?.n ?? ''}`}
-              pintar={(a) => <span className="text-sm text-ink">{a.nombre} <span className="text-ink/45">· {a.club?.n ?? 'sin club'}</span></span>}
+              pintar={(a) => (
+                <span className="text-sm text-ink">{a.nombre}{' '}
+                  <span className="text-ink/45">· {a.club?.n ?? 'sin club'}{a.prueba ? ` · ${a.prueba}` : ''}</span>
+                </span>
+              )}
               placeholder="Escribe tu nombre…" className={inputCls} />
           ) : (
             <Autocompletar<Club> value={autor} onChange={setAutor} onPick={(c) => setAutor(c.n)}
@@ -248,15 +260,28 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
           <span className="mb-1.5 block label-mono text-ink/60">Zona</span>
           <input value={zona} onChange={(e) => setZona(e.target.value)} maxLength={80} placeholder="Ciudad o comunidad" className={inputCls} />
         </label>
-        {esAtleta && (
-          <label className="block">
-            <span className="mb-1.5 block label-mono text-ink/60">Tu perfil en Mundo Atletismo</span>
-            <input value={perfil} onChange={(e) => setPerfil(e.target.value)} placeholder="https://mundoatletismo.es/#/…" className={inputCls} />
-            {!perfilOk && <span className="mt-1 block text-[0.75rem] text-red-700">Tiene que ser un enlace de mundoatletismo.es</span>}
-            <span className="mt-1 block text-[0.72rem] text-ink/40">Busca tu nombre en mundoatletismo.es y copia el enlace de tu ficha. Se verá aquí con tus marcas.</span>
-          </label>
-        )}
       </div>
+      {esAtleta && (perfil ? (
+        <div className="border border-mint bg-mint/15">
+          <div className="flex flex-wrap items-center gap-3 px-4 py-3">
+            <p className="flex-1 text-[0.85rem] text-ink/80">
+              ✓ Tu ficha de <strong className="font-semibold">Mundo Atletismo</strong> se enlaza sola, con tus marcas.
+            </p>
+            <button type="button" onClick={() => setVerFicha((v) => !v)} className="label-mono text-[0.6rem] text-ink underline">
+              {verFicha ? 'ocultar' : '¿es la tuya? míralo'}
+            </button>
+            <button type="button" onClick={() => { setPerfil(null); setVerFicha(false) }} className="label-mono text-[0.6rem] text-ink/50 underline">
+              no es mi ficha
+            </button>
+          </div>
+          {verFicha && <iframe src={perfil} title="Tu ficha en Mundo Atletismo" className="block h-[420px] w-full border-t border-mint" />}
+        </div>
+      ) : (
+        <p className="text-[0.75rem] text-ink/45">
+          Elige tu nombre en la lista de arriba y enlazamos solo tu ficha de Mundo Atletismo y tu prueba.
+        </p>
+      ))}
+
       <label className="block">
         <span className="mb-1.5 block label-mono text-ink/60">{esAtleta ? '¿Qué buscas?' : '¿Qué buscáis y qué ofrecéis?'} · obligatorio</span>
         <textarea required value={texto} onChange={(e) => setTexto(e.target.value)} rows={4} maxLength={800}
@@ -275,7 +300,7 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
         <label>Web <input tabIndex={-1} autoComplete="off" value={trampa} onChange={(e) => setTrampa(e.target.value)} /></label>
       </div>
       {error && <p className="border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
-      <button type="submit" disabled={estado === 'enviando' || !autor.trim() || texto.trim().length < 10 || !contacto.trim() || !perfilOk}
+      <button type="submit" disabled={estado === 'enviando' || !autor.trim() || texto.trim().length < 10 || !contacto.trim()}
         className="w-full bg-ink py-4 font-brand text-base font-bold text-cream hover:bg-mint hover:text-ink disabled:opacity-35">
         {estado === 'enviando' ? 'Enviando…' : 'Enviar para revisión'}
       </button>

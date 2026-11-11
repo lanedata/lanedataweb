@@ -85,25 +85,43 @@ export interface Interesado {
   atendido: boolean
 }
 
+const MA = 'https://mundoatletismo.es'
+
 /**
- * Perfil de mundoatletismo.es forzado a la skin «lane» (la de lanedata). Las
- * rutas de la web van tras el # (#/atleta/...?x=y): el parámetro se añade a la
- * query del hash. Devuelve null si no es un enlace de mundoatletismo.es.
+ * Ficha de un atleta en mundoatletismo.es en modo incrustable y con la skin
+ * «lane». La web enruta por ruta (/atleta/<nombre>) y tiene un modo embed
+ * (/embed/...); el club ayuda a desambiguar homónimos. Se genera sola a partir
+ * del nombre de la RFEA, que es el mismo que usa Mundo Atletismo.
+ */
+export function perfilMA(nombre: string, club?: string | null): string | null {
+  const n = nombre.trim()
+  if (n.length < 3) return null
+  const q = new URLSearchParams({ skin: 'lane' })
+  if (club) q.set('club', club)
+  // Mundo Atletismo guarda los nombres en mayúsculas, como la RFEA.
+  return `${MA}/embed/atleta/${encodeURIComponent(n.toLocaleUpperCase('es'))}?${q.toString()}`
+}
+
+/**
+ * Normaliza cualquier enlace de mundoatletismo.es a su versión embed con skin
+ * «lane» (acepta rutas antiguas con #/). null si no es de mundoatletismo.es.
  */
 export function perfilLane(url: string | null | undefined): string | null {
   if (!url) return null
   let u: URL
   try { u = new URL(url.trim()) } catch { return null }
   if (u.protocol !== 'https:' || !/^(www\.)?mundoatletismo\.es$/.test(u.hostname)) return null
+  let ruta = u.pathname
+  let q = u.search
   if (u.hash.startsWith('#/')) {
-    const [ruta, q = ''] = u.hash.slice(1).split('?')
-    const p = new URLSearchParams(q)
-    p.set('skin', 'lane')
-    u.hash = `${ruta}?${p.toString()}`
-  } else {
-    u.searchParams.set('skin', 'lane')
+    const [r, h = ''] = u.hash.slice(1).split('?')
+    ruta = r
+    q = h ? `?${h}` : q
   }
-  return u.toString()
+  if (!ruta.startsWith('/embed')) ruta = `/embed${ruta === '/' ? '' : ruta}`
+  const p = new URLSearchParams(q)
+  p.set('skin', 'lane')
+  return `${MA}${ruta}?${p.toString()}`
 }
 
 /** Propuesta de un atleta pendiente de aprobar (solo la ve el admin). */
