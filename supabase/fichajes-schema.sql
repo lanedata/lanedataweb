@@ -701,20 +701,28 @@ CREATE OR REPLACE FUNCTION avisos_disparar()
 RETURNS TRIGGER
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, extensions AS $fn$
 DECLARE
-  v_cfg avisos_config%ROWTYPE;
+  v_cfg  avisos_config%ROWTYPE;
+  -- La fila como JSON: este trigger lo comparten cuatro tablas con columnas
+  -- distintas, y acceder a NEW.<columna> que no existe en una de ellas hace
+  -- fallar el INSERT entero («record "new" has no field …»).
+  v_fila JSONB := to_jsonb(NEW);
 BEGIN
-  -- Lo que apruebas tú mismo no te avisa.
-  IF TG_TABLE_NAME = 'fichajes' AND NEW.origen_envio <> 'colaborador' THEN RETURN NEW; END IF;
-  SELECT * INTO v_cfg FROM avisos_config WHERE id = 1;
-  IF v_cfg.url IS NULL THEN RETURN NEW; END IF;
+  -- Todo va dentro de un bloque con EXCEPTION: pase lo que pase, un aviso
+  -- perdido nunca debe tumbar un envío.
   BEGIN
+    -- Lo que apruebas tú mismo no te avisa.
+    IF TG_TABLE_NAME = 'fichajes' AND COALESCE(v_fila->>'origen_envio', '') <> 'colaborador' THEN
+      RETURN NEW;
+    END IF;
+    SELECT * INTO v_cfg FROM avisos_config WHERE id = 1;
+    IF v_cfg.url IS NULL THEN RETURN NEW; END IF;
     PERFORM net.http_post(
       url     := v_cfg.url,
-      body    := jsonb_build_object('tabla', TG_TABLE_NAME, 'id', NEW.id),
+      body    := jsonb_build_object('tabla', TG_TABLE_NAME, 'id', v_fila->>'id'),
       headers := jsonb_build_object('Content-Type', 'application/json', 'x-aviso', v_cfg.secreto)
     );
   EXCEPTION WHEN OTHERS THEN
-    NULL; -- un aviso perdido nunca debe tumbar un envío
+    RAISE WARNING 'avisos_disparar (%): %', TG_TABLE_NAME, SQLERRM;
   END;
   RETURN NEW;
 END;
