@@ -50,22 +50,28 @@ export const POSICION_NOMBRE: Record<PosicionMercado, string> = {
   abajo: 'Al final de la portada',
 }
 
-let posPromesa: Promise<PosicionMercado> | null = null
+/** Bloques del mercado que se activan por separado en la portada. */
+export type BloqueMercado = 'fichajes' | 'tablon'
+export const BLOQUE_NOMBRE: Record<BloqueMercado, string> = {
+  fichajes: 'Últimos fichajes',
+  tablon: 'Tablón (atletas y clubes)',
+}
+const CLAVE: Record<BloqueMercado, string> = { fichajes: 'mercado_portada', tablon: 'tablon_portada' }
 
-export function posicionMercado(): Promise<PosicionMercado> {
-  if (!posPromesa) {
-    posPromesa = (async () => {
-      const { data } = await createClient()
-        .from('web_ajustes').select('valor').eq('clave', 'mercado_portada').maybeSingle()
-      const p = (data?.valor as { posicion?: string } | null)?.posicion
-      return (p && p in POSICION_NOMBRE ? p : 'oculto') as PosicionMercado
-    })().catch(() => 'oculto' as PosicionMercado)
-  }
-  return posPromesa
+const posPromesa: Partial<Record<BloqueMercado, Promise<PosicionMercado>>> = {}
+
+export function posicionMercado(bloque: BloqueMercado = 'fichajes'): Promise<PosicionMercado> {
+  posPromesa[bloque] ??= (async () => {
+    const { data } = await createClient()
+      .from('web_ajustes').select('valor').eq('clave', CLAVE[bloque]).maybeSingle()
+    const p = (data?.valor as { posicion?: string } | null)?.posicion
+    return (p && p in POSICION_NOMBRE ? p : 'oculto') as PosicionMercado
+  })().catch(() => 'oculto' as PosicionMercado)
+  return posPromesa[bloque]!
 }
 
-export async function guardarPosicionMercado(p: PosicionMercado) {
-  posPromesa = null
+export async function guardarPosicionMercado(p: PosicionMercado, bloque: BloqueMercado = 'fichajes') {
+  delete posPromesa[bloque]
   return createClient().from('web_ajustes')
-    .upsert({ clave: 'mercado_portada', valor: { posicion: p }, actualizado_en: new Date().toISOString() })
+    .upsert({ clave: CLAVE[bloque], valor: { posicion: p }, actualizado_en: new Date().toISOString() })
 }

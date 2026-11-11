@@ -79,7 +79,7 @@ export function BloqueTablon({ compacto = false }: { compacto?: boolean }) {
               <p className="text-[0.78rem] text-ink/50">
                 {[a.genero === 'H' ? 'hombres' : a.genero === 'M' ? 'mujeres' : a.genero === 'X' ? 'ambos' : null, a.pruebas, a.zona].filter(Boolean).join(' · ')}
               </p>
-              <p className="mt-1.5 whitespace-pre-line text-sm text-ink/80">{a.texto}</p>
+              <p className="mt-1.5 whitespace-pre-line text-sm text-ink/80">{a.busca || a.ofrece ? [a.busca && `Busca: ${a.busca}`, a.ofrece && `Ofrece: ${a.ofrece}`].filter(Boolean).join('\n') : a.texto}</p>
               {perfil && <a href={perfil} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-[0.78rem] font-semibold text-ink underline">perfil en Mundo Atletismo ↗</a>}
               <p className="mt-1.5 text-[0.78rem]">
                 <span className="label-mono text-[0.55rem] text-ink/40">contacto · solo tú </span>

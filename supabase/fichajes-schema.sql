@@ -530,6 +530,9 @@ CREATE POLICY "auth_full_web_ajustes" ON web_ajustes FOR ALL TO authenticated US
 
 INSERT INTO web_ajustes (clave, valor) VALUES ('mercado_portada', '{"posicion": "oculto"}')
 ON CONFLICT (clave) DO NOTHING;
+-- v4: el tablón se coloca en la portada por separado de los últimos fichajes.
+INSERT INTO web_ajustes (clave, valor) VALUES ('tablon_portada', '{"posicion": "oculto"}')
+ON CONFLICT (clave) DO NOTHING;
 
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -560,6 +563,15 @@ CREATE TABLE IF NOT EXISTS mercado_anuncios (
 
 CREATE INDEX IF NOT EXISTS anuncios_estado_idx ON mercado_anuncios (estado, publicado_en DESC);
 
+-- v4: «qué busco» y «qué ofrezco» por separado, ambos opcionales. `texto`
+-- queda como resumen de los dos (lo usan los avisos al móvil y el admin).
+ALTER TABLE mercado_anuncios ADD COLUMN IF NOT EXISTS busca  TEXT CHECK (busca  IS NULL OR length(busca)  <= 800);
+ALTER TABLE mercado_anuncios ADD COLUMN IF NOT EXISTS ofrece TEXT CHECK (ofrece IS NULL OR length(ofrece) <= 800);
+ALTER TABLE mercado_anuncios DROP CONSTRAINT IF EXISTS mercado_anuncios_texto_check;
+ALTER TABLE mercado_anuncios ADD CONSTRAINT mercado_anuncios_texto_check CHECK (length(texto) <= 1800);
+ALTER TABLE mercado_anuncios DROP CONSTRAINT IF EXISTS mercado_anuncios_pruebas_check;
+ALTER TABLE mercado_anuncios ADD CONSTRAINT mercado_anuncios_pruebas_check CHECK (pruebas IS NULL OR length(pruebas) <= 400);
+
 ALTER TABLE mercado_anuncios ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "public_read_anuncios" ON mercado_anuncios;
 CREATE POLICY "public_read_anuncios" ON mercado_anuncios FOR SELECT TO anon USING (estado = 'publicado');
@@ -567,7 +579,7 @@ DROP POLICY IF EXISTS "auth_full_anuncios" ON mercado_anuncios;
 CREATE POLICY "auth_full_anuncios" ON mercado_anuncios FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
 -- anon solo puede leer estas columnas (el contacto no está).
 REVOKE ALL ON TABLE mercado_anuncios FROM anon;
-GRANT SELECT (id, publicado_en, tipo, estado, autor, club_actual, genero, pruebas, zona, texto, perfil_url)
+GRANT SELECT (id, publicado_en, tipo, estado, autor, club_actual, genero, pruebas, zona, texto, busca, ofrece, perfil_url)
   ON mercado_anuncios TO anon;
 
 CREATE TABLE IF NOT EXISTS mercado_interesados (
@@ -585,20 +597,28 @@ REVOKE ALL ON TABLE mercado_interesados FROM anon;
 DROP POLICY IF EXISTS "auth_full_interesados" ON mercado_interesados;
 CREATE POLICY "auth_full_interesados" ON mercado_interesados FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
 
+-- v4: la firma cambia (busca/ofrece en vez de texto); se quita la antigua.
+DROP FUNCTION IF EXISTS mercado_anunciar(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT);
 CREATE OR REPLACE FUNCTION mercado_anunciar(
-  p_tipo TEXT, p_autor TEXT, p_texto TEXT,
+  p_tipo TEXT, p_autor TEXT,
+  p_busca TEXT DEFAULT NULL, p_ofrece TEXT DEFAULT NULL,
   p_club_actual TEXT DEFAULT NULL, p_genero TEXT DEFAULT NULL, p_pruebas TEXT DEFAULT NULL,
   p_zona TEXT DEFAULT NULL, p_perfil_url TEXT DEFAULT NULL, p_contacto TEXT DEFAULT NULL
 )
 RETURNS UUID
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
 DECLARE
-  v_id UUID;
-  v_n  INT;
+  v_id     UUID;
+  v_n      INT;
+  v_busca  TEXT := NULLIF(btrim(COALESCE(p_busca, '')), '');
+  v_ofrece TEXT := NULLIF(btrim(COALESCE(p_ofrece, '')), '');
+  v_prue   TEXT := NULLIF(btrim(COALESCE(p_pruebas, '')), '');
 BEGIN
   IF p_tipo NOT IN ('atleta', 'club') THEN RAISE EXCEPTION 'Tipo de anuncio no válido'; END IF;
   IF length(btrim(COALESCE(p_autor, ''))) < 3 THEN RAISE EXCEPTION 'Falta el nombre'; END IF;
-  IF length(btrim(COALESCE(p_texto, ''))) < 10 THEN RAISE EXCEPTION 'Cuéntalo con un poco más de detalle'; END IF;
+  IF v_busca IS NULL AND v_ofrece IS NULL AND v_prue IS NULL THEN
+    RAISE EXCEPTION 'Elige al menos una prueba o cuenta qué buscas u ofreces';
+  END IF;
   IF length(btrim(COALESCE(p_contacto, ''))) < 3 THEN RAISE EXCEPTION 'Deja un contacto para que podamos verificarlo'; END IF;
   IF p_perfil_url IS NOT NULL AND btrim(p_perfil_url) <> ''
      AND p_perfil_url !~ '^https://(www\.)?mundoatletismo\.es/' THEN
@@ -611,16 +631,17 @@ BEGIN
     RAISE EXCEPTION 'Ya nos ha llegado tu anuncio; lo revisamos en breve';
   END IF;
 
-  INSERT INTO mercado_anuncios (tipo, autor, texto, club_actual, genero, pruebas, zona, perfil_url, contacto)
-  VALUES (p_tipo, btrim(p_autor), btrim(p_texto),
+  INSERT INTO mercado_anuncios (tipo, autor, busca, ofrece, texto, club_actual, genero, pruebas, zona, perfil_url, contacto)
+  VALUES (p_tipo, btrim(p_autor), v_busca, v_ofrece,
+          concat_ws(chr(10), 'Busca: ' || v_busca, 'Ofrece: ' || v_ofrece, CASE WHEN v_busca IS NULL AND v_ofrece IS NULL THEN v_prue END),
           NULLIF(btrim(COALESCE(p_club_actual, '')), ''), NULLIF(p_genero, ''),
-          NULLIF(btrim(COALESCE(p_pruebas, '')), ''), NULLIF(btrim(COALESCE(p_zona, '')), ''),
+          v_prue, NULLIF(btrim(COALESCE(p_zona, '')), ''),
           NULLIF(btrim(COALESCE(p_perfil_url, '')), ''), btrim(p_contacto))
   RETURNING id INTO v_id;
   RETURN v_id;
 END;
 $fn$;
-GRANT EXECUTE ON FUNCTION mercado_anunciar(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION mercado_anunciar(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT) TO anon, authenticated;
 
 CREATE OR REPLACE FUNCTION mercado_interes(p_anuncio UUID, p_nombre TEXT, p_contacto TEXT, p_mensaje TEXT DEFAULT NULL)
 RETURNS UUID
@@ -749,7 +770,7 @@ CREATE TRIGGER avisos_interesados AFTER INSERT ON mercado_interesados FOR EACH R
 --     DROP FUNCTION IF EXISTS fichajes_clave_estado();
 --     DROP TABLE IF EXISTS mercado_interesados, mercado_anuncios, push_suscripciones,
 --       avisos_config, clubes_estilo, web_ajustes;
---     DROP FUNCTION IF EXISTS mercado_anunciar(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT);
+--     DROP FUNCTION IF EXISTS mercado_anunciar(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT);
 --     DROP FUNCTION IF EXISTS mercado_interes(UUID,TEXT,TEXT,TEXT);
 --     DROP FUNCTION IF EXISTS avisos_disparar() CASCADE;
 --     DROP FUNCTION IF EXISTS avisos_configurar(TEXT);

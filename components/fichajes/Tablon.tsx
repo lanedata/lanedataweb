@@ -16,6 +16,11 @@ import { ANUNCIO_COLUMNS_PUBLICAS, haceDe, perfilMA, type Anuncio, type TipoAnun
 import { Autocompletar } from './Autocompletar'
 import { FichaAtleta } from './FichaAtleta'
 import { CompensacionRFEA } from './CompensacionRFEA'
+import { compensacionDe } from '@/lib/fichajes/compensaciones'
+import { GRUPOS_PRUEBAS, ZONAS, encajaPrueba, pruebaDesdeMA, separarPruebas } from '@/lib/fichajes/tablon'
+
+type FiltroComp = 'todas' | 'sin' | '500' | '1000' | '2000'
+const selCls = 'border border-ink/25 bg-paper px-2.5 py-1.5 text-[0.8rem] text-ink focus:outline-none focus:ring-2 focus:ring-mint/40'
 
 const inputCls =
   'w-full border border-ink/[0.15] bg-cream/60 px-4 py-3 text-sm text-ink placeholder:text-ink/30 focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40'
@@ -24,6 +29,12 @@ export function Tablon() {
   const [anuncios, setAnuncios] = useState<Anuncio[] | null>(null)
   const [filtro, setFiltro] = useState<TipoAnuncio | 'todos'>('todos')
   const [formulario, setFormulario] = useState<TipoAnuncio | null>(null)
+  const [fPrueba, setFPrueba] = useState('')
+  const [fZona, setFZona] = useState('')
+  const [fGenero, setFGenero] = useState('')
+  const [fComp, setFComp] = useState<FiltroComp>('todas')
+  // Compensación RFEA de cada atleta anunciado (null = no tiene).
+  const [comp, setComp] = useState<Record<string, number | null>>({})
 
   const cargar = useCallback(async () => {
     const { data, error } = await createClient().from('mercado_anuncios')
@@ -33,7 +44,25 @@ export function Tablon() {
   }, [])
   useEffect(() => { cargar() }, [cargar])
 
-  const visibles = (anuncios ?? []).filter((a) => filtro === 'todos' || a.tipo === filtro)
+  useEffect(() => {
+    const atletas = (anuncios ?? []).filter((a) => a.tipo === 'atleta')
+    Promise.all(atletas.map(async (a) => [a.id, (await compensacionDe(a.autor))?.euros ?? null] as const))
+      .then((pares) => setComp(Object.fromEntries(pares)))
+  }, [anuncios])
+
+  const visibles = (anuncios ?? []).filter((a) => {
+    if (filtro !== 'todos' && a.tipo !== filtro) return false
+    if (fPrueba && !encajaPrueba(a.pruebas, fPrueba)) return false
+    if (fZona && a.zona !== fZona && a.zona !== 'Cualquier zona') return false
+    if (fGenero && a.genero && a.genero !== 'X' && a.genero !== fGenero) return false
+    if (fComp !== 'todas') {
+      if (a.tipo !== 'atleta') return false
+      const e = comp[a.id] ?? null
+      if (fComp === 'sin' ? e !== null : e !== null && e > Number(fComp)) return false
+    }
+    return true
+  })
+  const hayFiltros = Boolean(fPrueba || fZona || fGenero || fComp !== 'todas')
   const n = (t: TipoAnuncio) => (anuncios ?? []).filter((a) => a.tipo === t).length
 
   return (
@@ -62,12 +91,45 @@ export function Tablon() {
           </button>
         ))}
       </div>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <select aria-label="Filtrar por prueba" value={fPrueba} onChange={(e) => setFPrueba(e.target.value)} className={selCls}>
+          <option value="">Todas las pruebas</option>
+          {GRUPOS_PRUEBAS.map((g) => (
+            <optgroup key={g.grupo} label={g.grupo}>
+              {g.pruebas.length > 1 && <option value={g.grupo}>{g.grupo} (todas)</option>}
+              {g.pruebas.map((p) => <option key={p} value={p}>{p}</option>)}
+            </optgroup>
+          ))}
+        </select>
+        <select aria-label="Filtrar por zona" value={fZona} onChange={(e) => setFZona(e.target.value)} className={selCls}>
+          <option value="">Todas las zonas</option>
+          {ZONAS.filter((z) => z !== 'Cualquier zona').map((z) => <option key={z} value={z}>{z}</option>)}
+        </select>
+        <select aria-label="Filtrar por categoría" value={fGenero} onChange={(e) => setFGenero(e.target.value)} className={selCls}>
+          <option value="">Hombres y mujeres</option>
+          <option value="H">Hombres</option>
+          <option value="M">Mujeres</option>
+        </select>
+        {filtro !== 'club' && (
+          <select aria-label="Filtrar por compensación" value={fComp} onChange={(e) => setFComp(e.target.value as FiltroComp)} className={selCls}>
+            <option value="todas">Cualquier compensación</option>
+            <option value="sin">Sin compensación</option>
+            <option value="500">Hasta 500 €</option>
+            <option value="1000">Hasta 1.000 €</option>
+            <option value="2000">Hasta 2.000 €</option>
+          </select>
+        )}
+        {hayFiltros && (
+          <button type="button" onClick={() => { setFPrueba(''); setFZona(''); setFGenero(''); setFComp('todas') }}
+            className="label-mono text-[0.58rem] text-ink/50 underline hover:text-ink">quitar filtros</button>
+        )}
+      </div>
 
       {anuncios === null ? (
         <div className="mt-4 h-40 animate-pulse border border-ink/[0.14] bg-cream/50" />
       ) : visibles.length === 0 ? (
         <p className="mt-4 border border-ink/[0.14] bg-cream/40 p-6 text-sm text-ink/55">
-          Todavía no hay anuncios publicados aquí. ¡Sé el primero!
+          {hayFiltros ? 'Ningún anuncio encaja con estos filtros.' : 'Todavía no hay anuncios publicados aquí. ¡Sé el primero!'}
         </p>
       ) : (
         <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -98,11 +160,18 @@ function TarjetaAnuncio({ a }: { a: Anuncio }) {
         {a.club_actual && esAtleta && <p className="text-[0.82rem] text-ink/55">Ahora en {a.club_actual}</p>}
         {esAtleta && <CompensacionRFEA nombre={a.autor} detalle />}
         <div className="mt-2 flex flex-wrap gap-1.5">
-          {[genero, a.pruebas, a.zona && `📍 ${a.zona}`].filter(Boolean).map((t) => (
+          {[genero, ...separarPruebas(a.pruebas), a.zona && `📍 ${a.zona}`].filter(Boolean).map((t) => (
             <span key={t as string} className="border border-ink/15 bg-cream/50 px-2 py-0.5 text-[0.75rem] text-ink/70">{t}</span>
           ))}
         </div>
-        <p className="mt-3 whitespace-pre-line text-[0.9rem] leading-relaxed text-ink/80">{a.texto}</p>
+        {a.busca || a.ofrece ? (
+          <dl className="mt-3 space-y-2.5">
+            {a.busca && <Bloque titulo={esAtleta ? 'Busca' : 'Buscamos'} texto={a.busca} />}
+            {a.ofrece && <Bloque titulo={esAtleta ? 'Ofrece' : 'Ofrecemos'} texto={a.ofrece} />}
+          </dl>
+        ) : !a.pruebas && a.texto ? (
+          <p className="mt-3 whitespace-pre-line text-[0.9rem] leading-relaxed text-ink/80">{a.texto}</p>
+        ) : null}
       </div>
 
       {esAtleta && verPerfil && (
@@ -125,6 +194,15 @@ function TarjetaAnuncio({ a }: { a: Anuncio }) {
       </div>
       {interes && <FormularioInteres anuncio={a} />}
     </article>
+  )
+}
+
+function Bloque({ titulo, texto }: { titulo: string; texto: string }) {
+  return (
+    <div>
+      <dt className="label-mono text-[0.55rem] text-ink/45">{titulo}</dt>
+      <dd className="mt-0.5 whitespace-pre-line text-[0.9rem] leading-relaxed text-ink/80">{texto}</dd>
+    </div>
   )
 }
 
@@ -170,9 +248,11 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
   const [autor, setAutor] = useState('')
   const [clubActual, setClubActual] = useState('')
   const [genero, setGenero] = useState<'H' | 'M' | 'X' | ''>('')
-  const [pruebas, setPruebas] = useState('')
+  const [pruebas, setPruebas] = useState<string[]>([])
   const [zona, setZona] = useState('')
-  const [texto, setTexto] = useState('')
+  const [busca, setBusca] = useState('')
+  const [ofrece, setOfrece] = useState('')
+  const alternar = (p: string) => setPruebas((l) => (l.includes(p) ? l.filter((x) => x !== p) : [...l, p]))
   // Ficha de Mundo Atletismo: se genera sola al elegir al atleta del buscador.
   const [perfil, setPerfil] = useState<string | null>(null)
   const [verFicha, setVerFicha] = useState(false)
@@ -187,8 +267,8 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
     if (trampa) { setEstado('ok'); return }
     setEstado('enviando'); setError(null)
     const { error: err } = await createClient().rpc('mercado_anunciar', {
-      p_tipo: tipo, p_autor: autor, p_texto: texto,
-      p_club_actual: clubActual || null, p_genero: genero || null, p_pruebas: pruebas || null,
+      p_tipo: tipo, p_autor: autor, p_busca: busca || null, p_ofrece: ofrece || null,
+      p_club_actual: clubActual || null, p_genero: genero || null, p_pruebas: pruebas.join(', ') || null,
       p_zona: zona || null, p_perfil_url: perfil, p_contacto: contacto,
     })
     if (err) { setError(err.message); setEstado('libre'); return }
@@ -216,7 +296,8 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
               onPick={(a) => {
                 setAutor(a.nombre); setGenero(a.genero)
                 if (a.club) setClubActual(a.club.n)
-                if (a.prueba) setPruebas((p) => p || a.prueba!)
+                const pr = pruebaDesdeMA(a.prueba)
+                if (pr) setPruebas((l) => (l.length ? l : [pr]))
                 setPerfil(perfilMA(a.nombre, a.club?.n))
               }}
               buscar={buscarAtletas} clave={(a) => `${a.nombre}|${a.club?.n ?? ''}`}
@@ -250,14 +331,29 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
           </select>
         </label>
         <label className="block">
-          <span className="mb-1.5 block label-mono text-ink/60">Pruebas</span>
-          <input value={pruebas} onChange={(e) => setPruebas(e.target.value)} maxLength={160}
-            placeholder={esAtleta ? '800, 1500, cross…' : 'Velocidad, lanzamientos, fondo…'} className={inputCls} />
-        </label>
-        <label className="block">
           <span className="mb-1.5 block label-mono text-ink/60">Zona</span>
-          <input value={zona} onChange={(e) => setZona(e.target.value)} maxLength={80} placeholder="Ciudad o comunidad" className={inputCls} />
+          <select value={zona} onChange={(e) => setZona(e.target.value)} className={inputCls}>
+            <option value="">—</option>
+            {ZONAS.map((z) => <option key={z} value={z}>{z}</option>)}
+          </select>
         </label>
+      </div>
+
+      <div>
+        <span className="mb-1.5 block label-mono text-ink/60">Pruebas{pruebas.length ? ` · ${pruebas.length}` : ''}</span>
+        <div className="space-y-2 border border-ink/[0.15] bg-cream/40 p-3">
+          {GRUPOS_PRUEBAS.map((g) => (
+            <div key={g.grupo} className="flex flex-wrap items-center gap-1.5">
+              <span className="w-24 shrink-0 label-mono text-[0.52rem] text-ink/40">{g.grupo}</span>
+              {(g.pruebas.length > 1 && !esAtleta ? [g.grupo, ...g.pruebas] : g.pruebas).map((p) => (
+                <button key={p} type="button" onClick={() => alternar(p)} aria-pressed={pruebas.includes(p)}
+                  className={`border px-2 py-0.5 text-[0.75rem] ${pruebas.includes(p) ? 'border-ink bg-ink text-cream' : 'border-ink/20 bg-paper text-ink/70 hover:border-ink/50'}`}>
+                  {p === g.grupo && g.pruebas.length > 1 ? `${p} (cualquiera)` : p}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
       {esAtleta && (perfil ? (
         <div className="border border-mint bg-mint/15">
@@ -280,14 +376,24 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
         </p>
       ))}
 
-      <label className="block">
-        <span className="mb-1.5 block label-mono text-ink/60">{esAtleta ? '¿Qué buscas?' : '¿Qué buscáis y qué ofrecéis?'} · obligatorio</span>
-        <textarea required value={texto} onChange={(e) => setTexto(e.target.value)} rows={4} maxLength={800}
-          placeholder={esAtleta
-            ? 'Ej.: Busco club de División de Honor o Primera para competir en 1500. Puedo moverme por Madrid…'
-            : 'Ej.: Buscamos atletas de velocidad sub-23 para la liga. Ofrecemos entrenador, fisio y desplazamientos…'}
-          className={inputCls} />
-      </label>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="block">
+          <span className="mb-1.5 block label-mono text-ink/60">{esAtleta ? '¿Qué buscas?' : '¿Qué buscáis?'} · opcional</span>
+          <textarea value={busca} onChange={(e) => setBusca(e.target.value)} rows={4} maxLength={800}
+            placeholder={esAtleta
+              ? 'Ej.: Club de División de Honor o Primera, con grupo de entrenamiento en Madrid…'
+              : 'Ej.: Atletas sub-23 que puedan puntuar en la liga de Primera…'}
+            className={inputCls} />
+        </label>
+        <label className="block">
+          <span className="mb-1.5 block label-mono text-ink/60">{esAtleta ? '¿Qué ofreces?' : '¿Qué ofrecéis?'} · opcional</span>
+          <textarea value={ofrece} onChange={(e) => setOfrece(e.target.value)} rows={4} maxLength={800}
+            placeholder={esAtleta
+              ? 'Ej.: Puntuar en liga y relevos, disponibilidad para el Cto. de España de clubes…'
+              : 'Ej.: Entrenador, fisio, desplazamientos y premios por puntos…'}
+            className={inputCls} />
+        </label>
+      </div>
       <label className="block">
         <span className="mb-1.5 block label-mono text-ink/60">Contacto para verificarlo · obligatorio</span>
         <input required value={contacto} onChange={(e) => setContacto(e.target.value)} maxLength={160}
@@ -298,7 +404,7 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
         <label>Web <input tabIndex={-1} autoComplete="off" value={trampa} onChange={(e) => setTrampa(e.target.value)} /></label>
       </div>
       {error && <p className="border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
-      <button type="submit" disabled={estado === 'enviando' || !autor.trim() || texto.trim().length < 10 || !contacto.trim()}
+      <button type="submit" disabled={estado === 'enviando' || !autor.trim() || !contacto.trim() || (!pruebas.length && !busca.trim() && !ofrece.trim())}
         className="w-full bg-ink py-4 font-brand text-base font-bold text-cream hover:bg-mint hover:text-ink disabled:opacity-35">
         {estado === 'enviando' ? 'Enviando…' : 'Enviar para revisión'}
       </button>

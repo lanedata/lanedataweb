@@ -69,11 +69,13 @@ export interface Anuncio {
   pruebas: string | null
   zona: string | null
   texto: string
+  busca: string | null
+  ofrece: string | null
   perfil_url: string | null
   contacto?: string | null
 }
 export const ANUNCIO_COLUMNS_PUBLICAS =
-  'id, publicado_en, tipo, estado, autor, club_actual, genero, pruebas, zona, texto, perfil_url'
+  'id, publicado_en, tipo, estado, autor, club_actual, genero, pruebas, zona, texto, busca, ofrece, perfil_url'
 
 export interface Interesado {
   id: string

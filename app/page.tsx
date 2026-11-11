@@ -53,6 +53,7 @@ export default async function HomePage() {
       <main className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12">
         {/* TEMPORAL: mercado de fichajes. Su sitio se elige en /admin/fichajes. */}
         <MercadoPortada hueco="arriba" />
+        <MercadoPortada hueco="arriba" bloque="tablon" />
 
         {/* ── Featured article ── */}
         <section>
@@ -63,6 +64,7 @@ export default async function HomePage() {
         </section>
 
         <MercadoPortada hueco="tras-analisis" />
+        <MercadoPortada hueco="tras-analisis" bloque="tablon" />
 
         {/* ── El dato de la semana (columna recurrente) ── */}
         <section className="mt-20">
@@ -99,6 +101,7 @@ export default async function HomePage() {
         )}
 
         <MercadoPortada hueco="abajo" />
+        <MercadoPortada hueco="abajo" bloque="tablon" />
       </main>
 
       <Footer />

@@ -10,26 +10,36 @@ import { createClient } from '@/lib/supabase/client'
 import { buscarClubes, type Club } from '@/lib/fichajes/datos'
 import {
   POSICION_NOMBRE, cargarEstilos, guardarPosicionMercado, posicionMercado, tintaSobre,
-  type EstiloClub, type PosicionMercado,
+  BLOQUE_NOMBRE, type BloqueMercado, type EstiloClub, type PosicionMercado,
 } from '@/lib/fichajes/estilos'
 import { Autocompletar } from '@/components/fichajes/Autocompletar'
 import { Aviso, Caja, botonCls, botonFuerteCls, botonPeligroCls, inputCls } from './ui'
 
 // ─── Portada ─────────────────────────────────────────────────────────────────
 export function BloquePortada() {
+  return (
+    <Caja titulo="En la portada" texto="Dónde sale cada parte del mercado en lanedata.es, por separado. El cambio es inmediato para quien entre, sin volver a desplegar.">
+      <SelectorPortada bloque="fichajes" />
+      <SelectorPortada bloque="tablon" />
+    </Caja>
+  )
+}
+
+function SelectorPortada({ bloque }: { bloque: BloqueMercado }) {
   const [pos, setPos] = useState<PosicionMercado | null>(null)
   const [estado, setEstado] = useState<'ok' | 'error' | null>(null)
 
-  useEffect(() => { posicionMercado().then(setPos) }, [])
+  useEffect(() => { posicionMercado(bloque).then(setPos) }, [bloque])
 
   async function elegir(p: PosicionMercado) {
     setPos(p); setEstado(null)
-    const { error } = await guardarPosicionMercado(p)
+    const { error } = await guardarPosicionMercado(p, bloque)
     setEstado(error ? 'error' : 'ok')
   }
 
   return (
-    <Caja titulo="En la portada" texto="Dónde sale el mercado en lanedata.es. El cambio es inmediato para quien entre, sin volver a desplegar.">
+    <div className="border-b border-ink/[0.08] last:border-b-0">
+      <p className="px-4 pt-4 label-mono text-[0.6rem] text-ink/60">{BLOQUE_NOMBRE[bloque]}</p>
       <div className="grid gap-2 p-4 sm:grid-cols-4">
         {(Object.keys(POSICION_NOMBRE) as PosicionMercado[]).map((p) => (
           <button key={p} type="button" onClick={() => elegir(p)} aria-pressed={pos === p}
@@ -45,7 +55,7 @@ export function BloquePortada() {
           <Aviso tono={estado}>{estado === 'ok' ? 'Guardado. Recarga la portada para verlo.' : 'No se ha podido guardar (¿has relanzado el SQL v3?).'}</Aviso>
         </div>
       )}
-    </Caja>
+    </div>
   )
 }
 

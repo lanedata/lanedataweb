@@ -276,7 +276,8 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
         <p className="mb-6 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{errorToken}</p>
       )}
 
-      <LectorCaptura onLectura={aplicarLectura} />
+      {/* Solo para colaboradores: el público rellena a mano. */}
+      {esColab && <LectorCaptura onLectura={aplicarLectura} />}
 
       <form onSubmit={enviar} className="space-y-8">
         {/* ── Clave ── */}
