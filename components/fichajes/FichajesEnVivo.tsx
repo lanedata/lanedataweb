@@ -17,6 +17,7 @@ import {
   type Fichaje,
 } from '@/lib/fichajes/types'
 import { cargarEstilos, estiloDe, type EstiloClub } from '@/lib/fichajes/estilos'
+import { FichaAtleta } from './FichaAtleta'
 
 const REFRESCO_MS = 30_000
 // El enlace de colaboradores NO se enseña al público: cada colaborador recibe
@@ -231,6 +232,9 @@ function Fila({
   const tipo = tipoDe(fichaje)
   const rumor = fichaje.estado === 'rumor'
   const bomba = fichaje.bomba
+  // Ficha del atleta: se abre pulsando su nombre. Discreta a propósito: el
+  // directo va de movimientos, la ficha es un extra para quien la busque.
+  const [ficha, setFicha] = useState(false)
 
   return (
     <li className={`border-b border-ink/[0.09] last:border-0 transition-colors duration-1000 ${
@@ -267,7 +271,15 @@ function Fila({
           </div>
 
           <p className={`mt-2 font-brand font-extrabold leading-tight tracking-tight ${bomba ? 'text-[1.5rem] uppercase text-ink sm:text-[1.9rem]' : 'text-[1.15rem] text-ink sm:text-[1.25rem]'}`}>
-            {fichaje.atleta}
+            <button type="button" onClick={() => setFicha((v) => !v)} aria-expanded={ficha}
+              className="group text-left decoration-ink/25 decoration-dotted underline-offset-4 hover:underline"
+              title="Ver sus marcas">
+              {fichaje.atleta}
+              <span aria-hidden="true"
+                className={`ml-2 align-middle font-mono text-[0.6rem] font-normal normal-case tracking-normal text-ink/25 transition-opacity group-hover:text-ink/50 ${ficha ? 'opacity-100' : 'opacity-60'}`}>
+                {ficha ? '▴ marcas' : '▾ marcas'}
+              </span>
+            </button>
           </p>
 
           {/* En móvil, uno encima de otro: el nombre del club es el dato y no se corta. */}
@@ -292,6 +304,8 @@ function Fila({
               {fichaje.fuente && <span className="italic">{fichaje.fuente}</span>}
             </p>
           )}
+
+          {ficha && <FichaAtleta nombre={fichaje.atleta} club={fichaje.club_origen ?? fichaje.club_destino} discreta />}
         </div>
       </div>
     </li>

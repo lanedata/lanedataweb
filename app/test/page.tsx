@@ -2,7 +2,7 @@
 
 // Subpágina /test — un duplicado de la web protegido por contraseña para
 // experimentar sin tocar la home pública. Incluye la columna "El dato de la
-// semana" y LaneGames (el test y el wordle semanales), que aún no salen en la
+// semana" y el mercado de fichajes, que aún no salen en la
 // web pública. Al ser el sitio estático (GitHub Pages)
 // la contraseña se comprueba en cliente: es una barrera para un sandbox, no un
 // control de seguridad real. Cambia TEST_PASSWORD para actualizarla.
@@ -13,7 +13,6 @@ import { Footer } from '@/components/Footer'
 import { HeroArticle } from '@/components/HeroArticle'
 import { ArticleCard } from '@/components/ArticleCard'
 import { DatoSemanaColumn } from '@/components/datosemana/DatoSemanaColumn'
-import { LaneGames } from '@/components/lanegames/LaneGames'
 import { FichajesEnVivo } from '@/components/fichajes/FichajesEnVivo'
 import { Tablon } from '@/components/fichajes/Tablon'
 import { createClient } from '@/lib/supabase/client'
@@ -146,17 +145,13 @@ function Sandbox() {
         </section>
 
         <section id="tablon" className="mt-20">
-          <div className="section-label">03b · mercado · tablón</div>
+          <div className="section-label">04 · mercado · tablón</div>
           <h2 className="section-title mb-8">Atletas que buscan club, clubes que buscan atletas</h2>
           <Tablon />
         </section>
 
-        {/* ── LaneGames: test y wordle semanales (todavía sólo en /test) ── */}
-        <section className="mt-20">
-          <div className="section-label">04 · lanegames</div>
-          <h2 className="section-title mb-8">Los juegos de la semana</h2>
-          <LaneGames navegable />
-        </section>
+        {/* LaneGames (test y wordle semanales) ocultos por ahora. El código sigue en
+            components/lanegames: para recuperarlos, vuelve a poner aquí <LaneGames navegable />. */}
 
         {/* ── More articles ── */}
         {rest.length > 0 && (

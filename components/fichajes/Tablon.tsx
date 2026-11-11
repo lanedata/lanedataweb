@@ -12,8 +12,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { buscarAtletas, buscarClubes, type Atleta, type Club } from '@/lib/fichajes/datos'
-import { ANUNCIO_COLUMNS_PUBLICAS, haceDe, perfilLane, perfilMA, type Anuncio, type TipoAnuncio } from '@/lib/fichajes/types'
+import { ANUNCIO_COLUMNS_PUBLICAS, haceDe, perfilMA, type Anuncio, type TipoAnuncio } from '@/lib/fichajes/types'
 import { Autocompletar } from './Autocompletar'
+import { FichaAtleta } from './FichaAtleta'
 
 const inputCls =
   'w-full border border-ink/[0.15] bg-cream/60 px-4 py-3 text-sm text-ink placeholder:text-ink/30 focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40'
@@ -80,7 +81,6 @@ export function Tablon() {
 function TarjetaAnuncio({ a }: { a: Anuncio }) {
   const [verPerfil, setVerPerfil] = useState(false)
   const [interes, setInteres] = useState(false)
-  const perfil = perfilLane(a.perfil_url)
   const esAtleta = a.tipo === 'atleta'
   const genero = a.genero === 'H' ? 'Hombres' : a.genero === 'M' ? 'Mujeres' : a.genero === 'X' ? 'Hombres y mujeres' : null
 
@@ -103,21 +103,17 @@ function TarjetaAnuncio({ a }: { a: Anuncio }) {
         <p className="mt-3 whitespace-pre-line text-[0.9rem] leading-relaxed text-ink/80">{a.texto}</p>
       </div>
 
-      {perfil && verPerfil && (
-        <div className="border-t border-ink/[0.14] bg-cream/30">
-          <iframe src={perfil} title={`Perfil de ${a.autor} en Mundo Atletismo`} loading="lazy"
-            className="block h-[520px] w-full" referrerPolicy="no-referrer" />
-          <a href={perfil} target="_blank" rel="noopener noreferrer" className="block px-4 py-2 text-right label-mono text-[0.55rem] text-ink/50 underline">
-            abrir en mundoatletismo.es ↗
-          </a>
+      {esAtleta && verPerfil && (
+        <div className="border-t border-ink/[0.14] bg-cream/30 p-4">
+          <FichaAtleta nombre={a.autor} club={a.club_actual} perfilUrl={a.perfil_url} />
         </div>
       )}
 
       <div className="flex border-t border-ink/[0.14]">
-        {perfil && (
+        {esAtleta && (
           <button type="button" onClick={() => setVerPerfil((v) => !v)}
             className="flex-1 border-r border-ink/[0.14] px-4 py-3 label-mono text-[0.6rem] text-ink/70 hover:bg-cream/60">
-            {verPerfil ? 'ocultar perfil' : '📊 ver perfil y marcas'}
+            {verPerfil ? 'ocultar marcas' : '📊 ver marcas y ficha'}
           </button>
         )}
         <button type="button" onClick={() => setInteres((v) => !v)}
