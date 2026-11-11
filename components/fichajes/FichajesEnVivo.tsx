@@ -18,6 +18,7 @@ import {
 } from '@/lib/fichajes/types'
 import { cargarEstilos, estiloDe, type EstiloClub } from '@/lib/fichajes/estilos'
 import { FichaAtleta } from './FichaAtleta'
+import { CompensacionRFEA } from './CompensacionRFEA'
 
 const REFRESCO_MS = 30_000
 // El enlace de colaboradores NO se enseña al público: cada colaborador recibe
@@ -264,6 +265,7 @@ function Fila({
             {fichaje.origen_envio === 'atleta' && (
               <span className="border border-ink/20 px-1.5 py-0.5 label-mono text-[0.55rem] text-ink/50">lo cuenta el atleta</span>
             )}
+            <CompensacionRFEA nombre={fichaje.atleta} />
             {nuevo && <span className="bg-mint px-1.5 py-0.5 label-mono text-[0.55rem] text-ink">nuevo</span>}
             <time dateTime={fichaje.informado_en} className="ml-auto shrink-0 font-mono text-[0.75rem] tabular-nums text-ink/45">
               {horaDe(fichaje.informado_en)} · {haceDe(fichaje.informado_en, ahora)}

@@ -15,6 +15,7 @@ import { buscarAtletas, buscarClubes, type Atleta, type Club } from '@/lib/ficha
 import { ANUNCIO_COLUMNS_PUBLICAS, haceDe, perfilMA, type Anuncio, type TipoAnuncio } from '@/lib/fichajes/types'
 import { Autocompletar } from './Autocompletar'
 import { FichaAtleta } from './FichaAtleta'
+import { CompensacionRFEA } from './CompensacionRFEA'
 
 const inputCls =
   'w-full border border-ink/[0.15] bg-cream/60 px-4 py-3 text-sm text-ink placeholder:text-ink/30 focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40'
@@ -95,6 +96,7 @@ function TarjetaAnuncio({ a }: { a: Anuncio }) {
         </div>
         <h3 className="mt-2.5 font-brand text-[1.3rem] font-extrabold leading-tight tracking-tight text-ink">{a.autor}</h3>
         {a.club_actual && esAtleta && <p className="text-[0.82rem] text-ink/55">Ahora en {a.club_actual}</p>}
+        {esAtleta && <CompensacionRFEA nombre={a.autor} detalle />}
         <div className="mt-2 flex flex-wrap gap-1.5">
           {[genero, a.pruebas, a.zona && `📍 ${a.zona}`].filter(Boolean).map((t) => (
             <span key={t as string} className="border border-ink/15 bg-cream/50 px-2 py-0.5 text-[0.75rem] text-ink/70">{t}</span>
