@@ -13,10 +13,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
-  FICHAJE_COLUMNS, diaDe, divisionCorta, haceDe, horaDe, tipoDe,
+  FICHAJE_COLUMNS, diaDe, divisionCorta, haceDe, horaDe,
   type Fichaje,
 } from '@/lib/fichajes/types'
 import { cargarEstilos, estiloDe, tintaSobre, type EstiloClub } from '@/lib/fichajes/estilos'
+import { tratarLogo, type LogoTratado } from '@/lib/fichajes/logo'
+import { compensacionDe, euros, type Compensacion } from '@/lib/fichajes/compensaciones'
 import { FichaAtleta } from './FichaAtleta'
 import { CompensacionRFEA } from './CompensacionRFEA'
 
@@ -230,7 +232,6 @@ function Pie() {
 function Fila({
   fichaje, dia, nuevo, ahora, estilos,
 }: { fichaje: Fichaje; dia: string | null; nuevo: boolean; ahora: number; estilos: Map<string, EstiloClub> | null }) {
-  const tipo = tipoDe(fichaje)
   const rumor = fichaje.estado === 'rumor'
   const bomba = fichaje.bomba
   // Ficha del atleta: se abre pulsando su nombre. Discreta a propósito: el
@@ -286,18 +287,12 @@ function Fila({
 
           {/* En móvil, uno encima de otro: el nombre del club es el dato y no se corta. */}
           <div className="mt-2.5 grid grid-cols-1 items-stretch gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center sm:gap-3">
-            <Club nombre={fichaje.club_origen} division={fichaje.division_origen} rol="origen" estilo={estiloDe(estilos, fichaje.club_origen)} />
+            <Club nombre={fichaje.club_origen} division={fichaje.division_origen} rol="origen" estilo={estiloDe(estilos, fichaje.club_origen)} atleta={fichaje.atleta} />
             <span aria-hidden="true" className="text-center font-brand text-lg leading-none text-ink/30">
               <span className="sm:hidden">&darr;</span><span className="hidden sm:inline">&rarr;</span>
             </span>
-            <Club nombre={fichaje.club_destino} division={fichaje.division_destino} rol="destino" estilo={estiloDe(estilos, fichaje.club_destino)} />
+            <Club nombre={fichaje.club_destino} division={fichaje.division_destino} rol="destino" estilo={estiloDe(estilos, fichaje.club_destino)} atleta={fichaje.atleta} />
           </div>
-
-          {tipo !== 'completo' && (
-            <p className="mt-2 label-mono text-[0.56rem] text-ink/40">
-              {tipo === 'destino-incognito' ? 'Destino por confirmar' : 'Procedencia por confirmar'}
-            </p>
-          )}
 
           {(fichaje.nota || fichaje.fuente) && (
             <p className="mt-2 text-[0.78rem] leading-relaxed text-ink/50">
@@ -315,19 +310,10 @@ function Fila({
 }
 
 /** Un club con su división, o la incógnita cuando no se sabe. */
-function Club({ nombre, division, rol, estilo }: {
-  nombre: string | null; division: string | null; rol: 'origen' | 'destino'; estilo: EstiloClub | null
+function Club({ nombre, division, rol, estilo, atleta }: {
+  nombre: string | null; division: string | null; rol: 'origen' | 'destino'; estilo: EstiloClub | null; atleta?: string
 }) {
-  if (!nombre) {
-    return (
-      <div
-        className="flex h-full min-h-[2.75rem] items-center justify-center border border-dashed border-ink/30 bg-cream/50 font-brand text-2xl font-extrabold text-ink/40"
-        title={rol === 'destino' ? 'Se va, pero aún no se sabe a qué club' : 'Llega, pero aún no se sabe de qué club'}
-      >
-        ?
-      </div>
-    )
-  }
+  if (!nombre) return <Misterio rol={rol} atleta={atleta} />
   const corta = divisionCorta(division)
   const color = estilo?.color ?? null
   const color2 = estilo?.color2 ?? null
@@ -337,23 +323,64 @@ function Club({ nombre, division, rol, estilo }: {
   // colores del club desde la izquierda. Sin colores, queda neutra.
   const fondo = color
     ? [
-        `radial-gradient(120% 140% at 0% 50%, ${alfa(color, destino ? 0.2 : 0.14)} 0%, transparent 60%)`,
-        color2 ? `radial-gradient(90% 120% at 100% 100%, ${alfa(color2, 0.1)} 0%, transparent 55%)` : null,
+        `radial-gradient(120% 140% at 0% 50%, ${alfa(color, destino ? 0.3 : 0.22)} 0%, transparent 65%)`,
+        color2 ? `radial-gradient(90% 120% at 100% 100%, ${alfa(color2, 0.17)} 0%, transparent 60%)` : null,
       ].filter(Boolean).join(', ')
     : undefined
 
   return (
     <div
-      className={`flex min-w-0 items-center gap-3 border px-3 py-2.5 text-ink ${destino ? 'border-ink/25 bg-cream' : 'border-ink/[0.12] bg-paper'}`}
+      className={`flex h-full min-h-[4.5rem] min-w-0 items-center gap-3 border px-3 py-2.5 text-ink ${destino ? 'border-ink/25 bg-cream' : 'border-ink/[0.12] bg-paper'}`}
       style={fondo ? { backgroundImage: fondo } : undefined}
     >
-      <Escudo logo={estilo?.logo_url ?? null} color={color} />
+      <Escudo logo={estilo?.logo_url ?? null} color={color} mantenerFondo={estilo?.logo_fondo ?? false} />
       <div className="min-w-0">
         <p className="label-mono text-[0.56rem] text-ink/45">{destino ? 'Ficha por' : 'Sale de'}</p>
         <p className={`mt-0.5 break-words font-brand leading-tight tracking-tight ${destino ? 'text-[1rem] font-extrabold text-ink' : 'text-[0.92rem] font-bold text-ink/75'}`}>
           {nombre}
         </p>
         {corta && <p className="mt-0.5 label-mono text-[0.55rem] text-ink/50">{division}</p>}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Club que aún no se sabe. Destino desconocido: «¿Quién lo ficha?» y, si el
+ * atleta tiene compensación RFEA, lo que tendrá que pagar el club que lo fiche.
+ */
+function Misterio({ rol, atleta }: { rol: 'origen' | 'destino'; atleta?: string }) {
+  const [comp, setComp] = useState<Compensacion | null>(null)
+  useEffect(() => {
+    if (rol !== 'destino' || !atleta) return
+    let vivo = true
+    compensacionDe(atleta).then((c) => { if (vivo) setComp(c) })
+    return () => { vivo = false }
+  }, [rol, atleta])
+
+  const destino = rol === 'destino'
+  return (
+    <div
+      className="relative flex h-full min-h-[4.5rem] min-w-0 items-center gap-3 overflow-hidden border border-dashed border-ink/30 px-3 py-2.5 text-ink"
+      style={{ backgroundImage: 'repeating-linear-gradient(135deg, rgba(13,42,20,0.035) 0 8px, transparent 8px 16px)' }}
+      title={destino ? 'Se va, pero aún no se sabe a qué club' : 'Llega, pero aún no se sabe de qué club'}
+    >
+      <span aria-hidden="true"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-dashed border-ink/25 font-brand text-[1.4rem] font-extrabold text-ink/35">
+        ?
+      </span>
+      <div className="min-w-0">
+        <p className="label-mono text-[0.56rem] text-ink/45">{destino ? 'Ficha por' : 'Sale de'}</p>
+        <p className="mt-0.5 font-brand text-[0.95rem] font-bold leading-tight tracking-tight text-ink/55">
+          {destino ? '¿Quién lo ficha?' : 'Procedencia por confirmar'}
+        </p>
+        {comp ? (
+          <p className="mt-0.5 label-mono text-[0.55rem] text-ink/55">
+            <span title={`Para ${comp.club} · ${comp.tipo}`}>compensación <span className="font-semibold text-ink">{euros(comp.euros)}</span></span>
+          </p>
+        ) : destino ? (
+          <p className="mt-0.5 label-mono text-[0.55rem] text-ink/40">destino por confirmar</p>
+        ) : null}
       </div>
     </div>
   )
@@ -367,76 +394,37 @@ function alfa(hex: string, a: number): string {
 }
 
 /**
- * Escudo del club, respetando su forma: alto fijo y ancho según su proporción
- * (cuadrado, apaisado o alargado). Se mira la imagen al cargar:
- *  - fondo blanco (JPG/PNG sin transparencia): se funde con la tarjeta
- *    (multiply), así el recuadro blanco desaparece;
- *  - fondo de color: se recorta con esquinas redondeadas para que parezca
- *    una chapa y no un pegote;
- *  - logo blanco sobre transparente: chapa del color del club para que se vea.
+ * Escudo del club, respetando su forma (alto fijo, ancho según proporción).
+ * Si el logo trae fondo liso se le quita en el navegador (lib/fichajes/logo),
+ * salvo que en el admin se haya marcado «mantener el fondo»: entonces se
+ * redondea como una chapa. Si es blanco, va sobre el color del club.
  * Sin logo, no se pinta nada.
  */
-type Forma = { proporcion: number; tipo: 'limpio' | 'fondo-blanco' | 'fondo-color' | 'claro' }
+function Escudo({ logo, color, mantenerFondo }: { logo: string | null; color: string | null; mantenerFondo: boolean }) {
+  const [t, setT] = useState<LogoTratado | null>(null)
 
-function Escudo({ logo, color }: { logo: string | null; color: string | null }) {
-  const [forma, setForma] = useState<Forma | null>(null)
-  const [roto, setRoto] = useState(false)
-  const img = useRef<HTMLImageElement>(null)
+  useEffect(() => {
+    if (!logo) return
+    let vivo = true
+    tratarLogo(logo, !mantenerFondo).then((r) => { if (vivo) setT(r) })
+    return () => { vivo = false }
+  }, [logo, mantenerFondo])
 
-  const medir = () => {
-    const im = img.current
-    if (!im?.complete || !im.naturalHeight) return
-    setForma({ proporcion: im.naturalWidth / im.naturalHeight, tipo: analizar(im) })
-  }
-  // Si el logo ya estaba en caché, carga antes de que React escuche onLoad.
-  useEffect(medir, [logo])
+  if (!logo || !t) return null
 
-  if (!logo || roto) return null
-
-  const r = forma?.proporcion ?? 1
-  const tipo = forma?.tipo ?? 'limpio'
+  const r = t.proporcion
   const ancho = r <= 1.15 ? 44 : Math.min(44 * r * 0.82, 104)
-  const chapa = tipo === 'claro' ? (color && tintaSobre(color) === '#ffffff' ? color : '#0c2a18') : undefined
+  const claro = t.tipo === 'claro'
+  const chapa = claro ? (color && tintaSobre(color) === '#ffffff' ? color : '#0c2a18') : undefined
+  const conFondo = t.teniaFondo && mantenerFondo
 
   return (
-    <span className={`flex h-11 shrink-0 items-center justify-center ${tipo === 'claro' ? 'rounded-md px-1.5 py-1' : ''}`}
-      style={{ width: ancho, background: chapa, opacity: forma ? 1 : 0, transition: 'opacity 200ms' }}>
+    <span className={`flex h-11 shrink-0 items-center justify-center ${claro ? 'rounded-md px-1.5 py-1' : ''}`}
+      style={{ width: ancho, background: chapa, animation: 'cardFadeIn 280ms var(--ease-out) both' }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img ref={img} src={logo} alt="" loading="lazy" crossOrigin="anonymous" onLoad={medir} onError={() => setRoto(true)}
-        className={`max-h-full max-w-full object-contain ${tipo === 'fondo-color' ? 'rounded-md shadow-[0_0_0_1px_rgba(13,42,20,0.08)]' : ''}`}
-        style={tipo === 'fondo-blanco' ? { mixBlendMode: 'multiply' } : undefined} />
+      <img src={t.url} alt="" className={`max-h-full max-w-full object-contain ${conFondo ? 'rounded-md shadow-[0_0_0_1px_rgba(13,42,20,0.08)]' : ''}`} />
     </span>
   )
-}
-
-/** Qué clase de imagen es el logo, mirando sus píxeles (32×32). */
-function analizar(im: HTMLImageElement): Forma['tipo'] {
-  try {
-    const c = document.createElement('canvas')
-    const w = (c.width = 32), h = (c.height = 32)
-    const ctx = c.getContext('2d', { willReadFrequently: true })
-    if (!ctx) return 'limpio'
-    ctx.drawImage(im, 0, 0, w, h)
-    const d = ctx.getImageData(0, 0, w, h).data
-    const px = (x: number, y: number) => d.subarray((y * w + x) * 4, (y * w + x) * 4 + 4)
-    const luz = (q: Uint8ClampedArray) => 0.299 * q[0] + 0.587 * q[1] + 0.114 * q[2]
-
-    // Esquinas opacas → el logo trae fondo.
-    const esquinas = [px(0, 0), px(w - 1, 0), px(0, h - 1), px(w - 1, h - 1)]
-    if (esquinas.every((q) => q[3] > 200)) {
-      return esquinas.every((q) => luz(q) > 235) ? 'fondo-blanco' : 'fondo-color'
-    }
-    // Transparente: ¿es casi todo blanco?
-    let suma = 0, n = 0
-    for (let k = 0; k < d.length; k += 4) {
-      if (d[k + 3] < 64) continue
-      suma += 0.299 * d[k] + 0.587 * d[k + 1] + 0.114 * d[k + 2]
-      n++
-    }
-    return n > 20 && suma / n > 215 ? 'claro' : 'limpio'
-  } catch {
-    return 'limpio' // imagen sin CORS: no se puede leer, se deja tal cual
-  }
 }
 
 // ─── Falta aplicar / actualizar el SQL ───────────────────────────────────────

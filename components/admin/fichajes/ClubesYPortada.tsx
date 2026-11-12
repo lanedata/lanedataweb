@@ -66,6 +66,7 @@ export function BloqueClubes() {
   const [color, setColor] = useState('#0D2A14')
   const [color2, setColor2] = useState('#9FE88D')
   const [logo, setLogo] = useState<string | null>(null)
+  const [mantenerFondo, setMantenerFondo] = useState(false)
   const [subiendo, setSubiendo] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -76,7 +77,7 @@ export function BloqueClubes() {
   useEffect(() => { recargar() }, [])
 
   function editar(e: EstiloClub) {
-    setClub(e.nombre); setColor(e.color ?? '#0D2A14'); setColor2(e.color2 ?? '#9FE88D'); setLogo(e.logo_url)
+    setClub(e.nombre); setColor(e.color ?? '#0D2A14'); setColor2(e.color2 ?? '#9FE88D'); setLogo(e.logo_url); setMantenerFondo(e.logo_fondo ?? false)
     window.scrollTo({ top: (document.getElementById('bloque-clubes')?.offsetTop ?? 0) - 80, behavior: 'smooth' })
   }
 
@@ -98,10 +99,10 @@ export function BloqueClubes() {
     if (!club.trim()) return
     setError(null)
     const { error: err } = await createClient().from('clubes_estilo').upsert({
-      nombre: club.trim(), color, color2, logo_url: logo, actualizado_en: new Date().toISOString(),
+      nombre: club.trim(), color, color2, logo_url: logo, logo_fondo: mantenerFondo, actualizado_en: new Date().toISOString(),
     })
     if (err) { setError(err.message); return }
-    setClub(''); setLogo(null)
+    setClub(''); setLogo(null); setMantenerFondo(false)
     recargar()
   }
 
@@ -136,6 +137,12 @@ export function BloqueClubes() {
                 onChange={(e) => { const f = e.target.files?.[0]; if (f) subirLogo(f); e.target.value = '' }} />
             </label>
             {logo && <button type="button" onClick={() => setLogo(null)} className={botonCls}>sin escudo</button>}
+            {logo && (
+              <label className="flex cursor-pointer items-center gap-2 text-[0.8rem] text-ink/70" title="Por defecto, la web quita el fondo liso de los escudos. Márcalo si este lo necesita.">
+                <input type="checkbox" checked={mantenerFondo} onChange={(e) => setMantenerFondo(e.target.checked)} className="h-4 w-4 accent-ink" />
+                mantener el fondo del escudo
+              </label>
+            )}
             <button type="button" onClick={guardar} disabled={!club.trim() || subiendo} className={botonFuerteCls}>guardar</button>
           </div>
           {/* Vista previa como en las historias */}

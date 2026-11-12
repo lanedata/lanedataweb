@@ -490,6 +490,8 @@ CREATE TABLE IF NOT EXISTS clubes_estilo (
   logo_url        TEXT CHECK (logo_url IS NULL OR length(logo_url) <= 500),
   actualizado_en  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+-- v5: la web quita el fondo liso de los escudos; true = mantenerlo.
+ALTER TABLE clubes_estilo ADD COLUMN IF NOT EXISTS logo_fondo BOOLEAN NOT NULL DEFAULT FALSE;
 
 ALTER TABLE clubes_estilo ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "public_read_clubes_estilo" ON clubes_estilo;

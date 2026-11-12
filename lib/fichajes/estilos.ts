@@ -10,6 +10,8 @@ export interface EstiloClub {
   color: string | null
   color2: string | null
   logo_url: string | null
+  /** true = no quitar el fondo del escudo (se marca en el admin). */
+  logo_fondo?: boolean
 }
 
 let promesa: Promise<Map<string, EstiloClub>> | null = null
@@ -17,9 +19,10 @@ let promesa: Promise<Map<string, EstiloClub>> | null = null
 export function cargarEstilos(forzar = false): Promise<Map<string, EstiloClub>> {
   if (!promesa || forzar) {
     promesa = (async () => {
-      const { data, error } = await createClient()
-        .from('clubes_estilo').select('nombre, color, color2, logo_url')
-      if (error) return new Map()
+      const sb = createClient()
+      let { data, error } = await sb.from('clubes_estilo').select('nombre, color, color2, logo_url, logo_fondo')
+      if (error) ({ data, error } = await sb.from('clubes_estilo').select('nombre, color, color2, logo_url'))
+      if (error || !data) return new Map()
       return new Map((data as EstiloClub[]).map((e) => [normalizar(e.nombre), e]))
     })()
   }
