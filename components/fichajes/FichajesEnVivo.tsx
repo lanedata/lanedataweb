@@ -16,7 +16,7 @@ import {
   FICHAJE_COLUMNS, diaDe, divisionCorta, haceDe, horaDe, tipoDe,
   type Fichaje,
 } from '@/lib/fichajes/types'
-import { cargarEstilos, estiloDe, type EstiloClub } from '@/lib/fichajes/estilos'
+import { cargarEstilos, estiloDe, tintaSobre, type EstiloClub } from '@/lib/fichajes/estilos'
 import { FichaAtleta } from './FichaAtleta'
 import { CompensacionRFEA } from './CompensacionRFEA'
 
@@ -329,24 +329,114 @@ function Club({ nombre, division, rol, estilo }: {
     )
   }
   const corta = divisionCorta(division)
+  const color = estilo?.color ?? null
+  const color2 = estilo?.color2 ?? null
+  const destino = rol === 'destino'
+
+  // Tarjeta de siempre (papel y tinta) con un difuminado muy suave de los
+  // colores del club desde la izquierda. Sin colores, queda neutra.
+  const fondo = color
+    ? [
+        `radial-gradient(120% 140% at 0% 50%, ${alfa(color, destino ? 0.2 : 0.14)} 0%, transparent 60%)`,
+        color2 ? `radial-gradient(90% 120% at 100% 100%, ${alfa(color2, 0.1)} 0%, transparent 55%)` : null,
+      ].filter(Boolean).join(', ')
+    : undefined
+
   return (
     <div
-      className={`flex min-w-0 items-center gap-2.5 border px-3 py-2 text-ink ${rol === 'destino' ? 'border-ink/25 bg-cream' : 'border-ink/[0.12] bg-paper'}`}
-      style={estilo?.color ? { borderLeft: `4px solid ${estilo.color}` } : undefined}
+      className={`flex min-w-0 items-center gap-3 border px-3 py-2.5 text-ink ${destino ? 'border-ink/25 bg-cream' : 'border-ink/[0.12] bg-paper'}`}
+      style={fondo ? { backgroundImage: fondo } : undefined}
     >
-      {estilo?.logo_url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={estilo.logo_url} alt="" className="h-8 w-8 shrink-0 object-contain" loading="lazy" />
-      )}
+      <Escudo logo={estilo?.logo_url ?? null} color={color} />
       <div className="min-w-0">
-        <p className="label-mono text-[0.58rem] text-ink/45">{rol === 'origen' ? 'Sale de' : 'Ficha por'}</p>
-        <p className={`mt-0.5 break-words text-[0.88rem] leading-snug ${rol === 'destino' ? 'font-semibold text-ink' : 'text-ink/70'}`}>
+        <p className="label-mono text-[0.56rem] text-ink/45">{destino ? 'Ficha por' : 'Sale de'}</p>
+        <p className={`mt-0.5 break-words font-brand leading-tight tracking-tight ${destino ? 'text-[1rem] font-extrabold text-ink' : 'text-[0.92rem] font-bold text-ink/75'}`}>
           {nombre}
         </p>
-        {corta && <p className="mt-0.5 label-mono text-[0.58rem] text-ink/50">{division}</p>}
+        {corta && <p className="mt-0.5 label-mono text-[0.55rem] text-ink/50">{division}</p>}
       </div>
     </div>
   )
+}
+
+/** #RRGGBB + opacidad → rgba(). */
+function alfa(hex: string, a: number): string {
+  if (!/^#[0-9a-f]{6}$/i.test(hex)) return 'transparent'
+  const n = parseInt(hex.slice(1), 16)
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`
+}
+
+/**
+ * Escudo del club, respetando su forma: alto fijo y ancho según su proporción
+ * (cuadrado, apaisado o alargado). Se mira la imagen al cargar:
+ *  - fondo blanco (JPG/PNG sin transparencia): se funde con la tarjeta
+ *    (multiply), así el recuadro blanco desaparece;
+ *  - fondo de color: se recorta con esquinas redondeadas para que parezca
+ *    una chapa y no un pegote;
+ *  - logo blanco sobre transparente: chapa del color del club para que se vea.
+ * Sin logo, no se pinta nada.
+ */
+type Forma = { proporcion: number; tipo: 'limpio' | 'fondo-blanco' | 'fondo-color' | 'claro' }
+
+function Escudo({ logo, color }: { logo: string | null; color: string | null }) {
+  const [forma, setForma] = useState<Forma | null>(null)
+  const [roto, setRoto] = useState(false)
+  const img = useRef<HTMLImageElement>(null)
+
+  const medir = () => {
+    const im = img.current
+    if (!im?.complete || !im.naturalHeight) return
+    setForma({ proporcion: im.naturalWidth / im.naturalHeight, tipo: analizar(im) })
+  }
+  // Si el logo ya estaba en caché, carga antes de que React escuche onLoad.
+  useEffect(medir, [logo])
+
+  if (!logo || roto) return null
+
+  const r = forma?.proporcion ?? 1
+  const tipo = forma?.tipo ?? 'limpio'
+  const ancho = r <= 1.15 ? 44 : Math.min(44 * r * 0.82, 104)
+  const chapa = tipo === 'claro' ? (color && tintaSobre(color) === '#ffffff' ? color : '#0c2a18') : undefined
+
+  return (
+    <span className={`flex h-11 shrink-0 items-center justify-center ${tipo === 'claro' ? 'rounded-md px-1.5 py-1' : ''}`}
+      style={{ width: ancho, background: chapa, opacity: forma ? 1 : 0, transition: 'opacity 200ms' }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img ref={img} src={logo} alt="" loading="lazy" crossOrigin="anonymous" onLoad={medir} onError={() => setRoto(true)}
+        className={`max-h-full max-w-full object-contain ${tipo === 'fondo-color' ? 'rounded-md shadow-[0_0_0_1px_rgba(13,42,20,0.08)]' : ''}`}
+        style={tipo === 'fondo-blanco' ? { mixBlendMode: 'multiply' } : undefined} />
+    </span>
+  )
+}
+
+/** Qué clase de imagen es el logo, mirando sus píxeles (32×32). */
+function analizar(im: HTMLImageElement): Forma['tipo'] {
+  try {
+    const c = document.createElement('canvas')
+    const w = (c.width = 32), h = (c.height = 32)
+    const ctx = c.getContext('2d', { willReadFrequently: true })
+    if (!ctx) return 'limpio'
+    ctx.drawImage(im, 0, 0, w, h)
+    const d = ctx.getImageData(0, 0, w, h).data
+    const px = (x: number, y: number) => d.subarray((y * w + x) * 4, (y * w + x) * 4 + 4)
+    const luz = (q: Uint8ClampedArray) => 0.299 * q[0] + 0.587 * q[1] + 0.114 * q[2]
+
+    // Esquinas opacas → el logo trae fondo.
+    const esquinas = [px(0, 0), px(w - 1, 0), px(0, h - 1), px(w - 1, h - 1)]
+    if (esquinas.every((q) => q[3] > 200)) {
+      return esquinas.every((q) => luz(q) > 235) ? 'fondo-blanco' : 'fondo-color'
+    }
+    // Transparente: ¿es casi todo blanco?
+    let suma = 0, n = 0
+    for (let k = 0; k < d.length; k += 4) {
+      if (d[k + 3] < 64) continue
+      suma += 0.299 * d[k] + 0.587 * d[k + 1] + 0.114 * d[k + 2]
+      n++
+    }
+    return n > 20 && suma / n > 215 ? 'claro' : 'limpio'
+  } catch {
+    return 'limpio' // imagen sin CORS: no se puede leer, se deja tal cual
+  }
 }
 
 // ─── Falta aplicar / actualizar el SQL ───────────────────────────────────────
