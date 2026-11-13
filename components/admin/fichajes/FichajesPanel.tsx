@@ -2,10 +2,8 @@
 
 // TEMPORAL — Panel del mercado de fichajes.
 //
-//   1. ENLACES Y CLAVE: la clave de colaborador se escribe aquí y se guarda
-//      hasheada (bcrypt) vía `fichajes_set_clave`, que solo puede llamar una
-//      sesión autenticada. No vuelve a salir de la base: el panel solo sabe si
-//      está puesta y de cuándo es. Si se pierde, se pone otra.
+//   1. ENLACES Y COLABORADORES: quién puede entrar en /fichajes/enviar/ (lista
+//      blanca por correo de Google) y las incidencias que marcan entre ellos.
 //   2. PROPUESTAS DE ATLETAS: lo que mandan los propios atletas desde
 //      /fichajes/mi-fichaje no se publica solo. Aquí se aprueba (como rumor o
 //      confirmado) o se descarta. El contacto que dejan solo se ve aquí.
@@ -15,15 +13,17 @@
 import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
-  FICHAJE_COLUMNS, diaDe, horaDe,
-  type Colaborador, type EstadoFichaje, type Fichaje, type Propuesta,
+  FICHAJE_COLUMNS, diaDe, esChivatazo, horaDe,
+  type Colaborador, type EstadoFichaje, type Fichaje, type IncidenciaAdmin, type Propuesta,
 } from '@/lib/fichajes/types'
 import { BloqueColaboradores } from './Colaboradores'
 import { BloqueClubes, BloquePortada } from './ClubesYPortada'
 import { BloqueTablon } from './TablonAdmin'
 
 const ENLACES = [
-  { ruta: '/fichajes/mi-fichaje/', titulo: 'Atletas', texto: 'Sin clave. Llega aquí abajo para que lo apruebes.' },
+  { ruta: '/fichajes/mi-fichaje/#chivatazo', titulo: 'Chivatazos', texto: 'Para todo el mundo, sin clave. Compártelo: llega aquí abajo para que lo apruebes.' },
+  { ruta: '/fichajes/mi-fichaje/', titulo: 'Atletas', texto: 'La misma página, abierta en «es el mío».' },
+  { ruta: '/fichajes/enviar/', titulo: 'Colaboradores', texto: 'El mismo enlace para todos: entran con Google si su correo está en la lista de abajo.' },
   { ruta: '/mercado/', titulo: 'Mercado público', texto: 'Directo + tablón de atletas y clubes.' },
   { ruta: '/admin/movil/', titulo: 'Panel móvil', texto: 'Instálalo como app y activa los avisos.' },
 ]
@@ -36,17 +36,19 @@ export function FichajesPanel() {
   const [fichajes, setFichajes] = useState<FichajeAdmin[]>([])
   const [propuestas, setPropuestas] = useState<Propuesta[]>([])
   const [colaboradores, setColaboradores] = useState<Colaborador[]>([])
-  const [claveInfo, setClaveInfo] = useState<{ configurada: boolean; actualizado_en: string | null } | null>(null)
+  const [incidencias, setIncidencias] = useState<IncidenciaAdmin[]>([])
 
   const cargar = useCallback(async () => {
     const supabase = createClient()
-    const [lista, props, clave, colabs] = await Promise.all([
+    const [lista, props, incs, colabs] = await Promise.all([
       supabase.from('fichajes').select(`${FICHAJE_COLUMNS}, visible, colaborador_id`)
         .order('informado_en', { ascending: false }).limit(500),
       supabase.from('fichajes_propuestas')
-        .select('id, creado_en, atleta, genero, club_origen, club_destino, division_origen, division_destino, nota, contacto')
+        .select('*')
         .order('creado_en', { ascending: true }),
-      supabase.rpc('fichajes_clave_estado'),
+      // Si la tabla aún no existe (SQL v5 sin aplicar) simplemente no hay incidencias.
+      supabase.from('fichajes_incidencias').select('id, creado_en, fichaje_id, colaborador_id, texto, resuelta_en')
+        .is('resuelta_en', null).order('creado_en', { ascending: true }),
       supabase.from('fichajes_colaboradores').select('*').order('creado_en', { ascending: true }),
     ])
 
@@ -59,8 +61,7 @@ export function FichajesPanel() {
     setFichajes((lista.data as unknown as FichajeAdmin[]) ?? [])
     setPropuestas((props.data as unknown as Propuesta[]) ?? [])
     setColaboradores((colabs.data as Colaborador[]) ?? [])
-    const fila = Array.isArray(clave.data) ? clave.data[0] : clave.data
-    setClaveInfo(fila ? { configurada: !!fila.configurada, actualizado_en: fila.actualizado_en ?? null } : null)
+    setIncidencias((incs.data as IncidenciaAdmin[]) ?? [])
     setEstado('listo')
   }, [])
 
@@ -77,7 +78,8 @@ export function FichajesPanel() {
   return (
     <div className="space-y-10">
       <BloqueEnlaces />
-      <BloquePropuestas propuestas={propuestas} onCambio={cargar} />
+      <BloqueIncidencias incidencias={incidencias} fichajes={fichajes} colaboradores={colaboradores} onCambio={cargar} />
+      <BloquePropuestas propuestas={propuestas} colaboradores={colaboradores} onCambio={cargar} />
       <BloqueTablon />
       <BloqueDirecto fichajes={fichajes} colaboradores={colaboradores} onCambio={cargar} />
       <BloqueColaboradores
@@ -90,7 +92,6 @@ export function FichajesPanel() {
       />
       <BloquePortada />
       <BloqueClubes />
-      <BloqueClave info={claveInfo} onCambiada={cargar} />
     </div>
   )
 }
@@ -108,7 +109,7 @@ function BloqueEnlaces() {
   }
 
   return (
-    <section className="grid gap-px border border-ink/[0.14] bg-ink/[0.14] sm:grid-cols-3">
+    <section className="grid gap-px border border-ink/[0.14] bg-ink/[0.14] sm:grid-cols-2 lg:grid-cols-5">
       {ENLACES.map((e) => (
         <div key={e.ruta} className="bg-paper p-5">
           <p className="font-brand text-base font-extrabold tracking-tight text-ink">{e.titulo}</p>
@@ -129,7 +130,8 @@ function BloqueEnlaces() {
 }
 
 // ─── Propuestas de atletas (pendientes) ──────────────────────────────────────
-function BloquePropuestas({ propuestas, onCambio }: { propuestas: Propuesta[]; onCambio: () => void }) {
+function BloquePropuestas({ propuestas, colaboradores, onCambio }: { propuestas: Propuesta[]; colaboradores: Colaborador[]; onCambio: () => void }) {
+  const nombres: Record<string, string> = Object.fromEntries(colaboradores.map((c) => [c.id, c.nombre]))
   const [trabajando, setTrabajando] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -153,10 +155,10 @@ function BloquePropuestas({ propuestas, onCambio }: { propuestas: Propuesta[]; o
   return (
     <section className="border border-ink/[0.14] bg-paper">
       <header className={`flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-ink/[0.14] px-5 py-3 ${propuestas.length ? 'bg-mint/25' : 'bg-cream/50'}`}>
-        <h2 className="font-brand text-base font-extrabold tracking-tight text-ink">Lo que cuentan los atletas</h2>
+        <h2 className="font-brand text-base font-extrabold tracking-tight text-ink">Chivatazos y atletas</h2>
         <span className="label-mono text-ink/50">{propuestas.length} pendientes</span>
         <p className="w-full text-[0.8rem] text-ink/50">
-          No se publica hasta que lo apruebes. Usa el contacto para comprobar que es el atleta de verdad.
+          Los chivatazos también los revisan y publican los colaboradores; lo que cuenta un atleta solo lo apruebas tú (usa el contacto para ver que es él de verdad).
         </p>
       </header>
 
@@ -173,11 +175,20 @@ function BloquePropuestas({ propuestas, onCambio }: { propuestas: Propuesta[]; o
                 <p className="label-mono text-[0.58rem] text-ink/35">{diaDe(p.creado_en)}</p>
               </div>
               <div className="min-w-0 flex-1">
+                <p className={`mb-1 inline-block px-1.5 py-0.5 label-mono text-[0.55rem] ${esChivatazo(p) ? 'bg-ink text-mint' : 'border border-ink/25 text-ink/55'}`}>
+                  {esChivatazo(p) ? '🤫 chivatazo' : 'lo cuenta el atleta'}
+                </p>
+                {p.descartada_en && (
+                  <p className="mb-1 ml-2 inline-block border border-red-300 px-1.5 py-0.5 label-mono text-[0.55rem] text-red-700">
+                    descartado por {p.descartada_por ? nombres[p.descartada_por] ?? '¿?' : '¿?'}
+                  </p>
+                )}
                 <p className="font-brand text-[1rem] font-extrabold leading-tight text-ink">
                   {p.atleta}{p.genero && <span className="ml-2 label-mono text-[0.55rem] text-ink/45">{p.genero === 'H' ? 'hombres' : 'mujeres'}</span>}
                 </p>
                 <Movimiento origen={p.club_origen} destino={p.club_destino} divOrigen={p.division_origen} divDestino={p.division_destino} />
                 {p.nota && <p className="mt-1 text-[0.78rem] text-ink/50">{p.nota}</p>}
+                {p.fuente && <p className="mt-1 text-[0.78rem] text-ink/50"><span className="label-mono text-[0.55rem] text-ink/40">fuente </span>{p.fuente}</p>}
                 <p className="mt-1.5 text-[0.78rem]">
                   <span className="label-mono text-[0.55rem] text-ink/40">contacto · solo tú </span>
                   <span className="text-ink/75">{p.contacto || '— no ha dejado contacto'}</span>
@@ -200,6 +211,70 @@ function BloquePropuestas({ propuestas, onCambio }: { propuestas: Propuesta[]; o
           ))}
         </ul>
       )}
+    </section>
+  )
+}
+
+// ─── Incidencias que marcan los colaboradores ────────────────────────────────
+function BloqueIncidencias({ incidencias, fichajes, colaboradores, onCambio }: {
+  incidencias: IncidenciaAdmin[]; fichajes: FichajeAdmin[]; colaboradores: Colaborador[]; onCambio: () => void
+}) {
+  const [trabajando, setTrabajando] = useState<string | null>(null)
+  if (incidencias.length === 0) return null
+  const nombres: Record<string, string> = Object.fromEntries(colaboradores.map((c) => [c.id, c.nombre]))
+  const porId = new Map(fichajes.map((f) => [f.id, f]))
+
+  async function hacer(i: IncidenciaAdmin, ocultar: boolean) {
+    setTrabajando(i.id)
+    const sb = createClient()
+    if (ocultar) await sb.from('fichajes').update({ visible: false }).eq('id', i.fichaje_id)
+    await sb.from('fichajes_incidencias')
+      .update({ resuelta_en: new Date().toISOString(), resuelta_por: 'admin' })
+      .eq(ocultar ? 'fichaje_id' : 'id', ocultar ? i.fichaje_id : i.id).is('resuelta_en', null)
+    setTrabajando(null)
+    onCambio()
+  }
+
+  return (
+    <section className="border border-amber-400 bg-paper">
+      <header className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-amber-300 bg-amber-50 px-5 py-3">
+        <h2 className="font-brand text-base font-extrabold tracking-tight text-ink">⚑ Incidencias</h2>
+        <span className="label-mono text-ink/50">{incidencias.length} abiertas</span>
+        <p className="w-full text-[0.8rem] text-ink/55">
+          Un colaborador avisa de que un fichaje publicado está mal. También le llega a quien lo subió, que puede corregirlo o retirarlo.
+          Para cambiar rumor ⇄ confirmado, hazlo abajo, en el directo, y luego ciérrala.
+        </p>
+      </header>
+      <ul className="divide-y divide-ink/[0.09]">
+        {incidencias.map((i) => {
+          const f = porId.get(i.fichaje_id)
+          return (
+            <li key={i.id} className="flex flex-col gap-3 p-4 lg:flex-row lg:items-start lg:gap-5">
+              <div className="min-w-0 flex-1">
+                <p className="font-brand text-[1rem] font-extrabold leading-tight text-ink">
+                  {f?.atleta ?? 'Fichaje antiguo'}
+                  {f && <span className="ml-2 label-mono text-[0.55rem] text-ink/45">{f.estado}{f.visible ? '' : ' · oculto'}</span>}
+                </p>
+                {f && <Movimiento origen={f.club_origen} destino={f.club_destino} divOrigen={f.division_origen} divDestino={f.division_destino} />}
+                <p className="mt-2 border-l-2 border-amber-400 bg-amber-50 px-3 py-2 text-[0.85rem] leading-snug text-ink/80">{i.texto}</p>
+                <p className="mt-1.5 label-mono text-[0.55rem] text-ink/45">
+                  la marca {i.colaborador_id ? nombres[i.colaborador_id] ?? '¿?' : '¿?'} · {diaDe(i.creado_en)} {horaDe(i.creado_en)}
+                  {f?.colaborador_id && <> · lo subió {nombres[f.colaborador_id] ?? '¿?'}</>}
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-wrap items-center gap-2">
+                <button type="button" disabled={trabajando === i.id} onClick={() => hacer(i, false)} className={botonCls}>cerrar incidencia</button>
+                {f?.visible && (
+                  <button type="button" disabled={trabajando === i.id} onClick={() => hacer(i, true)}
+                    className="border border-red-300 px-2.5 py-1.5 label-mono text-red-700 transition-colors hover:bg-red-50 disabled:opacity-40">
+                    ocultar el fichaje
+                  </button>
+                )}
+              </div>
+            </li>
+          )
+        })}
+      </ul>
     </section>
   )
 }
@@ -243,7 +318,7 @@ function BloqueDirecto({
             className="mt-1 border border-ink/[0.15] bg-cream/50 px-2 py-1 text-[0.78rem] text-ink">
             <option value="">Todos los que suben</option>
             {colaboradores.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}
-            <option value="-">Sin colaborador (clave general, atletas, tú)</option>
+            <option value="-">Sin colaborador (atletas, tú)</option>
           </select>
         )}
       </header>
@@ -267,11 +342,12 @@ function BloqueDirecto({
                     </span>
                     {f.bomba && <span className="bg-mint px-1.5 py-0.5 label-mono text-[0.55rem] text-ink">💥 bomba</span>}
                     {f.origen_envio === 'atleta' && <span className="label-mono text-[0.55rem] text-ink/45">lo contó el atleta</span>}
+                    {f.origen_envio === 'chivatazo' && <span className="label-mono text-[0.55rem] text-ink/45">chivatazo</span>}
                     {f.colaborador_id && (
-                      <span className="label-mono text-[0.55rem] text-ink/55">subido por {nombres[f.colaborador_id] ?? '¿?'}</span>
+                      <span className="label-mono text-[0.55rem] text-ink/55">{f.origen_envio === 'chivatazo' ? 'aprobado' : 'subido'} por {nombres[f.colaborador_id] ?? '¿?'}</span>
                     )}
                     {f.origen_envio === 'colaborador' && !f.colaborador_id && (
-                      <span className="label-mono text-[0.55rem] text-ink/35">clave general</span>
+                      <span className="label-mono text-[0.55rem] text-ink/35">clave antigua</span>
                     )}
                     {!f.visible && <span className="label-mono text-[0.55rem] text-ink/45">oculto</span>}
                   </div>
@@ -309,92 +385,7 @@ function BloqueDirecto({
   )
 }
 
-// ─── Clave de colaborador ────────────────────────────────────────────────────
-function BloqueClave({
-  info, onCambiada,
-}: {
-  info: { configurada: boolean; actualizado_en: string | null } | null
-  onCambiada: () => void
-}) {
-  const [clave, setClave] = useState('')
-  const [repetida, setRepetida] = useState('')
-  const [guardando, setGuardando] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [hecho, setHecho] = useState(false)
-
-  const coincide = clave.length > 0 && clave === repetida
-  const puedeGuardar = clave.length >= 6 && coincide && !guardando
-
-  async function guardar(e: React.FormEvent) {
-    e.preventDefault()
-    if (!puedeGuardar) return
-    setGuardando(true); setError(null); setHecho(false)
-    const { error: err } = await createClient().rpc('fichajes_set_clave', { p_clave: clave })
-    setGuardando(false)
-    if (err) { setError(err.message || 'No se ha podido guardar la clave.'); return }
-    setClave(''); setRepetida(''); setHecho(true)
-    onCambiada()
-  }
-
-  return (
-    <section className="border border-ink/[0.14] bg-paper">
-      <header className="border-b border-ink/[0.14] bg-cream/50 px-5 py-3">
-        <h2 className="font-brand text-base font-extrabold tracking-tight text-ink">Clave general (antigua)</h2>
-        <p className="mt-0.5 text-[0.8rem] text-ink/50">
-          La clave única de antes sigue valiendo, pero no dice quién publica. Cuando todos tengan su
-          enlace personal, bórrala.
-        </p>
-        {info?.configurada && (
-          <button type="button" className="mt-2 border border-red-300 px-2.5 py-1.5 label-mono text-red-700 hover:bg-red-50"
-            onClick={async () => {
-              if (!window.confirm('¿Borrar la clave general? Solo podrán publicar los colaboradores con enlace personal.')) return
-              await createClient().rpc('fichajes_borrar_clave'); onCambiada()
-            }}>
-            borrar clave general
-          </button>
-        )}
-      </header>
-      <div className="space-y-5 p-5">
-        {info?.configurada ? (
-          <Aviso tono="ok">
-            Hay una clave puesta
-            {info.actualizado_en && <> desde el {new Date(info.actualizado_en).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}</>}.
-            No se puede consultar: si no la recuerdas, escribe una nueva aquí abajo.
-          </Aviso>
-        ) : (
-          <Aviso tono="pendiente">Todavía no hay clave. Hasta que pongas una, los colaboradores no pueden enviar.</Aviso>
-        )}
-        <form onSubmit={guardar} className="space-y-3">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="block">
-              <span className="mb-1.5 block label-mono text-ink/60">{info?.configurada ? 'Clave nueva' : 'Clave'} · mínimo 6</span>
-              <input type="password" value={clave} autoComplete="new-password"
-                onChange={(e) => { setClave(e.target.value); setError(null); setHecho(false) }}
-                className={inputCls} placeholder="••••••••" />
-            </label>
-            <label className="block">
-              <span className="mb-1.5 block label-mono text-ink/60">Repítela</span>
-              <input type="password" value={repetida} autoComplete="new-password"
-                onChange={(e) => { setRepetida(e.target.value); setError(null) }}
-                className={inputCls} placeholder="••••••••" />
-            </label>
-          </div>
-          {repetida.length > 0 && !coincide && <p className="text-[0.8rem] text-ink/55">Las dos claves no coinciden.</p>}
-          {error && <Aviso tono="error">{error}</Aviso>}
-          {hecho && <Aviso tono="ok">Clave guardada. Ya puedes repartirla con el enlace de colaboradores.</Aviso>}
-          <button type="submit" disabled={!puedeGuardar}
-            className="bg-ink px-5 py-2.5 text-sm font-semibold text-cream transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40">
-            {guardando ? 'Guardando…' : info?.configurada ? 'Cambiar la clave' : 'Guardar la clave'}
-          </button>
-        </form>
-      </div>
-    </section>
-  )
-}
-
 // ─── Piezas ──────────────────────────────────────────────────────────────────
-const inputCls =
-  'w-full border border-ink/[0.15] bg-cream/60 px-4 py-2.5 text-sm text-ink placeholder:text-ink/30 transition-colors focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40'
 const botonCls =
   'border border-ink/25 px-2.5 py-1.5 label-mono text-ink/65 transition-colors hover:border-ink hover:text-ink disabled:opacity-40'
 

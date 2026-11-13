@@ -62,12 +62,13 @@ CREATE POLICY "public_read_published"
     AND published_at <= NOW()
   );
 
--- Authenticated users (admins) have full access
+-- Admins have full access. `es_admin()` lives in roles-schema.sql (run it
+-- first): a signed-in user is NOT necessarily an admin any more.
 CREATE POLICY "auth_full_access"
   ON articles FOR ALL
   TO authenticated
-  USING (true)
-  WITH CHECK (true);
+  USING (es_admin())
+  WITH CHECK (es_admin());
 
 
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -90,12 +91,12 @@ ON CONFLICT (id) DO NOTHING;
 CREATE POLICY "auth_upload_covers"
   ON storage.objects FOR INSERT
   TO authenticated
-  WITH CHECK (bucket_id = 'covers');
+  WITH CHECK (bucket_id = 'covers' AND es_admin());
 
 CREATE POLICY "auth_delete_covers"
   ON storage.objects FOR DELETE
   TO authenticated
-  USING (bucket_id = 'covers');
+  USING (bucket_id = 'covers' AND es_admin());
 
 -- Allow public read of covers
 CREATE POLICY "public_read_covers"
@@ -113,12 +114,12 @@ ON CONFLICT (id) DO NOTHING;
 CREATE POLICY "auth_upload_articles"
   ON storage.objects FOR INSERT
   TO authenticated
-  WITH CHECK (bucket_id = 'articles');
+  WITH CHECK (bucket_id = 'articles' AND es_admin());
 
 CREATE POLICY "auth_delete_articles"
   ON storage.objects FOR DELETE
   TO authenticated
-  USING (bucket_id = 'articles');
+  USING (bucket_id = 'articles' AND es_admin());
 
 CREATE POLICY "public_read_articles"
   ON storage.objects FOR SELECT

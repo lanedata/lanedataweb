@@ -1,26 +1,34 @@
 -- ─────────────────────────────────────────────────────────────────────────────
--- lanedata — Mercado de fichajes  (v3: tokens por colaborador, bombas,
--- colores de club, portada desde admin, tablón y avisos push)
+-- lanedata — Mercado de fichajes  (v5: colaboradores con Google y lista blanca,
+-- chivatazos, incidencias, bombas, colores de club, tablón y avisos push)
 --
+-- ANTES que este, ejecuta supabase/roles-schema.sql (define quién es admin).
 -- Ejecuta este fichero ENTERO en Supabase (Dashboard > SQL Editor > New query).
 -- Es idempotente: puedes volver a lanzarlo sin romper nada. Si ya tenías la v1
--- aplicada, al relanzarlo se ACTUALIZA en sitio sin perder datos ni la clave.
+-- aplicada, al relanzarlo se ACTUALIZA en sitio sin perder datos.
 --
--- La clave de colaborador se pone desde el panel: /admin/fichajes.
+-- Los colaboradores se dan de alta por su correo en el panel: /admin/fichajes.
 --
--- Tres vías de entrada, cada una con su nivel de confianza:
---   · COLABORADORES (/fichajes/enviar, con clave): se publica al momento como
---     "rumor" o "confirmado". Entra por `fichajes_enviar`, que comprueba la
---     clave contra un hash bcrypt. La clave nunca viaja al JavaScript.
+-- Vías de entrada, cada una con su nivel de confianza:
+--   · COLABORADORES (/fichajes/enviar, con sesión): se publica al momento como
+--     "rumor" o "confirmado". Entra por `colab_publicar`, que mira quién ha
+--     iniciado sesión y si su correo está en `fichajes_colaboradores`. Además
+--     ven lo publicado (sin saber por quién), marcan incidencias y revisan
+--     los chivatazos.
 --   · ATLETAS (/fichajes/mi-fichaje, sin clave): cualquiera puede escribir en
 --     ese formulario y decir que es cualquiera, así que NO se publica solo: va a
 --     `fichajes_propuestas` (tabla privada) y tú lo apruebas en /admin/fichajes.
 --     El contacto que dejen solo lo ves tú; nunca se copia al directo.
+--   · CHIVATAZOS (/fichajes/mi-fichaje/#chivatazo, sin clave): cualquiera que se haya
+--     enterado de un fichaje. Misma cola de revisión que los atletas, marcados
+--     con tipo = 'chivatazo'. Tampoco se publican solos.
 --   · TÚ, desde el panel: aprobar, cambiar rumor ⇄ confirmado, ocultar, borrar.
 --
 -- Diseño general: la web es un sitio estático (GitHub Pages), sin servidor
 -- propio. anon solo puede LEER los fichajes visibles; toda escritura pasa por
 -- funciones SECURITY DEFINER con validación, límite de ritmo y antiduplicados.
+-- Tener sesión NO da permisos: las tablas solo las toca quien es admin
+-- (`es_admin()`); los colaboradores pasan siempre por las funciones `colab_*`.
 -- ─────────────────────────────────────────────────────────────────────────────
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -105,7 +113,7 @@ DROP POLICY IF EXISTS "auth_full_fichajes" ON fichajes;
 CREATE POLICY "auth_full_fichajes"
   ON fichajes FOR ALL
   TO authenticated
-  USING (TRUE) WITH CHECK (TRUE);
+  USING (es_admin()) WITH CHECK (es_admin());
 
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -129,6 +137,34 @@ CREATE TABLE IF NOT EXISTS fichajes_propuestas (
 
 CREATE INDEX IF NOT EXISTS propuestas_creado_idx ON fichajes_propuestas (creado_en DESC);
 
+-- v4 · CHIVATAZOS (/fichajes/mi-fichaje/#chivatazo): cualquiera que se haya enterado de un
+-- fichaje lo manda sin clave. Va a esta misma cola de revisión, marcado con
+-- `tipo`, y puede traer de dónde ha salido la noticia (`fuente`).
+ALTER TABLE fichajes_propuestas ADD COLUMN IF NOT EXISTS tipo TEXT NOT NULL DEFAULT 'atleta';
+ALTER TABLE fichajes_propuestas ADD COLUMN IF NOT EXISTS fuente TEXT;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'propuestas_tipo_chk') THEN
+    ALTER TABLE fichajes_propuestas ADD CONSTRAINT propuestas_tipo_chk
+      CHECK (tipo IN ('atleta', 'chivatazo'));
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'propuestas_fuente_chk') THEN
+    ALTER TABLE fichajes_propuestas ADD CONSTRAINT propuestas_fuente_chk
+      CHECK (fuente IS NULL OR length(fuente) <= 200);
+  END IF;
+END $$;
+
+-- v5: los colaboradores revisan los chivatazos. Si uno lo descarta no se borra:
+-- deja de salirles a ellos y a ti te queda marcado, por si quieres repescarlo.
+ALTER TABLE fichajes_propuestas ADD COLUMN IF NOT EXISTS descartada_en TIMESTAMPTZ;
+ALTER TABLE fichajes_propuestas ADD COLUMN IF NOT EXISTS descartada_por UUID;
+
+-- Un chivatazo aprobado queda en el directo con origen_envio = 'chivatazo'
+-- (así no lleva la etiqueta «lo cuenta el atleta»).
+ALTER TABLE fichajes DROP CONSTRAINT IF EXISTS fichajes_origen_envio_chk;
+ALTER TABLE fichajes ADD CONSTRAINT fichajes_origen_envio_chk
+  CHECK (origen_envio IN ('colaborador', 'atleta', 'admin', 'chivatazo'));
+
 ALTER TABLE fichajes_propuestas ENABLE ROW LEVEL SECURITY;
 
 -- Sin ninguna política para anon: nadie de fuera puede leerla.
@@ -136,58 +172,29 @@ DROP POLICY IF EXISTS "auth_full_propuestas" ON fichajes_propuestas;
 CREATE POLICY "auth_full_propuestas"
   ON fichajes_propuestas FOR ALL
   TO authenticated
-  USING (TRUE) WITH CHECK (TRUE);
+  USING (es_admin()) WITH CHECK (es_admin());
 
 
 -- ═════════════════════════════════════════════════════════════════════════════
--- 3. CLAVE DE COLABORADOR
+-- 3. COLABORADORES: ENTRAN CON SU CORREO (v5)
 -- ═════════════════════════════════════════════════════════════════════════════
+-- Esta tabla es la LISTA BLANCA de colaboradores: una fila por persona, con su
+-- CORREO de Google. Entra en /fichajes/enviar (el mismo enlace para todos) con
+-- «Continuar con Google»; Google garantiza que el correo es suyo y aquí se mira
+-- si está en la lista. Sin contraseñas: no hay nada que adivinar a la fuerza.
+-- Tú decides quién entra: añades o quitas correos en /admin/fichajes.
+--
+-- Ya no hay clave general ni enlaces con token: quien tuviera uno deja de
+-- poder publicar hasta que le pongas su correo. La columna `token` se queda
+-- por compatibilidad, sin uso.
 
-CREATE TABLE IF NOT EXISTS fichajes_clave (
-  id             SMALLINT PRIMARY KEY DEFAULT 1 CHECK (id = 1),
-  hash           TEXT NOT NULL,
-  actualizado_en TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-ALTER TABLE fichajes_clave ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON TABLE fichajes_clave FROM anon, authenticated;
-
-CREATE OR REPLACE FUNCTION fichajes_set_clave(p_clave TEXT)
-RETURNS TEXT
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, extensions AS $fn$
-BEGIN
-  IF p_clave IS NULL OR length(p_clave) < 6 THEN
-    RAISE EXCEPTION 'La clave debe tener al menos 6 caracteres';
-  END IF;
-  INSERT INTO fichajes_clave (id, hash, actualizado_en)
-  VALUES (1, crypt(p_clave, gen_salt('bf', 10)), NOW())
-  ON CONFLICT (id) DO UPDATE
-    SET hash = EXCLUDED.hash, actualizado_en = NOW();
-  RETURN 'Clave de colaborador actualizada';
-END;
-$fn$;
-
-REVOKE ALL ON FUNCTION fichajes_set_clave(TEXT) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION fichajes_set_clave(TEXT) TO authenticated;
-
-CREATE OR REPLACE FUNCTION fichajes_clave_estado()
-RETURNS TABLE (configurada BOOLEAN, actualizado_en TIMESTAMPTZ)
-LANGUAGE sql SECURITY DEFINER SET search_path = public AS $fn$
-  SELECT EXISTS (SELECT 1 FROM fichajes_clave WHERE id = 1),
-         (SELECT c.actualizado_en FROM fichajes_clave c WHERE c.id = 1);
-$fn$;
-
-REVOKE ALL ON FUNCTION fichajes_clave_estado() FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION fichajes_clave_estado() TO authenticated;
-
-
--- ═════════════════════════════════════════════════════════════════════════════
--- 3b. COLABORADORES CON TOKEN PERSONAL (v3)
--- ═════════════════════════════════════════════════════════════════════════════
--- Cada colaborador tiene su propio token (lo genera el panel). Sirve para saber
--- quién ha subido cada fichaje y para cortarle el acceso a uno sin tocar al
--- resto. Solo lo ves tú (sin políticas para anon). El enlace personal lleva el
--- token detrás de un # (/fichajes/enviar/#t=...), que no viaja a ningún servidor.
+DROP FUNCTION IF EXISTS fichajes_enviar(TEXT, TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, TEXT, TEXT, TEXT);
+DROP FUNCTION IF EXISTS fichajes_enviar(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, TEXT, TEXT);
+DROP FUNCTION IF EXISTS fichajes_quien_soy(TEXT);
+DROP FUNCTION IF EXISTS fichajes_set_clave(TEXT);
+DROP FUNCTION IF EXISTS fichajes_clave_estado();
+DROP FUNCTION IF EXISTS fichajes_borrar_clave();
+DROP TABLE IF EXISTS fichajes_clave;
 
 CREATE TABLE IF NOT EXISTS fichajes_colaboradores (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -204,11 +211,25 @@ CREATE TABLE IF NOT EXISTS fichajes_colaboradores (
 ALTER TABLE fichajes_colaboradores ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE fichajes_colaboradores FROM anon;
 
+-- Correo con el que entra (en minúsculas) y la cuenta de Supabase Auth que lo
+-- ha usado, que se enlaza sola la primera vez que inicia sesión.
+ALTER TABLE fichajes_colaboradores ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE fichajes_colaboradores ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL;
+ALTER TABLE fichajes_colaboradores ADD COLUMN IF NOT EXISTS ultimo_acceso_en TIMESTAMPTZ;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'colaboradores_email_chk') THEN
+    ALTER TABLE fichajes_colaboradores ADD CONSTRAINT colaboradores_email_chk
+      CHECK (email IS NULL OR (email = lower(btrim(email)) AND email ~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$' AND length(email) <= 160));
+  END IF;
+END $$;
+CREATE UNIQUE INDEX IF NOT EXISTS colaboradores_email_idx ON fichajes_colaboradores (email) WHERE email IS NOT NULL;
+
 DROP POLICY IF EXISTS "auth_full_colaboradores" ON fichajes_colaboradores;
 CREATE POLICY "auth_full_colaboradores"
   ON fichajes_colaboradores FOR ALL
   TO authenticated
-  USING (TRUE) WITH CHECK (TRUE);
+  USING (es_admin()) WITH CHECK (es_admin());
 
 -- Quién subió cada fichaje (NULL = clave general antigua, atleta o tú).
 ALTER TABLE fichajes ADD COLUMN IF NOT EXISTS colaborador_id UUID
@@ -218,49 +239,212 @@ CREATE INDEX IF NOT EXISTS fichajes_colaborador_idx ON fichajes (colaborador_id,
 -- Fichaje bomba: lo marcas tú y se resalta en el directo y en las historias.
 ALTER TABLE fichajes ADD COLUMN IF NOT EXISTS bomba BOOLEAN NOT NULL DEFAULT FALSE;
 
--- El formulario saluda al colaborador por su nombre al abrir su enlace (y así
--- sabe al momento si su acceso sigue activo). Solo devuelve el nombre.
-CREATE OR REPLACE FUNCTION fichajes_quien_soy(p_token TEXT)
-RETURNS TEXT
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- 5. PROPUESTA DE UN ATLETA (sin clave → a revisión, nunca se publica sola)
+-- ═════════════════════════════════════════════════════════════════════════════
+
+-- La firma creció en la v4 (tipo y fuente, para los chivatazos): se borra la
+-- vieja para que no queden dos funciones con el mismo nombre.
+DROP FUNCTION IF EXISTS fichajes_proponer(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT);
+
+CREATE OR REPLACE FUNCTION fichajes_proponer(
+  p_atleta           TEXT,
+  p_genero           TEXT DEFAULT NULL,
+  p_club_origen      TEXT DEFAULT NULL,
+  p_club_destino     TEXT DEFAULT NULL,
+  p_division_origen  TEXT DEFAULT NULL,
+  p_division_destino TEXT DEFAULT NULL,
+  p_nota             TEXT DEFAULT NULL,
+  p_contacto         TEXT DEFAULT NULL,
+  p_tipo             TEXT DEFAULT 'atleta',
+  p_fuente           TEXT DEFAULT NULL
+)
+RETURNS UUID
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
 DECLARE
+  v_id        UUID;
+  v_recientes INT;
+  v_atleta    TEXT := btrim(COALESCE(p_atleta, ''));
+  v_origen    TEXT := NULLIF(btrim(COALESCE(p_club_origen, '')), '');
+  v_destino   TEXT := NULLIF(btrim(COALESCE(p_club_destino, '')), '');
+  v_tipo      TEXT := COALESCE(p_tipo, 'atleta');
+BEGIN
+  IF v_tipo NOT IN ('atleta', 'chivatazo') THEN
+    RAISE EXCEPTION 'Tipo de envío no válido';
+  END IF;
+  IF length(v_atleta) < 3 THEN
+    RAISE EXCEPTION 'Falta el nombre y los apellidos del atleta';
+  END IF;
+  IF v_origen IS NULL AND v_destino IS NULL THEN
+    RAISE EXCEPTION 'Indica al menos el club de origen o el de destino';
+  END IF;
+  IF p_genero IS NOT NULL AND p_genero NOT IN ('H', 'M') THEN
+    RAISE EXCEPTION 'Sexo no válido';
+  END IF;
+
+  -- Formulario público: límite global más estricto que el de colaboradores.
+  SELECT COUNT(*) INTO v_recientes
+    FROM fichajes_propuestas WHERE creado_en > NOW() - INTERVAL '1 hour';
+  IF v_recientes >= 60 THEN
+    RAISE EXCEPTION 'Nos están llegando muchos avisos a la vez; prueba dentro de un rato';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM fichajes_propuestas
+     WHERE lower(atleta) = lower(v_atleta)
+       AND COALESCE(lower(club_destino), '') = COALESCE(lower(v_destino), '')
+       AND creado_en > NOW() - INTERVAL '24 hours'
+  ) THEN
+    RAISE EXCEPTION 'Ese fichaje ya nos ha llegado; lo revisamos en breve';
+  END IF;
+
+  INSERT INTO fichajes_propuestas (
+    atleta, genero, club_origen, club_destino,
+    division_origen, division_destino, nota, contacto, tipo, fuente
+  ) VALUES (
+    v_atleta, p_genero, v_origen, v_destino,
+    NULLIF(btrim(COALESCE(p_division_origen, '')), ''),
+    NULLIF(btrim(COALESCE(p_division_destino, '')), ''),
+    NULLIF(btrim(COALESCE(p_nota, '')), ''),
+    NULLIF(btrim(COALESCE(p_contacto, '')), ''),
+    v_tipo,
+    NULLIF(btrim(COALESCE(p_fuente, '')), '')
+  )
+  RETURNING id INTO v_id;
+
+  RETURN v_id;
+END;
+$fn$;
+
+GRANT EXECUTE ON FUNCTION fichajes_proponer(
+  TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT
+) TO anon, authenticated;
+
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- 6. APROBAR UNA PROPUESTA (solo tú, desde /admin/fichajes)
+-- ═════════════════════════════════════════════════════════════════════════════
+-- Copia la propuesta al directo y la borra, todo de una vez. El contacto NO se
+-- copia: se queda solo contigo hasta que se borra la propuesta.
+
+CREATE OR REPLACE FUNCTION fichajes_aprobar(p_id UUID, p_estado TEXT DEFAULT 'confirmado')
+RETURNS UUID
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
+DECLARE
+  v_prop fichajes_propuestas%ROWTYPE;
+  v_id   UUID;
+BEGIN
+  PERFORM exigir_admin();
+  IF COALESCE(p_estado, '') NOT IN ('rumor', 'confirmado') THEN
+    RAISE EXCEPTION 'El estado tiene que ser rumor o confirmado';
+  END IF;
+
+  SELECT * INTO v_prop FROM fichajes_propuestas WHERE id = p_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Esa propuesta ya no existe';
+  END IF;
+
+  INSERT INTO fichajes (
+    informado_en, atleta, estado, genero, club_origen, club_destino,
+    division_origen, division_destino, nota, fuente, origen_envio
+  ) VALUES (
+    v_prop.creado_en, v_prop.atleta, p_estado, v_prop.genero,
+    v_prop.club_origen, v_prop.club_destino,
+    v_prop.division_origen, v_prop.division_destino, v_prop.nota, v_prop.fuente,
+    CASE WHEN v_prop.tipo = 'chivatazo' THEN 'chivatazo' ELSE 'atleta' END
+  )
+  RETURNING id INTO v_id;
+
+  DELETE FROM fichajes_propuestas WHERE id = p_id;
+  RETURN v_id;
+END;
+$fn$;
+
+REVOKE ALL ON FUNCTION fichajes_aprobar(UUID, TEXT) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION fichajes_aprobar(UUID, TEXT) TO authenticated;
+
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- 6a. LO QUE HACE UN COLABORADOR (v5) — todo por funciones `colab_*`
+-- ═════════════════════════════════════════════════════════════════════════════
+-- Un colaborador no lee ni escribe ninguna tabla: solo llama a estas funciones,
+-- que primero miran quién es (`colab_actual`). Nunca devuelven quién publicó
+-- qué (entre ellos es anónimo; tú sí lo ves en el panel) ni el contacto de
+-- quien manda un chivatazo.
+
+-- Incidencias: «esto está mal» sobre un fichaje publicado. Las ve el autor
+-- (para corregirlo) y tú. No salen en la web.
+CREATE TABLE IF NOT EXISTS fichajes_incidencias (
+  id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  creado_en      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  fichaje_id     UUID NOT NULL REFERENCES fichajes(id) ON DELETE CASCADE,
+  colaborador_id UUID REFERENCES fichajes_colaboradores(id) ON DELETE SET NULL,
+  texto          TEXT NOT NULL CHECK (length(btrim(texto)) BETWEEN 5 AND 400),
+  resuelta_en    TIMESTAMPTZ,
+  resuelta_por   TEXT CHECK (resuelta_por IS NULL OR resuelta_por IN ('autor', 'admin'))
+);
+CREATE INDEX IF NOT EXISTS incidencias_fichaje_idx ON fichajes_incidencias (fichaje_id) WHERE resuelta_en IS NULL;
+
+ALTER TABLE fichajes_incidencias ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE fichajes_incidencias FROM anon;
+DROP POLICY IF EXISTS "auth_full_incidencias" ON fichajes_incidencias;
+CREATE POLICY "auth_full_incidencias" ON fichajes_incidencias FOR ALL TO authenticated
+  USING (es_admin()) WITH CHECK (es_admin());
+
+-- Quién es el colaborador que llama. El correo se lee de su cuenta (no de lo
+-- que diga el navegador) y solo vale si está VERIFICADO (con Google lo está
+-- siempre). Uso interno.
+CREATE OR REPLACE FUNCTION colab_actual()
+RETURNS fichajes_colaboradores
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
+DECLARE
+  v_email TEXT;
   v_colab fichajes_colaboradores%ROWTYPE;
 BEGIN
-  SELECT * INTO v_colab FROM fichajes_colaboradores WHERE token = btrim(COALESCE(p_token, ''));
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'Inicia sesión para entrar como colaborador';
+  END IF;
+  SELECT lower(u.email) INTO v_email FROM auth.users u
+   WHERE u.id = auth.uid() AND u.email_confirmed_at IS NOT NULL;
+  IF v_email IS NULL THEN
+    RAISE EXCEPTION 'Tu cuenta no tiene un correo verificado. Entra con Google.';
+  END IF;
+  SELECT * INTO v_colab FROM fichajes_colaboradores WHERE email = v_email;
   IF NOT FOUND THEN
-    PERFORM pg_sleep(0.4);
-    RAISE EXCEPTION 'Ese enlace de colaborador no es válido';
+    RAISE EXCEPTION 'El correo % no tiene acceso de colaborador. Pide a lanedata que lo añada.', v_email;
   END IF;
   IF NOT v_colab.activo THEN
     RAISE EXCEPTION 'Tu acceso de colaborador está revocado. Habla con lanedata.';
   END IF;
-  RETURN v_colab.nombre;
+  IF v_colab.user_id IS DISTINCT FROM auth.uid() THEN
+    UPDATE fichajes_colaboradores SET user_id = auth.uid() WHERE id = v_colab.id;
+  END IF;
+  RETURN v_colab;
+END;
+$fn$;
+REVOKE ALL ON FUNCTION colab_actual() FROM PUBLIC, anon, authenticated;
+
+-- Al entrar: quién soy y cuánto hay por revisar.
+CREATE OR REPLACE FUNCTION colab_yo()
+RETURNS JSONB
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
+DECLARE
+  v_yo fichajes_colaboradores%ROWTYPE := colab_actual();
+BEGIN
+  UPDATE fichajes_colaboradores SET ultimo_acceso_en = NOW() WHERE id = v_yo.id;
+  RETURN jsonb_build_object(
+    'nombre', v_yo.nombre,
+    'email', v_yo.email,
+    'chivatazos', (SELECT COUNT(*) FROM fichajes_propuestas WHERE tipo = 'chivatazo' AND descartada_en IS NULL),
+    'incidencias', (SELECT COUNT(*) FROM fichajes_incidencias i JOIN fichajes f ON f.id = i.fichaje_id
+                     WHERE i.resuelta_en IS NULL AND f.colaborador_id = v_yo.id)
+  );
 END;
 $fn$;
 
-GRANT EXECUTE ON FUNCTION fichajes_quien_soy(TEXT) TO anon, authenticated;
-
--- Para dejar de aceptar la clave general antigua cuando ya todos tengan token.
-CREATE OR REPLACE FUNCTION fichajes_borrar_clave()
-RETURNS TEXT
-LANGUAGE sql SECURITY DEFINER SET search_path = public AS $fn$
-  DELETE FROM fichajes_clave WHERE id = 1;
-  SELECT 'Clave general borrada'::TEXT;
-$fn$;
-
-REVOKE ALL ON FUNCTION fichajes_borrar_clave() FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION fichajes_borrar_clave() TO authenticated;
-
-
--- ═════════════════════════════════════════════════════════════════════════════
--- 4. ENVÍO DE COLABORADOR (con token o clave → se publica al momento)
--- ═════════════════════════════════════════════════════════════════════════════
-
--- La firma cambió en la v2 (estado, sexo, divisiones; sin alias): se borra la vieja.
-DROP FUNCTION IF EXISTS fichajes_enviar(TEXT, TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, TEXT, TEXT, TEXT);
-
-CREATE OR REPLACE FUNCTION fichajes_enviar(
-  p_clave            TEXT,
+-- Publicar un fichaje: sale en el directo al momento, a su nombre (solo tú lo ves).
+CREATE OR REPLACE FUNCTION colab_publicar(
   p_atleta           TEXT,
   p_estado           TEXT        DEFAULT 'rumor',
   p_genero           TEXT        DEFAULT NULL,
@@ -273,40 +457,16 @@ CREATE OR REPLACE FUNCTION fichajes_enviar(
   p_nota             TEXT        DEFAULT NULL
 )
 RETURNS UUID
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, extensions AS $fn$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
 DECLARE
-  v_hash      TEXT;
+  v_yo        fichajes_colaboradores%ROWTYPE := colab_actual();
   v_id        UUID;
   v_recientes INT;
-  v_colab     fichajes_colaboradores%ROWTYPE;
-  v_colab_id  UUID;
   v_atleta    TEXT := btrim(COALESCE(p_atleta, ''));
   v_origen    TEXT := NULLIF(btrim(COALESCE(p_club_origen, '')), '');
   v_destino   TEXT := NULLIF(btrim(COALESCE(p_club_destino, '')), '');
   v_momento   TIMESTAMPTZ := COALESCE(p_informado_en, NOW());
 BEGIN
-  -- v3: primero se busca el TOKEN PERSONAL del colaborador (revocable, y deja
-  -- constancia de quién sube qué). Si no es un token, se prueba la clave
-  -- general antigua, que sigue valiendo hasta que la borres en el panel.
-  SELECT * INTO v_colab FROM fichajes_colaboradores WHERE token = btrim(COALESCE(p_clave, ''));
-  IF FOUND THEN
-    IF NOT v_colab.activo THEN
-      RAISE EXCEPTION 'Tu acceso de colaborador está revocado. Habla con lanedata.';
-    END IF;
-    v_colab_id := v_colab.id;
-    SELECT COUNT(*) INTO v_recientes FROM fichajes
-     WHERE colaborador_id = v_colab_id AND creado_en > NOW() - INTERVAL '1 hour';
-    IF v_recientes >= 25 THEN
-      RAISE EXCEPTION 'Has enviado muchos fichajes en la última hora; espera un poco';
-    END IF;
-  ELSE
-    SELECT hash INTO v_hash FROM fichajes_clave WHERE id = 1;
-    IF v_hash IS NULL OR crypt(COALESCE(p_clave, ''), v_hash) <> v_hash THEN
-      PERFORM pg_sleep(0.4);   -- freno a la fuerza bruta
-      RAISE EXCEPTION 'Clave incorrecta';
-    END IF;
-  END IF;
-
   IF length(v_atleta) < 3 THEN
     RAISE EXCEPTION 'Falta el nombre y los apellidos del atleta';
   END IF;
@@ -326,15 +486,19 @@ BEGIN
     RAISE EXCEPTION 'La hora informada es demasiado antigua para el directo';
   END IF;
 
-  SELECT COUNT(*) INTO v_recientes FROM fichajes WHERE creado_en > NOW() - INTERVAL '1 hour';
-  IF v_recientes >= 40 THEN
-    RAISE EXCEPTION 'Demasiados envíos en la última hora; prueba más tarde';
+  SELECT COUNT(*) INTO v_recientes FROM fichajes
+   WHERE colaborador_id = v_yo.id AND creado_en > NOW() - INTERVAL '1 hour';
+  IF v_recientes >= 25 THEN
+    RAISE EXCEPTION 'Has enviado muchos fichajes en la última hora; espera un poco';
   END IF;
 
+  -- Solo cuentan los que siguen a la vista: si retiras uno por un error,
+  -- puedes volver a publicarlo bien.
   IF EXISTS (
     SELECT 1 FROM fichajes
      WHERE lower(atleta) = lower(v_atleta)
        AND COALESCE(lower(club_destino), '') = COALESCE(lower(v_destino), '')
+       AND visible
        AND creado_en > NOW() - INTERVAL '1 hour'
   ) THEN
     RAISE EXCEPTION 'Ese fichaje ya se ha publicado hace unos minutos';
@@ -349,132 +513,218 @@ BEGIN
     NULLIF(btrim(COALESCE(p_division_destino, '')), ''),
     NULLIF(btrim(COALESCE(p_fuente, '')), ''),
     NULLIF(btrim(COALESCE(p_nota, '')), ''),
-    'colaborador', v_colab_id
+    'colaborador', v_yo.id
   )
   RETURNING id INTO v_id;
 
-  IF v_colab_id IS NOT NULL THEN
-    UPDATE fichajes_colaboradores SET ultimo_envio_en = NOW() WHERE id = v_colab_id;
-  END IF;
-
+  UPDATE fichajes_colaboradores SET ultimo_envio_en = NOW() WHERE id = v_yo.id;
   RETURN v_id;
 END;
 $fn$;
 
-GRANT EXECUTE ON FUNCTION fichajes_enviar(
-  TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, TEXT, TEXT
-) TO anon, authenticated;
-
-
--- ═════════════════════════════════════════════════════════════════════════════
--- 5. PROPUESTA DE UN ATLETA (sin clave → a revisión, nunca se publica sola)
--- ═════════════════════════════════════════════════════════════════════════════
-
-CREATE OR REPLACE FUNCTION fichajes_proponer(
-  p_atleta           TEXT,
-  p_genero           TEXT DEFAULT NULL,
-  p_club_origen      TEXT DEFAULT NULL,
-  p_club_destino     TEXT DEFAULT NULL,
-  p_division_origen  TEXT DEFAULT NULL,
-  p_division_destino TEXT DEFAULT NULL,
-  p_nota             TEXT DEFAULT NULL,
-  p_contacto         TEXT DEFAULT NULL
+-- Todo lo publicado, sin decir por quién: solo si es mío. Con las incidencias
+-- abiertas de cada uno. Los míos salen aunque estén retirados.
+CREATE OR REPLACE FUNCTION colab_fichajes(p_limite INT DEFAULT 100)
+RETURNS TABLE (
+  id UUID, informado_en TIMESTAMPTZ, atleta TEXT, estado TEXT, genero TEXT,
+  club_origen TEXT, club_destino TEXT, division_origen TEXT, division_destino TEXT,
+  fuente TEXT, nota TEXT, bomba BOOLEAN, visible BOOLEAN, origen_envio TEXT,
+  mio BOOLEAN, incidencias JSONB
 )
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
+#variable_conflict use_column
+DECLARE
+  v_yo UUID := (colab_actual()).id;
+BEGIN
+  RETURN QUERY
+  SELECT f.id, f.informado_en, f.atleta, f.estado, f.genero,
+         f.club_origen, f.club_destino, f.division_origen, f.division_destino,
+         f.fuente, f.nota, f.bomba, f.visible, f.origen_envio,
+         COALESCE(f.colaborador_id = v_yo, FALSE),
+         COALESCE((
+           SELECT jsonb_agg(jsonb_build_object(
+                    'id', i.id, 'texto', i.texto, 'creado_en', i.creado_en,
+                    'mia', COALESCE(i.colaborador_id = v_yo, FALSE)) ORDER BY i.creado_en)
+             FROM fichajes_incidencias i
+            WHERE i.fichaje_id = f.id AND i.resuelta_en IS NULL
+         ), '[]'::jsonb)
+    FROM fichajes f
+   WHERE f.visible OR f.colaborador_id = v_yo
+   ORDER BY f.informado_en DESC
+   LIMIT LEAST(GREATEST(COALESCE(p_limite, 100), 1), 300);
+END;
+$fn$;
+
+-- Marcar una incidencia en un fichaje publicado.
+CREATE OR REPLACE FUNCTION colab_incidencia(p_fichaje UUID, p_texto TEXT)
 RETURNS UUID
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
 DECLARE
-  v_id        UUID;
-  v_recientes INT;
-  v_atleta    TEXT := btrim(COALESCE(p_atleta, ''));
-  v_origen    TEXT := NULLIF(btrim(COALESCE(p_club_origen, '')), '');
-  v_destino   TEXT := NULLIF(btrim(COALESCE(p_club_destino, '')), '');
+  v_yo    UUID := (colab_actual()).id;
+  v_texto TEXT := btrim(COALESCE(p_texto, ''));
+  v_id    UUID;
+  v_n     INT;
 BEGIN
-  IF length(v_atleta) < 3 THEN
-    RAISE EXCEPTION 'Falta tu nombre y apellidos';
+  IF length(v_texto) < 5 THEN
+    RAISE EXCEPTION 'Cuenta en una frase qué está mal';
   END IF;
-  IF v_origen IS NULL AND v_destino IS NULL THEN
-    RAISE EXCEPTION 'Indica al menos tu club de origen o el de destino';
+  IF length(v_texto) > 400 THEN
+    RAISE EXCEPTION 'La incidencia es demasiado larga (máximo 400 caracteres)';
   END IF;
-  IF p_genero IS NOT NULL AND p_genero NOT IN ('H', 'M') THEN
-    RAISE EXCEPTION 'Sexo no válido';
+  IF NOT EXISTS (SELECT 1 FROM fichajes WHERE id = p_fichaje AND visible) THEN
+    RAISE EXCEPTION 'Ese fichaje ya no está en el directo';
   END IF;
-
-  -- Formulario público: límite global más estricto que el de colaboradores.
-  SELECT COUNT(*) INTO v_recientes
-    FROM fichajes_propuestas WHERE creado_en > NOW() - INTERVAL '1 hour';
-  IF v_recientes >= 20 THEN
-    RAISE EXCEPTION 'Hay muchas propuestas pendientes; prueba dentro de un rato';
+  IF EXISTS (SELECT 1 FROM fichajes_incidencias
+              WHERE fichaje_id = p_fichaje AND colaborador_id = v_yo AND resuelta_en IS NULL) THEN
+    RAISE EXCEPTION 'Ya has marcado una incidencia en este fichaje';
   END IF;
-
-  IF EXISTS (
-    SELECT 1 FROM fichajes_propuestas
-     WHERE lower(atleta) = lower(v_atleta)
-       AND COALESCE(lower(club_destino), '') = COALESCE(lower(v_destino), '')
-       AND creado_en > NOW() - INTERVAL '24 hours'
-  ) THEN
-    RAISE EXCEPTION 'Ya nos ha llegado tu fichaje; lo revisamos en breve';
+  SELECT COUNT(*) INTO v_n FROM fichajes_incidencias
+   WHERE colaborador_id = v_yo AND creado_en > NOW() - INTERVAL '1 hour';
+  IF v_n >= 30 THEN
+    RAISE EXCEPTION 'Has marcado muchas incidencias en la última hora; espera un poco';
   END IF;
 
-  INSERT INTO fichajes_propuestas (
-    atleta, genero, club_origen, club_destino,
-    division_origen, division_destino, nota, contacto
-  ) VALUES (
-    v_atleta, p_genero, v_origen, v_destino,
-    NULLIF(btrim(COALESCE(p_division_origen, '')), ''),
-    NULLIF(btrim(COALESCE(p_division_destino, '')), ''),
-    NULLIF(btrim(COALESCE(p_nota, '')), ''),
-    NULLIF(btrim(COALESCE(p_contacto, '')), '')
-  )
+  INSERT INTO fichajes_incidencias (fichaje_id, colaborador_id, texto)
+  VALUES (p_fichaje, v_yo, v_texto)
   RETURNING id INTO v_id;
-
   RETURN v_id;
 END;
 $fn$;
 
-GRANT EXECUTE ON FUNCTION fichajes_proponer(
-  TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT
-) TO anon, authenticated;
+-- Corregir un fichaje MÍO: cambiar rumor ⇄ confirmado y/o retirarlo del
+-- directo (para volver a publicarlo bien). Cierra sus incidencias abiertas;
+-- sin cambios, solo las cierra («ya está bien»).
+CREATE OR REPLACE FUNCTION colab_corregir(p_fichaje UUID, p_estado TEXT DEFAULT NULL, p_retirar BOOLEAN DEFAULT FALSE)
+RETURNS VOID
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
+DECLARE
+  v_yo UUID := (colab_actual()).id;
+BEGIN
+  IF p_estado IS NOT NULL AND p_estado NOT IN ('rumor', 'confirmado') THEN
+    RAISE EXCEPTION 'El estado tiene que ser rumor o confirmado';
+  END IF;
+  UPDATE fichajes
+     SET estado  = COALESCE(p_estado, estado),
+         visible = CASE WHEN COALESCE(p_retirar, FALSE) THEN FALSE ELSE visible END
+   WHERE id = p_fichaje AND colaborador_id = v_yo;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Solo puedes corregir los fichajes que has publicado tú. Si es de otro, marca una incidencia.';
+  END IF;
+  UPDATE fichajes_incidencias SET resuelta_en = NOW(), resuelta_por = 'autor'
+   WHERE fichaje_id = p_fichaje AND resuelta_en IS NULL;
+END;
+$fn$;
 
+-- Chivatazos por revisar. Sin el contacto: eso solo lo ves tú.
+CREATE OR REPLACE FUNCTION colab_chivatazos()
+RETURNS TABLE (
+  id UUID, creado_en TIMESTAMPTZ, atleta TEXT, genero TEXT,
+  club_origen TEXT, club_destino TEXT, division_origen TEXT, division_destino TEXT,
+  nota TEXT, fuente TEXT
+)
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
+#variable_conflict use_column
+BEGIN
+  PERFORM colab_actual();
+  RETURN QUERY
+  SELECT p.id, p.creado_en, p.atleta, p.genero, p.club_origen, p.club_destino,
+         p.division_origen, p.division_destino, p.nota, p.fuente
+    FROM fichajes_propuestas p
+   WHERE p.tipo = 'chivatazo' AND p.descartada_en IS NULL
+   ORDER BY p.creado_en ASC
+   LIMIT 200;
+END;
+$fn$;
 
--- ═════════════════════════════════════════════════════════════════════════════
--- 6. APROBAR UNA PROPUESTA (solo tú, desde /admin/fichajes)
--- ═════════════════════════════════════════════════════════════════════════════
--- Copia la propuesta al directo y la borra, todo de una vez. El contacto NO se
--- copia: se queda solo contigo hasta que se borra la propuesta.
-
-CREATE OR REPLACE FUNCTION fichajes_aprobar(p_id UUID, p_estado TEXT DEFAULT 'confirmado')
+-- Resolver un chivatazo: 'confirmado' o 'rumor' lo publican (queda apuntado
+-- quién lo aprobó); 'descartar' lo quita de la cola de los colaboradores.
+CREATE OR REPLACE FUNCTION colab_chivatazo_resolver(p_id UUID, p_accion TEXT)
 RETURNS UUID
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
 DECLARE
+  v_yo   UUID := (colab_actual()).id;
   v_prop fichajes_propuestas%ROWTYPE;
   v_id   UUID;
 BEGIN
-  IF COALESCE(p_estado, '') NOT IN ('rumor', 'confirmado') THEN
-    RAISE EXCEPTION 'El estado tiene que ser rumor o confirmado';
+  IF COALESCE(p_accion, '') NOT IN ('confirmado', 'rumor', 'descartar') THEN
+    RAISE EXCEPTION 'Acción no válida';
+  END IF;
+  SELECT * INTO v_prop FROM fichajes_propuestas
+   WHERE id = p_id AND tipo = 'chivatazo' AND descartada_en IS NULL
+   FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Ese chivatazo ya lo ha revisado otra persona';
   END IF;
 
-  SELECT * INTO v_prop FROM fichajes_propuestas WHERE id = p_id;
-  IF NOT FOUND THEN
-    RAISE EXCEPTION 'Esa propuesta ya no existe';
+  IF p_accion = 'descartar' THEN
+    UPDATE fichajes_propuestas SET descartada_en = NOW(), descartada_por = v_yo WHERE id = p_id;
+    RETURN NULL;
   END IF;
 
   INSERT INTO fichajes (
     informado_en, atleta, estado, genero, club_origen, club_destino,
-    division_origen, division_destino, nota, origen_envio
+    division_origen, division_destino, nota, fuente, origen_envio, colaborador_id
   ) VALUES (
-    v_prop.creado_en, v_prop.atleta, p_estado, v_prop.genero,
+    v_prop.creado_en, v_prop.atleta, p_accion, v_prop.genero,
     v_prop.club_origen, v_prop.club_destino,
-    v_prop.division_origen, v_prop.division_destino, v_prop.nota, 'atleta'
+    v_prop.division_origen, v_prop.division_destino, v_prop.nota, v_prop.fuente,
+    'chivatazo', v_yo
   )
   RETURNING id INTO v_id;
 
   DELETE FROM fichajes_propuestas WHERE id = p_id;
+  UPDATE fichajes_colaboradores SET ultimo_envio_en = NOW() WHERE id = v_yo;
   RETURN v_id;
 END;
 $fn$;
 
-REVOKE ALL ON FUNCTION fichajes_aprobar(UUID, TEXT) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION fichajes_aprobar(UUID, TEXT) TO authenticated;
+REVOKE ALL ON FUNCTION colab_yo() FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION colab_publicar(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, TEXT, TEXT) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION colab_fichajes(INT) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION colab_incidencia(UUID, TEXT) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION colab_corregir(UUID, TEXT, BOOLEAN) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION colab_chivatazos() FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION colab_chivatazo_resolver(UUID, TEXT) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION colab_yo() TO authenticated;
+GRANT EXECUTE ON FUNCTION colab_publicar(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TIMESTAMPTZ, TEXT, TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION colab_fichajes(INT) TO authenticated;
+GRANT EXECUTE ON FUNCTION colab_incidencia(UUID, TEXT) TO authenticated;
+GRANT EXECUTE ON FUNCTION colab_corregir(UUID, TEXT, BOOLEAN) TO authenticated;
+GRANT EXECUTE ON FUNCTION colab_chivatazos() TO authenticated;
+GRANT EXECUTE ON FUNCTION colab_chivatazo_resolver(UUID, TEXT) TO authenticated;
+
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- 6a-bis. LISTA BLANCA DE CUENTAS (v5) — hook «Before User Created»
+-- ═════════════════════════════════════════════════════════════════════════════
+-- Con Google, cualquiera podría crearse una cuenta (sin permisos, pero ahí
+-- estaría). Este hook lo corta de raíz: Supabase Auth lo llama ANTES de crear
+-- una cuenta y solo deja pasar los correos de `admins` o de un colaborador
+-- activo. Hay que activarlo a mano una vez:
+--   Dashboard > Authentication > Hooks > Before User Created > Postgres >
+--   schema `public`, función `hook_lista_blanca`.
+-- Aunque no lo actives, una cuenta que no esté en las listas no puede hacer nada.
+
+CREATE OR REPLACE FUNCTION hook_lista_blanca(event JSONB)
+RETURNS JSONB
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
+DECLARE
+  v_email TEXT := lower(btrim(COALESCE(event->'user'->>'email', '')));
+BEGIN
+  IF v_email <> '' AND (
+       EXISTS (SELECT 1 FROM admins WHERE email = v_email)
+    OR EXISTS (SELECT 1 FROM fichajes_colaboradores WHERE email = v_email AND activo)
+  ) THEN
+    RETURN '{}'::jsonb;
+  END IF;
+  RETURN jsonb_build_object('error', jsonb_build_object(
+    'http_code', 403,
+    'message', 'Este correo no tiene acceso. Pide a lanedata que lo dé de alta.'));
+END;
+$fn$;
+
+REVOKE ALL ON FUNCTION hook_lista_blanca(JSONB) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION hook_lista_blanca(JSONB) TO supabase_auth_admin;
 
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -497,7 +747,7 @@ ALTER TABLE clubes_estilo ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "public_read_clubes_estilo" ON clubes_estilo;
 CREATE POLICY "public_read_clubes_estilo" ON clubes_estilo FOR SELECT TO anon, authenticated USING (TRUE);
 DROP POLICY IF EXISTS "auth_full_clubes_estilo" ON clubes_estilo;
-CREATE POLICY "auth_full_clubes_estilo" ON clubes_estilo FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
+CREATE POLICY "auth_full_clubes_estilo" ON clubes_estilo FOR ALL TO authenticated USING (es_admin()) WITH CHECK (es_admin());
 
 INSERT INTO storage.buckets (id, name, public) VALUES ('clubes', 'clubes', true)
 ON CONFLICT (id) DO NOTHING;
@@ -505,11 +755,11 @@ ON CONFLICT (id) DO NOTHING;
 DROP POLICY IF EXISTS "public_read_clubes" ON storage.objects;
 CREATE POLICY "public_read_clubes" ON storage.objects FOR SELECT USING (bucket_id = 'clubes');
 DROP POLICY IF EXISTS "auth_insert_clubes" ON storage.objects;
-CREATE POLICY "auth_insert_clubes" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'clubes');
+CREATE POLICY "auth_insert_clubes" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'clubes' AND es_admin());
 DROP POLICY IF EXISTS "auth_update_clubes" ON storage.objects;
-CREATE POLICY "auth_update_clubes" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'clubes');
+CREATE POLICY "auth_update_clubes" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'clubes' AND es_admin());
 DROP POLICY IF EXISTS "auth_delete_clubes" ON storage.objects;
-CREATE POLICY "auth_delete_clubes" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'clubes');
+CREATE POLICY "auth_delete_clubes" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'clubes' AND es_admin());
 
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -528,7 +778,7 @@ ALTER TABLE web_ajustes ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "public_read_web_ajustes" ON web_ajustes;
 CREATE POLICY "public_read_web_ajustes" ON web_ajustes FOR SELECT TO anon, authenticated USING (TRUE);
 DROP POLICY IF EXISTS "auth_full_web_ajustes" ON web_ajustes;
-CREATE POLICY "auth_full_web_ajustes" ON web_ajustes FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
+CREATE POLICY "auth_full_web_ajustes" ON web_ajustes FOR ALL TO authenticated USING (es_admin()) WITH CHECK (es_admin());
 
 INSERT INTO web_ajustes (clave, valor) VALUES ('mercado_portada', '{"posicion": "oculto"}')
 ON CONFLICT (clave) DO NOTHING;
@@ -578,11 +828,18 @@ ALTER TABLE mercado_anuncios ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "public_read_anuncios" ON mercado_anuncios;
 CREATE POLICY "public_read_anuncios" ON mercado_anuncios FOR SELECT TO anon USING (estado = 'publicado');
 DROP POLICY IF EXISTS "auth_full_anuncios" ON mercado_anuncios;
-CREATE POLICY "auth_full_anuncios" ON mercado_anuncios FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
+CREATE POLICY "auth_full_anuncios" ON mercado_anuncios FOR ALL TO authenticated USING (es_admin()) WITH CHECK (es_admin());
 -- anon solo puede leer estas columnas (el contacto no está).
 REVOKE ALL ON TABLE mercado_anuncios FROM anon;
 GRANT SELECT (id, publicado_en, tipo, estado, autor, club_actual, genero, pruebas, zona, texto, busca, ofrece, perfil_url)
   ON mercado_anuncios TO anon;
+
+-- v5: lo mismo, como vista, para que el tablón se vea igual con sesión iniciada
+-- (un colaborador no es admin y la política de arriba es solo para anon).
+CREATE OR REPLACE VIEW mercado_anuncios_publicos AS
+  SELECT id, publicado_en, tipo, estado, autor, club_actual, genero, pruebas, zona, texto, busca, ofrece, perfil_url
+    FROM mercado_anuncios WHERE estado = 'publicado';
+GRANT SELECT ON mercado_anuncios_publicos TO anon, authenticated;
 
 CREATE TABLE IF NOT EXISTS mercado_interesados (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -597,7 +854,7 @@ CREATE TABLE IF NOT EXISTS mercado_interesados (
 ALTER TABLE mercado_interesados ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE mercado_interesados FROM anon;
 DROP POLICY IF EXISTS "auth_full_interesados" ON mercado_interesados;
-CREATE POLICY "auth_full_interesados" ON mercado_interesados FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
+CREATE POLICY "auth_full_interesados" ON mercado_interesados FOR ALL TO authenticated USING (es_admin()) WITH CHECK (es_admin());
 
 -- v4: la firma cambia (busca/ofrece en vez de texto); se quita la antigua.
 DROP FUNCTION IF EXISTS mercado_anunciar(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT);
@@ -693,7 +950,7 @@ CREATE TABLE IF NOT EXISTS push_suscripciones (
 ALTER TABLE push_suscripciones ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE push_suscripciones FROM anon;
 DROP POLICY IF EXISTS "auth_full_push" ON push_suscripciones;
-CREATE POLICY "auth_full_push" ON push_suscripciones FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
+CREATE POLICY "auth_full_push" ON push_suscripciones FOR ALL TO authenticated USING (es_admin()) WITH CHECK (es_admin());
 
 -- URL de la función y secreto compartido. Sin políticas: solo la leen las
 -- funciones SECURITY DEFINER y la Edge Function (service role).
@@ -710,6 +967,7 @@ CREATE OR REPLACE FUNCTION avisos_configurar(p_url TEXT)
 RETURNS TEXT
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
 BEGIN
+  PERFORM exigir_admin();
   IF p_url !~ '^https://[a-z0-9.-]+/functions/v1/fichajes-push$' THEN
     RAISE EXCEPTION 'URL de la función no válida';
   END IF;
@@ -725,7 +983,7 @@ RETURNS TRIGGER
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, extensions AS $fn$
 DECLARE
   v_cfg  avisos_config%ROWTYPE;
-  -- La fila como JSON: este trigger lo comparten cuatro tablas con columnas
+  -- La fila como JSON: este trigger lo comparten cinco tablas con columnas
   -- distintas, y acceder a NEW.<columna> que no existe en una de ellas hace
   -- fallar el INSERT entero («record "new" has no field …»).
   v_fila JSONB := to_jsonb(NEW);
@@ -734,7 +992,9 @@ BEGIN
   -- perdido nunca debe tumbar un envío.
   BEGIN
     -- Lo que apruebas tú mismo no te avisa.
-    IF TG_TABLE_NAME = 'fichajes' AND COALESCE(v_fila->>'origen_envio', '') <> 'colaborador' THEN
+    -- (Sí avisa lo que publica o aprueba un colaborador.)
+    IF TG_TABLE_NAME = 'fichajes' AND COALESCE(v_fila->>'origen_envio', '') <> 'colaborador'
+       AND v_fila->>'colaborador_id' IS NULL THEN
       RETURN NEW;
     END IF;
     SELECT * INTO v_cfg FROM avisos_config WHERE id = 1;
@@ -755,6 +1015,8 @@ DROP TRIGGER IF EXISTS avisos_fichajes ON fichajes;
 CREATE TRIGGER avisos_fichajes AFTER INSERT ON fichajes FOR EACH ROW EXECUTE FUNCTION avisos_disparar();
 DROP TRIGGER IF EXISTS avisos_propuestas ON fichajes_propuestas;
 CREATE TRIGGER avisos_propuestas AFTER INSERT ON fichajes_propuestas FOR EACH ROW EXECUTE FUNCTION avisos_disparar();
+DROP TRIGGER IF EXISTS avisos_incidencias ON fichajes_incidencias;
+CREATE TRIGGER avisos_incidencias AFTER INSERT ON fichajes_incidencias FOR EACH ROW EXECUTE FUNCTION avisos_disparar();
 DROP TRIGGER IF EXISTS avisos_anuncios ON mercado_anuncios;
 CREATE TRIGGER avisos_anuncios AFTER INSERT ON mercado_anuncios FOR EACH ROW EXECUTE FUNCTION avisos_disparar();
 DROP TRIGGER IF EXISTS avisos_interesados ON mercado_interesados;
@@ -766,19 +1028,18 @@ CREATE TRIGGER avisos_interesados AFTER INSERT ON mercado_interesados FOR EACH R
 -- ═════════════════════════════════════════════════════════════════════════════
 -- Cuando el mercado se cierre y quites la sección, para borrarlo todo:
 --     DROP FUNCTION IF EXISTS fichajes_aprobar(UUID, TEXT);
---     DROP FUNCTION IF EXISTS fichajes_proponer(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT);
---     DROP FUNCTION IF EXISTS fichajes_enviar(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TIMESTAMPTZ,TEXT,TEXT);
---     DROP FUNCTION IF EXISTS fichajes_set_clave(TEXT);
---     DROP FUNCTION IF EXISTS fichajes_clave_estado();
+--     DROP FUNCTION IF EXISTS fichajes_proponer(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT);
+--     DROP FUNCTION IF EXISTS colab_yo(), colab_actual(), colab_fichajes(INT), colab_chivatazos(),
+--       colab_incidencia(UUID,TEXT), colab_corregir(UUID,TEXT,BOOLEAN), colab_chivatazo_resolver(UUID,TEXT),
+--       colab_publicar(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TIMESTAMPTZ,TEXT,TEXT);
+--     DROP VIEW IF EXISTS mercado_anuncios_publicos;
+--     DROP TABLE IF EXISTS fichajes_incidencias;
 --     DROP TABLE IF EXISTS mercado_interesados, mercado_anuncios, push_suscripciones,
 --       avisos_config, clubes_estilo, web_ajustes;
 --     DROP FUNCTION IF EXISTS mercado_anunciar(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT);
 --     DROP FUNCTION IF EXISTS mercado_interes(UUID,TEXT,TEXT,TEXT);
 --     DROP FUNCTION IF EXISTS avisos_disparar() CASCADE;
 --     DROP FUNCTION IF EXISTS avisos_configurar(TEXT);
---     DROP FUNCTION IF EXISTS fichajes_quien_soy(TEXT);
---     DROP FUNCTION IF EXISTS fichajes_borrar_clave();
 --     DROP TABLE IF EXISTS fichajes_propuestas;
---     DROP TABLE IF EXISTS fichajes_clave;
 --     DROP TABLE IF EXISTS fichajes;
 --     DROP TABLE IF EXISTS fichajes_colaboradores;

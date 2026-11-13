@@ -30,26 +30,41 @@ const mov = (o: string | null, d: string | null) => `${o ?? '¿?'} → ${d ?? '�
 async function componer(tabla: string, id: string): Promise<Aviso | null> {
   if (tabla === 'fichajes') {
     const { data: f } = await sb.from('fichajes')
-      .select('atleta, estado, club_origen, club_destino, colaborador_id, fichajes_colaboradores(nombre)')
+      .select('atleta, estado, origen_envio, club_origen, club_destino, colaborador_id, fichajes_colaboradores(nombre)')
       .eq('id', id).maybeSingle()
     if (!f) return null
     // deno-lint-ignore no-explicit-any
-    const quien = (f as any).fichajes_colaboradores?.nombre ?? 'clave general'
+    const quien = (f as any).fichajes_colaboradores?.nombre ?? '¿?'
+    const como = f.origen_envio === 'chivatazo' ? 'chivatazo aprobado por' : 'publicado por'
     return {
       titulo: `${f.estado === 'confirmado' ? '✅' : '👀'} ${f.atleta}`,
-      cuerpo: `${mov(f.club_origen, f.club_destino)}\n${f.estado === 'confirmado' ? 'Confirmado' : 'Rumor'} · publicado por ${quien}`,
+      cuerpo: `${mov(f.club_origen, f.club_destino)}\n${f.estado === 'confirmado' ? 'Confirmado' : 'Rumor'} · ${como} ${quien}`,
       url: `/admin/movil/?id=${id}`,
       tag: `f-${id}`,
     }
   }
   if (tabla === 'fichajes_propuestas') {
-    const { data: p } = await sb.from('fichajes_propuestas').select('atleta, club_origen, club_destino').eq('id', id).maybeSingle()
+    const { data: p } = await sb.from('fichajes_propuestas').select('*').eq('id', id).maybeSingle()
     if (!p) return null
+    const chivatazo = p.tipo === 'chivatazo'
     return {
-      titulo: `🙋 Pendiente: ${p.atleta}`,
-      cuerpo: `${mov(p.club_origen, p.club_destino)}\nLo cuenta el propio atleta · toca para aprobar`,
+      titulo: `${chivatazo ? '🤫 Chivatazo' : '🙋 Pendiente'}: ${p.atleta}`,
+      cuerpo: `${mov(p.club_origen, p.club_destino)}\n${chivatazo ? 'Chivatazo anónimo' : 'Lo cuenta el propio atleta'} · toca para aprobar`,
       url: `/admin/movil/?p=${id}`,
       tag: `p-${id}`,
+    }
+  }
+  if (tabla === 'fichajes_incidencias') {
+    const { data: i } = await sb.from('fichajes_incidencias')
+      .select('texto, fichaje_id, fichajes(atleta), fichajes_colaboradores(nombre)').eq('id', id).maybeSingle()
+    if (!i) return null
+    // deno-lint-ignore no-explicit-any
+    const x = i as any
+    return {
+      titulo: `⚑ Incidencia: ${x.fichajes?.atleta ?? 'un fichaje'}`,
+      cuerpo: `${String(i.texto).slice(0, 110)}\nLa marca ${x.fichajes_colaboradores?.nombre ?? 'un colaborador'}`,
+      url: `/admin/movil/?id=${i.fichaje_id}`,
+      tag: `i-${id}`,
     }
   }
   if (tabla === 'mercado_anuncios') {

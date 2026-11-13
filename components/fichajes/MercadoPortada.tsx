@@ -42,7 +42,7 @@ export function MercadoPortada({ hueco, bloque = 'fichajes' }: {
       <p className="mb-8 max-w-2xl text-sm leading-relaxed text-ink/55">
         Quién se mueve, de dónde a dónde y a qué hora se supo. Rumores y confirmados, al momento.
       </p>
-      <FichajesEnVivo limite={hueco === 'arriba' ? 15 : 8} />
+      <FichajesEnVivo limite={60} pagina={hueco === 'arriba' ? 6 : 4} />
       <Link href="/mercado/" className={enlaceCls}>
         Todo el mercado y el tablón de atletas y clubes &rarr;
       </Link>

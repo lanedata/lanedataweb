@@ -75,19 +75,19 @@ DROP POLICY IF EXISTS "auth_read_errors" ON error_logs;
 CREATE POLICY "auth_read_errors"
   ON error_logs FOR SELECT
   TO authenticated
-  USING (true);
+  USING (es_admin());
 
 DROP POLICY IF EXISTS "auth_update_errors" ON error_logs;
 CREATE POLICY "auth_update_errors"
   ON error_logs FOR UPDATE
   TO authenticated
-  USING (true) WITH CHECK (true);
+  USING (es_admin()) WITH CHECK (es_admin());
 
 DROP POLICY IF EXISTS "auth_delete_errors" ON error_logs;
 CREATE POLICY "auth_delete_errors"
   ON error_logs FOR DELETE
   TO authenticated
-  USING (true);
+  USING (es_admin());
 
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -147,20 +147,22 @@ DROP POLICY IF EXISTS "auth_read_analytics" ON analytics_events;
 CREATE POLICY "auth_read_analytics"
   ON analytics_events FOR SELECT
   TO authenticated
-  USING (true);
+  USING (es_admin());
 
 DROP POLICY IF EXISTS "auth_delete_analytics" ON analytics_events;
 CREATE POLICY "auth_delete_analytics"
   ON analytics_events FOR DELETE
   TO authenticated
-  USING (true);
+  USING (es_admin());
 
 
 -- ═════════════════════════════════════════════════════════════════════════════
 -- 3. AGREGADOS PARA EL PANEL
 -- ═════════════════════════════════════════════════════════════════════════════
 -- Se ejecutan en Postgres (rápido) en vez de descargar miles de filas al
--- navegador. SECURITY DEFINER + REVOKE: solo un usuario autenticado las llama.
+-- navegador. SECURITY DEFINER + REVOKE: solo un usuario autenticado las llama,
+-- y solo devuelven datos si es admin (`es_admin()`, ver roles-schema.sql: hay
+-- cuentas con sesión que no lo son, como los colaboradores del mercado).
 
 -- 3.1 Resumen general del periodo
 CREATE OR REPLACE FUNCTION analytics_overview(p_from TIMESTAMPTZ, p_to TIMESTAMPTZ)
@@ -175,7 +177,7 @@ RETURNS TABLE (
 LANGUAGE sql SECURITY DEFINER SET search_path = public AS $fn$
   WITH win AS (
     SELECT * FROM analytics_events
-    WHERE created_at >= p_from AND created_at < p_to
+    WHERE created_at >= p_from AND created_at < p_to AND es_admin()
   ),
   per_session AS (
     SELECT session_id, count(*) FILTER (WHERE name = 'page_view') AS pv
@@ -208,7 +210,7 @@ LANGUAGE sql SECURITY DEFINER SET search_path = public AS $fn$
       count(*) FILTER (WHERE name = 'page_view') AS views,
       count(DISTINCT session_id) AS sessions
     FROM analytics_events
-    WHERE created_at >= p_from AND created_at < p_to
+    WHERE created_at >= p_from AND created_at < p_to AND es_admin()
     GROUP BY 1
   ) v ON v.day = d::date
   ORDER BY 1;
@@ -232,7 +234,7 @@ BEGIN
       count(*) FILTER (WHERE name = 'page_view')::bigint,
       count(DISTINCT session_id)::bigint
     FROM analytics_events
-    WHERE created_at >= $1 AND created_at < $2
+    WHERE created_at >= $1 AND created_at < $2 AND es_admin()
     GROUP BY 1
     ORDER BY 2 DESC, 3 DESC
     LIMIT $3
@@ -250,7 +252,7 @@ LANGUAGE sql SECURITY DEFINER SET search_path = public AS $fn$
     count(*)::bigint,
     count(DISTINCT e.session_id)::bigint
   FROM analytics_events e
-  WHERE e.created_at >= p_from AND e.created_at < p_to
+  WHERE e.created_at >= p_from AND e.created_at < p_to AND es_admin()
     AND e.name NOT IN ('page_view', 'page_time', 'session_end')
   GROUP BY 1, 2
   ORDER BY 3 DESC
@@ -270,7 +272,7 @@ LANGUAGE sql SECURITY DEFINER SET search_path = public AS $fn$
       extract(hour FROM created_at AT TIME ZONE 'Europe/Madrid')::int AS hour,
       count(*) AS views
     FROM analytics_events
-    WHERE created_at >= p_from AND created_at < p_to AND name = 'page_view'
+    WHERE created_at >= p_from AND created_at < p_to AND es_admin() AND name = 'page_view'
     GROUP BY 1
   ) v ON v.hour = h
   ORDER BY 1;
@@ -288,7 +290,7 @@ LANGUAGE sql SECURITY DEFINER SET search_path = public AS $fn$
     count(DISTINCT e.session_id)::bigint,
     round(avg(e.duration_ms) FILTER (WHERE e.name = 'page_time') / 1000.0, 1)
   FROM analytics_events e
-  WHERE e.created_at >= p_from AND e.created_at < p_to
+  WHERE e.created_at >= p_from AND e.created_at < p_to AND es_admin()
     AND e.name IN ('page_view', 'page_time')
   GROUP BY 1
   ORDER BY 2 DESC, 3 DESC
@@ -322,6 +324,7 @@ DECLARE
   n_events INT;
   n_errors INT;
 BEGIN
+  PERFORM exigir_admin();
   DELETE FROM analytics_events WHERE created_at < NOW() - INTERVAL '14 months';
   GET DIAGNOSTICS n_events = ROW_COUNT;
   DELETE FROM error_logs WHERE created_at < NOW() - INTERVAL '90 days';

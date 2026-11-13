@@ -7,7 +7,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
-  FICHAJE_COLUMNS, haceDe,
+  FICHAJE_COLUMNS, esChivatazo, haceDe,
   type Colaborador, type EstadoFichaje, type Fichaje, type Propuesta,
 } from '@/lib/fichajes/types'
 import { activarPush, desactivarPush, estadoPush, probarPush, registrarSW, type EstadoPush } from '@/lib/fichajes/push'
@@ -87,10 +87,11 @@ export function PanelMovil() {
         <div className="space-y-3">
           {propuestas.map((p) => (
             <article key={p.id} id={`m-${p.id}`} className={`border-2 bg-paper p-4 ${foco === p.id ? 'border-ink' : 'border-ink/15'}`}>
-              <p className="label-mono text-[0.58rem] text-ink/45">lo cuenta el atleta · {haceDe(p.creado_en)}</p>
+              <p className="label-mono text-[0.58rem] text-ink/45">{esChivatazo(p) ? '🤫 chivatazo' : 'lo cuenta el atleta'} · {haceDe(p.creado_en)}{p.descartada_en ? ` · descartado por ${p.descartada_por ? nombres[p.descartada_por] ?? '¿?' : '¿?'}` : ''}</p>
               <p className="mt-1 font-brand text-xl font-extrabold leading-tight text-ink">{p.atleta}</p>
               <p className="mt-1 text-[0.95rem] text-ink/75">{p.club_origen ?? '¿?'} <span className="text-ink/35">→</span> <strong className="text-ink">{p.club_destino ?? '¿?'}</strong></p>
               {p.nota && <p className="mt-1 text-sm text-ink/55">{p.nota}</p>}
+              {p.fuente && <p className="mt-1 text-sm text-ink/55">Fuente: {p.fuente}</p>}
               <p className="mt-2 bg-cream/70 px-2 py-1.5 text-sm text-ink/80">📇 {p.contacto || 'sin contacto'}</p>
               <div className="mt-3 flex gap-2">
                 <button disabled={ocupado === p.id} onClick={() => aprobar(p, 'confirmado')} className={`${grande} bg-ink text-mint`}>✓ Confirmado</button>
@@ -118,7 +119,7 @@ export function PanelMovil() {
                   {f.bomba && <span className="text-ink">💥 bomba</span>}
                   {!f.visible && <span>oculto</span>}
                   <span>· {haceDe(f.informado_en)}</span>
-                  <span>· {f.colaborador_id ? nombres[f.colaborador_id] ?? '¿?' : f.origen_envio === 'atleta' ? 'atleta' : f.origen_envio === 'admin' ? 'tú' : 'clave general'}</span>
+                  <span>· {f.colaborador_id ? nombres[f.colaborador_id] ?? '¿?' : f.origen_envio === 'atleta' ? 'atleta' : f.origen_envio === 'chivatazo' ? 'chivatazo' : f.origen_envio === 'admin' ? 'tú' : 'clave antigua'}</span>
                 </p>
                 <p className="mt-1 font-brand text-lg font-extrabold leading-tight text-ink">{f.atleta}</p>
                 <p className="mt-0.5 text-sm text-ink/70">{f.club_origen ?? '¿?'} → <strong className="text-ink">{f.club_destino ?? '¿?'}</strong></p>

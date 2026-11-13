@@ -7,7 +7,7 @@
 
 export type EstadoFichaje = 'rumor' | 'confirmado'
 export type Genero = 'H' | 'M'
-export type OrigenEnvio = 'colaborador' | 'atleta' | 'admin'
+export type OrigenEnvio = 'colaborador' | 'atleta' | 'admin' | 'chivatazo'
 
 export interface Fichaje {
   id: string
@@ -32,27 +32,66 @@ export interface Fichaje {
 export const FICHAJE_COLUMNS =
   'id, informado_en, atleta, estado, genero, club_origen, club_destino, division_origen, division_destino, fuente, nota, origen_envio, bomba'
 
-/** Colaborador con token personal (solo admin). */
+/**
+ * Colaborador (solo lo ve el admin). Entra en /fichajes/enviar/ iniciando
+ * sesión con su correo —contraseña o Google—; `user_id` se rellena solo la
+ * primera vez que entra.
+ */
 export interface Colaborador {
   id: string
   creado_en: string
   nombre: string
-  token: string
+  email: string | null
+  user_id: string | null
   activo: boolean
   revocado_en: string | null
   ultimo_envio_en: string | null
+  ultimo_acceso_en: string | null
 }
 
-/** Enlace personal: el token va tras # y no viaja a ningún servidor. */
-export function enlaceColaborador(token: string, origen = typeof window !== 'undefined' ? window.location.origin : 'https://lanedata.es'): string {
-  return `${origen}/fichajes/enviar/#t=${token}`
+/** El único enlace de colaboradores: el mismo para todos. */
+export const RUTA_COLABORADORES = '/fichajes/enviar/'
+
+// ─── Lo que ve un colaborador (funciones colab_* del SQL) ────────────────────
+
+/** Incidencia abierta sobre un fichaje. Anónima: solo se sabe si es mía. */
+export interface Incidencia {
+  id: string
+  texto: string
+  creado_en: string
+  mia: boolean
 }
 
-/** Token nuevo generado en el navegador (mismo formato que el default SQL). */
-export function nuevoToken(): string {
-  const b = new Uint8Array(12)
-  crypto.getRandomValues(b)
-  return 'ld' + Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('')
+/** Un fichaje del directo visto por un colaborador: sin autor, solo si es suyo. */
+export interface FichajeColab extends Omit<Fichaje, 'origen_envio'> {
+  origen_envio: OrigenEnvio
+  visible: boolean
+  mio: boolean
+  incidencias: Incidencia[]
+}
+
+/** Chivatazo pendiente tal como lo ve un colaborador (sin el contacto). */
+export interface ChivatazoPendiente {
+  id: string
+  creado_en: string
+  atleta: string
+  genero: Genero | null
+  club_origen: string | null
+  club_destino: string | null
+  division_origen: string | null
+  division_destino: string | null
+  nota: string | null
+  fuente: string | null
+}
+
+/** Incidencia tal como la ve el admin (con quién la marcó). */
+export interface IncidenciaAdmin {
+  id: string
+  creado_en: string
+  fichaje_id: string
+  colaborador_id: string | null
+  texto: string
+  resuelta_en: string | null
 }
 
 // ─── Tablón ──────────────────────────────────────────────────────────────────
@@ -126,7 +165,18 @@ export function perfilLane(url: string | null | undefined): string | null {
   return `${MA}${ruta}?${p.toString()}`
 }
 
-/** Propuesta de un atleta pendiente de aprobar (solo la ve el admin). */
+/**
+ * Marca de respaldo en la nota de un chivatazo cuando la base de datos aún no
+ * tiene la columna `tipo` (SQL v4 sin aplicar): así el admin lo distingue.
+ */
+export const MARCA_CHIVATAZO = '[Chivatazo]'
+
+/** ¿Esta propuesta es un chivatazo (de un tercero) y no del propio atleta? */
+export function esChivatazo(p: Pick<Propuesta, 'tipo' | 'nota'>): boolean {
+  return p.tipo === 'chivatazo' || (p.nota ?? '').startsWith(MARCA_CHIVATAZO)
+}
+
+/** Propuesta pendiente de aprobar: del propio atleta o un chivatazo (solo la ve el admin). */
 export interface Propuesta {
   id: string
   creado_en: string
@@ -138,6 +188,12 @@ export interface Propuesta {
   division_destino: string | null
   nota: string | null
   contacto: string | null
+  /** Faltan si el SQL v4 no está aplicado. */
+  tipo?: 'atleta' | 'chivatazo'
+  fuente?: string | null
+  /** Un colaborador lo descartó: sigue aquí por si el admin quiere repescarlo. */
+  descartada_en?: string | null
+  descartada_por?: string | null
 }
 
 // ─── Divisiones ──────────────────────────────────────────────────────────────

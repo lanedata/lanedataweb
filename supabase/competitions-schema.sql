@@ -21,7 +21,7 @@ CREATE POLICY "competitions_public_read" ON competitions
   FOR SELECT USING (true);
 
 CREATE POLICY "competitions_auth_insert" ON competitions
-  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+  FOR INSERT WITH CHECK (es_admin());  -- ver roles-schema.sql
 
 CREATE POLICY "competitions_auth_update" ON competitions
-  FOR UPDATE USING (auth.role() = 'authenticated');
+  FOR UPDATE USING (es_admin());
