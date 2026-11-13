@@ -5,7 +5,7 @@
 //   1. ENLACES Y COLABORADORES: quién puede entrar en /fichajes/enviar/ (lista
 //      blanca por correo de Google) y las incidencias que marcan entre ellos.
 //   2. PROPUESTAS DE ATLETAS: lo que mandan los propios atletas desde
-//      /fichajes/mi-fichaje no se publica solo. Aquí se aprueba (como rumor o
+//      /fichajes/chivatazo no se publica solo. Aquí se aprueba (como rumor o
 //      confirmado) o se descarta. El contacto que dejan solo se ve aquí.
 //   3. EL DIRECTO: cambiar rumor ⇄ confirmado, ocultar (queda guardado pero
 //      fuera de la web) o borrar.
@@ -19,10 +19,10 @@ import {
 import { BloqueColaboradores } from './Colaboradores'
 import { BloqueClubes, BloquePortada } from './ClubesYPortada'
 import { BloqueTablon } from './TablonAdmin'
+import { Pruebas } from '@/components/fichajes/Pruebas'
 
 const ENLACES = [
-  { ruta: '/fichajes/mi-fichaje/#chivatazo', titulo: 'Chivatazos', texto: 'Para todo el mundo, sin clave. Compártelo: llega aquí abajo para que lo apruebes.' },
-  { ruta: '/fichajes/mi-fichaje/', titulo: 'Atletas', texto: 'La misma página, abierta en «es el mío».' },
+  { ruta: '/fichajes/chivatazo/', titulo: 'Chivatazos', texto: 'Para todo el mundo, sin clave: un chivatazo o el fichaje propio. Compártelo; llega aquí abajo para revisarlo.' },
   { ruta: '/fichajes/enviar/', titulo: 'Colaboradores', texto: 'El mismo enlace para todos: entran con Google si su correo está en la lista de abajo.' },
   { ruta: '/mercado/', titulo: 'Mercado público', texto: 'Directo + tablón de atletas y clubes.' },
   { ruta: '/admin/movil/', titulo: 'Panel móvil', texto: 'Instálalo como app y activa los avisos.' },
@@ -109,7 +109,7 @@ function BloqueEnlaces() {
   }
 
   return (
-    <section className="grid gap-px border border-ink/[0.14] bg-ink/[0.14] sm:grid-cols-2 lg:grid-cols-5">
+    <section className="grid gap-px border border-ink/[0.14] bg-ink/[0.14] sm:grid-cols-2 lg:grid-cols-4">
       {ENLACES.map((e) => (
         <div key={e.ruta} className="bg-paper p-5">
           <p className="font-brand text-base font-extrabold tracking-tight text-ink">{e.titulo}</p>
@@ -189,6 +189,7 @@ function BloquePropuestas({ propuestas, colaboradores, onCambio }: { propuestas:
                 <Movimiento origen={p.club_origen} destino={p.club_destino} divOrigen={p.division_origen} divDestino={p.division_destino} />
                 {p.nota && <p className="mt-1 text-[0.78rem] text-ink/50">{p.nota}</p>}
                 {p.fuente && <p className="mt-1 text-[0.78rem] text-ink/50"><span className="label-mono text-[0.55rem] text-ink/40">fuente </span>{p.fuente}</p>}
+                <Pruebas enlace={p.enlace} adjunto={p.adjunto} />
                 <p className="mt-1.5 text-[0.78rem]">
                   <span className="label-mono text-[0.55rem] text-ink/40">contacto · solo tú </span>
                   <span className="text-ink/75">{p.contacto || '— no ha dejado contacto'}</span>

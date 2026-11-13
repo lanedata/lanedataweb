@@ -5,10 +5,10 @@
 //   · colaborador (dentro de /fichajes/enviar/, ver PanelColaborador): ya ha
 //     iniciado sesión con su correo. Elige rumor o confirmado y se publica AL
 //     MOMENTO, a su nombre (función `colab_publicar`).
-//   · atleta (/fichajes/mi-fichaje/): el propio atleta cuenta su fichaje, sin
+//   · atleta (/fichajes/chivatazo/#mio): el propio atleta cuenta su fichaje, sin
 //     clave. Como cualquiera podría decir que es cualquiera, NO se publica: va a
 //     revisión y el admin lo aprueba. El contacto que deje solo lo ve el admin.
-//   · chivatazo (la MISMA página, /fichajes/mi-fichaje/#chivatazo): cualquiera
+//   · chivatazo (la MISMA página, /fichajes/chivatazo/, y su modo por defecto): cualquiera
 //     que se haya enterado de un fichaje, sin clave y sin dar su nombre. Es el
 //     formulario más corto a propósito (cuanta menos fricción, más avisos) y
 //     va a la misma revisión. En la página pública se cambia de uno a otro con
@@ -34,9 +34,16 @@ import {
 } from '@/lib/fichajes/types'
 import { Autocompletar } from './Autocompletar'
 import { LectorCaptura } from './LectorCaptura'
+import { BUCKET_CHIVATAZOS } from './Pruebas'
 import type { Lectura } from '@/lib/fichajes/lector'
 
 type Modo = 'colaborador' | 'atleta' | 'chivatazo'
+
+/** Archivos que se pueden adjuntar a un aviso → extensión con la que se guardan. */
+const TIPOS_ARCHIVO: Record<string, string> = {
+  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'application/pdf': 'pdf',
+}
+const MAX_ARCHIVO = 5 * 1024 * 1024
 
 /** "2026-10-14T16:40" — valor que espera <input type="datetime-local">. */
 function ahoraLocal(): string {
@@ -59,7 +66,7 @@ export function FormularioFichaje({ modo: modoPagina, onPublicado }: {
   onPublicado?: () => void
 }) {
   // La página pública sirve para las dos cosas: mi fichaje o un chivatazo.
-  const [publico, setPublico] = useState<'atleta' | 'chivatazo'>('atleta')
+  const [publico, setPublico] = useState<'atleta' | 'chivatazo'>('chivatazo')
   const modo: Modo = modoPagina === 'colaborador' ? 'colaborador' : publico
   const esColab = modo === 'colaborador'
   const esChiv = modo === 'chivatazo'
@@ -86,6 +93,10 @@ export function FormularioFichaje({ modo: modoPagina, onPublicado }: {
   const [nota, setNota] = useState('')
   const [contacto, setContacto] = useState('')
   const [trampa, setTrampa] = useState('') // honeypot: los bots lo rellenan
+  // Pruebas (solo formulario público): un enlace y/o un archivo. No se publican.
+  const [enlace, setEnlace] = useState('')
+  const [archivo, setArchivo] = useState<File | null>(null)
+  const [errorArchivo, setErrorArchivo] = useState<string | null>(null)
 
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -94,7 +105,7 @@ export function FormularioFichaje({ modo: modoPagina, onPublicado }: {
 
   useEffect(() => {
     if (modoPagina === 'colaborador') return
-    const leer = () => setPublico(window.location.hash === '#chivatazo' ? 'chivatazo' : 'atleta')
+    const leer = () => setPublico(window.location.hash === '#mio' ? 'atleta' : 'chivatazo')
     leer()
     window.addEventListener('hashchange', leer)
     return () => window.removeEventListener('hashchange', leer)
@@ -102,7 +113,7 @@ export function FormularioFichaje({ modo: modoPagina, onPublicado }: {
 
   function elegirPublico(v: 'atleta' | 'chivatazo') {
     setPublico(v); setError(null)
-    history.replaceState(null, '', v === 'chivatazo' ? '#chivatazo' : window.location.pathname)
+    history.replaceState(null, '', v === 'atleta' ? '#mio' : window.location.pathname)
   }
 
   const aplicarLectura = useCallback((l: Lectura) => {
@@ -167,6 +178,18 @@ export function FormularioFichaje({ modo: modoPagina, onPublicado }: {
     setDivOrigen(''); setDivDestino(''); setDivOrigenManual(false); setDivDestinoManual(false)
     setEstado('rumor'); setInformado(ahoraLocal())
     setFuente(''); setNota(''); setContacto(''); setCandidatos([])
+    setEnlace(''); setArchivo(null); setErrorArchivo(null)
+  }
+
+  function elegirArchivo(f: File | null) {
+    setErrorArchivo(null)
+    if (f && !(f.type in TIPOS_ARCHIVO)) {
+      setArchivo(null); setErrorArchivo('Solo se admiten imágenes (JPG, PNG, WebP) o un PDF.'); return
+    }
+    if (f && f.size > MAX_ARCHIVO) {
+      setArchivo(null); setErrorArchivo(`Ese archivo pesa ${(f.size / 1048576).toFixed(1)} MB y el máximo son 5 MB. Prueba con una captura.`); return
+    }
+    setArchivo(f)
   }
 
   async function enviar(e: React.FormEvent) {
@@ -185,8 +208,36 @@ export function FormularioFichaje({ modo: modoPagina, onPublicado }: {
     // Bot: se finge que ha ido bien y no se manda nada.
     if (!esColab && trampa) { registrarEnviado(base); limpiar(); return }
 
+    // El enlace se acepta sin «https://» delante; si no es una dirección, se avisa.
+    let enlaceOk: string | null = null
+    if (!esColab && enlace.trim()) {
+      try {
+        const u = new URL(/^https?:\/\//i.test(enlace.trim()) ? enlace.trim() : `https://${enlace.trim()}`)
+        if (!u.hostname.includes('.') || u.href.length > 500) throw new Error('enlace')
+        enlaceOk = u.href
+      } catch {
+        setError('El enlace no parece una dirección web. Revísalo o bórralo.')
+        return
+      }
+    }
+
     setEnviando(true)
     const supabase = createClient()
+
+    // El archivo se sube primero a un bucket privado (solo se puede subir, no leer).
+    let adjunto: string | null = null
+    if (!esColab && archivo) {
+      const nombre = `${crypto.randomUUID()}.${TIPOS_ARCHIVO[archivo.type]}`
+      const { error: errSubida } = await supabase.storage.from(BUCKET_CHIVATAZOS)
+        .upload(nombre, archivo, { contentType: archivo.type })
+      if (errSubida) {
+        setEnviando(false)
+        setError('No se ha podido subir el archivo. Prueba otra vez, o quítalo y pon un enlace.')
+        return
+      }
+      adjunto = nombre
+    }
+
     const propuesta = {
       p_atleta: base.atleta,
       p_genero: genero,
@@ -210,14 +261,19 @@ export function FormularioFichaje({ modo: modoPagina, onPublicado }: {
           p_fuente: fuente.trim() || null,
           p_nota: nota.trim() || null,
         })
-      : esChiv
-        ? await supabase.rpc('fichajes_proponer', { ...propuesta, p_tipo: 'chivatazo', p_fuente: fuente.trim() || null })
-        : await supabase.rpc('fichajes_proponer', propuesta)
-    // Base de datos sin el SQL v4 (no conoce p_tipo): el chivatazo se manda
-    // igual por la función antigua, marcado en la nota para que el admin lo vea.
-    if (esChiv && err?.code === 'PGRST202') {
-      const partes = [MARCA_CHIVATAZO, fuente.trim() && `Fuente: ${fuente.trim()}.`, nota.trim()].filter(Boolean)
-      ;({ error: err } = await supabase.rpc('fichajes_proponer', { ...propuesta, p_nota: partes.join(' ').slice(0, 400) }))
+      : await supabase.rpc('fichajes_proponer', {
+          ...propuesta,
+          p_tipo: esChiv ? 'chivatazo' : 'atleta',
+          p_fuente: fuente.trim() || null,
+          p_enlace: enlaceOk,
+          p_adjunto: adjunto,
+        })
+    // Base de datos sin el SQL nuevo (no conoce esos parámetros): se manda igual
+    // por la función antigua, con todo resumido en la nota para que el admin lo vea.
+    if (!esColab && err?.code === 'PGRST202') {
+      const partes = [esChiv && MARCA_CHIVATAZO, fuente.trim() && `Fuente: ${fuente.trim()}.`, enlaceOk, nota.trim()].filter(Boolean)
+      const antigua = await supabase.rpc('fichajes_proponer', { ...propuesta, p_nota: partes.join(' ').slice(0, 400) || null })
+      err = antigua.error
     }
     setEnviando(false)
 
@@ -472,6 +528,37 @@ export function FormularioFichaje({ modo: modoPagina, onPublicado }: {
                 {esChiv
                   ? 'Solo por si necesitamos preguntarte algo. Nunca publicamos quién nos avisa.'
                   : 'Solo lo ve lanedata para comprobar que eres tú. No se publica nunca.'}
+              </p>
+            </div>
+          )}
+
+          {/* Pruebas: ayudan a comprobarlo antes. Nunca se publican. */}
+          {!esColab && (
+            <div className="mt-5 border-t border-ink/[0.1] pt-5">
+              <Etiqueta texto={esChiv ? '¿Tienes una prueba? Enlace o archivo' : 'Enlace o archivo que lo confirme'} />
+              <input
+                type="url" inputMode="url" value={enlace} onChange={(e) => { setEnlace(e.target.value); setError(null) }} maxLength={500}
+                placeholder="Pega el enlace: Instagram del club, noticia, comunicado…" className={inputCls}
+              />
+              <div className="mt-3">
+                {archivo ? (
+                  <div className="flex items-center gap-3 border border-ink/[0.14] bg-cream/40 px-4 py-3">
+                    <span aria-hidden="true">📎</span>
+                    <span className="min-w-0 flex-1 truncate text-sm text-ink/80">{archivo.name}</span>
+                    <span className="shrink-0 font-mono text-[0.72rem] text-ink/45">{(archivo.size / 1048576).toFixed(1)} MB</span>
+                    <button type="button" onClick={() => elegirArchivo(null)} className="shrink-0 label-mono text-[0.58rem] text-ink/50 hover:text-ink">quitar</button>
+                  </div>
+                ) : (
+                  <label className="flex cursor-pointer items-center justify-center gap-2 border border-dashed border-ink/30 bg-cream/30 px-4 py-3.5 text-sm text-ink/65 transition-colors hover:border-ink/55 hover:text-ink focus-within:ring-2 focus-within:ring-mint/40">
+                    <span aria-hidden="true">📎</span> O sube una captura o un PDF
+                    <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="sr-only"
+                      onChange={(e) => { elegirArchivo(e.target.files?.[0] ?? null); e.target.value = '' }} />
+                  </label>
+                )}
+              </div>
+              {errorArchivo && <p className="mt-2 text-[0.8rem] text-red-700">{errorArchivo}</p>}
+              <p className="mt-1.5 text-[0.75rem] text-ink/40">
+                Imagen o PDF, máximo 5 MB. Solo lo ve quien revisa el aviso; no se publica.
               </p>
             </div>
           )}

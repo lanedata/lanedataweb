@@ -25,9 +25,8 @@ import { CompensacionRFEA } from './CompensacionRFEA'
 const REFRESCO_MS = 30_000
 // El enlace de colaboradores NO se enseña al público: cada colaborador recibe
 // el suyo personal desde /admin/fichajes.
-const ATLETAS_URL = '/fichajes/mi-fichaje/'
-// Misma página que la de los atletas; el # la abre en modo chivatazo.
-const CHIVATAZO_URL = '/fichajes/mi-fichaje/#chivatazo'
+// Una sola página para avisar de un fichaje: un chivatazo o el tuyo propio.
+const CHIVATAZO_URL = '/fichajes/chivatazo/'
 const TABLON_URL = '/mercado/#tablon'
 
 type Estado = 'cargando' | 'listo' | 'sin-tabla' | 'error'
@@ -364,6 +363,7 @@ function Chip({
 }
 
 function Pie() {
+  const [busca, setBusca] = useState(false)
   return (
     <footer className="border-t border-ink/[0.14]">
       {/* El chivatazo es la llamada principal: cuanta más gente avise, mejor directo. */}
@@ -374,24 +374,107 @@ function Pie() {
             ¿Te has enterado de un fichaje?
           </span>
           <span className="mt-1 block text-[0.8rem] leading-snug text-cream/60">
-            Danos el chivatazo. Es anónimo, se tarda medio minuto y lo comprobamos antes de publicarlo.
+            Danos el chivatazo, también si el que cambia de club eres tú. Es anónimo, se tarda medio
+            minuto y lo comprobamos antes de publicarlo.
           </span>
         </span>
         <span className="shrink-0 bg-mint px-4 py-2.5 font-brand text-[0.9rem] font-extrabold tracking-tight text-ink transition-colors group-hover:bg-cream">
           Dar el chivatazo &rarr;
         </span>
       </a>
-      <div className="grid gap-px border-t border-ink/[0.14] bg-ink/[0.14] sm:grid-cols-2">
-        <a href={ATLETAS_URL} className="group bg-cream/50 px-4 py-4 transition-colors hover:bg-mint/30 sm:px-6">
-          <p className="font-brand text-[0.95rem] font-extrabold tracking-tight text-ink">¿Cambias de club?</p>
-          <p className="mt-0.5 text-[0.78rem] text-ink/55">Cuéntanoslo tú y lo publicamos &rarr;</p>
-        </a>
-        <a href={TABLON_URL} className="group bg-cream/50 px-4 py-4 transition-colors hover:bg-mint/30 sm:px-6">
-          <p className="font-brand text-[0.95rem] font-extrabold tracking-tight text-ink">¿Buscas club o atletas?</p>
-          <p className="mt-0.5 text-[0.78rem] text-ink/55">Anúnciate en el tablón del mercado &rarr;</p>
-        </a>
-      </div>
+      <button type="button" onClick={() => setBusca(true)} aria-haspopup="dialog"
+        className="group flex w-full flex-wrap items-center gap-x-5 gap-y-2 border-t border-ink/[0.14] bg-cream/50 px-4 py-4 text-left transition-colors hover:bg-mint/30 sm:px-6">
+        <span className="min-w-0 flex-1 basis-56">
+          <span className="block font-brand text-[1rem] font-extrabold tracking-tight text-ink">¿Buscas club o atletas?</span>
+          <span className="mt-0.5 block text-[0.8rem] text-ink/55">Dinos si eres atleta o club y te decimos por dónde empezar.</span>
+        </span>
+        <span className="shrink-0 border border-ink/25 px-3.5 py-2 label-mono text-[0.6rem] text-ink/70 transition-colors group-hover:border-ink group-hover:text-ink">
+          Atleta o club &rarr;
+        </span>
+      </button>
+      {busca && <VentanaBusca onCerrar={() => setBusca(false)} />}
     </footer>
+  )
+}
+
+/**
+ * «¿Buscas club o atletas?»: primero se elige qué eres. El atleta va al
+ * buscador de clubes de Mundo Atletismo; al club se le ofrece un dossier a
+ * medida por correo.
+ */
+function VentanaBusca({ onCerrar }: { onCerrar: () => void }) {
+  const [soy, setSoy] = useState<'atleta' | 'club' | null>(null)
+
+  useEffect(() => {
+    const tecla = (e: KeyboardEvent) => { if (e.key === 'Escape') onCerrar() }
+    document.addEventListener('keydown', tecla)
+    const antes = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.removeEventListener('keydown', tecla); document.body.style.overflow = antes }
+  }, [onCerrar])
+
+  const opcion = (v: 'atleta' | 'club', titulo: string, texto: string) => (
+    <button type="button" onClick={() => setSoy(v)} aria-pressed={soy === v}
+      className={`border-2 p-4 text-left transition-colors ${
+        soy === v ? 'border-ink bg-ink text-cream' : 'border-ink/[0.18] bg-paper text-ink hover:border-ink/45'}`}>
+      <span className="block font-brand text-lg font-extrabold tracking-tight">{titulo}</span>
+      <span className={`mt-1 block text-[0.8rem] leading-snug ${soy === v ? 'text-cream/70' : 'text-ink/55'}`}>{texto}</span>
+    </button>
+  )
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/60 p-0 sm:items-center sm:p-6" onClick={onCerrar}>
+      <div role="dialog" aria-modal="true" aria-labelledby="busca-titulo" onClick={(e) => e.stopPropagation()}
+        className="panel-enter max-h-[90dvh] w-full max-w-md overflow-y-auto border border-ink/[0.14] bg-paper p-5 sm:p-7">
+        <div className="flex items-start justify-between gap-4">
+          <h3 id="busca-titulo" className="font-brand text-[1.4rem] font-extrabold leading-tight tracking-tight text-ink">
+            ¿Eres atleta o club?
+          </h3>
+          <button type="button" onClick={onCerrar} aria-label="Cerrar"
+            className="-mr-1 -mt-1 flex h-9 w-9 shrink-0 items-center justify-center text-xl text-ink/45 transition-colors hover:text-ink">
+            ✕
+          </button>
+        </div>
+
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          {opcion('atleta', 'Soy atleta', 'Busco club para competir')}
+          {opcion('club', 'Soy un club', 'Busco atletas que fichar')}
+        </div>
+
+        {soy === 'atleta' && (
+          <div className="panel-enter mt-5 border-l-2 border-mint bg-mint/15 p-4">
+            <p className="text-sm leading-relaxed text-ink/80">
+              En Mundo Atletismo tienes un buscador de clubes para atletas: mira cuáles encajan contigo.
+            </p>
+            <a href="https://mundoatletismo.es/atletas" target="_blank" rel="noopener noreferrer"
+              className="mt-4 inline-block bg-ink px-4 py-3 font-brand text-[0.92rem] font-extrabold tracking-tight text-mint transition-colors hover:bg-mint hover:text-ink">
+              Ir al buscador de clubes &rarr;
+            </a>
+            <p className="mt-2.5 label-mono text-[0.55rem] text-ink/45">mundoatletismo.es/atletas · se abre en otra pestaña</p>
+          </div>
+        )}
+
+        {soy === 'club' && (
+          <div className="panel-enter mt-5 border-l-2 border-mint bg-mint/15 p-4">
+            <p className="text-sm leading-relaxed text-ink/80">
+              ¿Quieres un dossier detallado de qué atletas puede fichar tu club? Escríbenos y te lo preparamos.
+            </p>
+            <a href="mailto:info@mundoatletismo.es?subject=Dossier%20de%20fichajes%20para%20mi%20club"
+              className="mt-4 inline-block bg-ink px-4 py-3 font-brand text-[0.92rem] font-extrabold tracking-tight text-mint transition-colors hover:bg-mint hover:text-ink">
+              Escribir a info@mundoatletismo.es
+            </a>
+            <p className="mt-2.5 select-all font-mono text-[0.8rem] text-ink/60">info@mundoatletismo.es</p>
+          </div>
+        )}
+
+        <p className="mt-6 border-t border-ink/[0.1] pt-4 text-[0.78rem] text-ink/50">
+          También puedes{' '}
+          <a href={TABLON_URL} onClick={onCerrar} className="font-semibold text-ink/75 underline decoration-ink/25 underline-offset-4 hover:text-ink">
+            anunciarte en el tablón del mercado
+          </a>.
+        </p>
+      </div>
+    </div>
   )
 }
 
@@ -459,10 +542,9 @@ function Fila({
           </p>
 
           {/* En móvil, uno encima de otro: el nombre del club es el dato y no se corta. */}
-          <div className="mt-3 grid grid-cols-1 items-stretch gap-1 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center sm:gap-2">
+          <div className="mt-3 grid grid-cols-1 items-stretch gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:items-center sm:gap-3">
             <Club nombre={fichaje.club_origen} division={fichaje.division_origen} rol="origen" estilo={estiloDe(estilos, fichaje.club_origen)} atleta={fichaje.atleta} />
-            <span aria-hidden="true"
-              className="z-[1] -my-2.5 flex h-7 w-7 items-center justify-center justify-self-center rounded-full border border-ink/15 bg-paper font-brand text-sm leading-none text-ink/55 sm:-mx-1 sm:my-0">
+            <span aria-hidden="true" className="justify-self-center font-brand text-lg leading-none text-ink/40">
               <span className="sm:hidden">&darr;</span><span className="hidden sm:inline">&rarr;</span>
             </span>
             <Club nombre={fichaje.club_destino} division={fichaje.division_destino} rol="destino" estilo={estiloDe(estilos, fichaje.club_destino)} atleta={fichaje.atleta} />

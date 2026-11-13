@@ -1,13 +1,15 @@
 'use client'
 
-// Subpágina /test — un duplicado de la web protegido por contraseña para
-// experimentar sin tocar la home pública. Incluye la columna "El dato de la
-// semana" y el mercado de fichajes, que aún no salen en la
-// web pública. Al ser el sitio estático (GitHub Pages)
-// la contraseña se comprueba en cliente: es una barrera para un sandbox, no un
-// control de seguridad real. Cambia TEST_PASSWORD para actualizarla.
+// Subpágina /test — un duplicado de la web para experimentar sin tocar la home
+// pública. Incluye la columna "El dato de la semana" y el mercado de fichajes.
+//
+// Se entra con Google y solo si el correo está en la lista blanca (`admins` o
+// `acceso_test`, ver supabase/roles-schema.sql); lo decide Postgres con
+// `puede_ver_test()`. Sin contraseñas. Al ser el sitio estático, esto decide a
+// quién se le enseña la página: lo que pinta son datos que ya son públicos.
 
 import { useEffect, useState } from 'react'
+import { BotonGoogle } from '@/components/fichajes/PanelColaborador'
 import { NavBar } from '@/components/NavBar'
 import { Footer } from '@/components/Footer'
 import { HeroArticle } from '@/components/HeroArticle'
@@ -18,66 +20,82 @@ import { Tablon } from '@/components/fichajes/Tablon'
 import { createClient } from '@/lib/supabase/client'
 import type { ArticlePreview } from '@/types'
 
-const TEST_PASSWORD = 'lanetest'
-const STORAGE_KEY = 'lanedata-test-unlocked'
+type Acceso = 'cargando' | 'fuera' | 'denegado' | 'dentro'
 
 export default function TestPage() {
-  const [unlocked, setUnlocked] = useState(false)
-  const [checked, setChecked] = useState(false)
+  const [acceso, setAcceso] = useState<Acceso>('cargando')
+  const [correo, setCorreo] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [abriendo, setAbriendo] = useState(false)
 
   useEffect(() => {
-    setUnlocked(sessionStorage.getItem(STORAGE_KEY) === '1')
-    setChecked(true)
+    // Si Google falla (o el correo no está en ninguna lista), Supabase vuelve con el error en la URL.
+    const p = new URLSearchParams(window.location.hash.slice(1) || window.location.search)
+    const fallo = p.get('error_description') ?? p.get('error')
+    if (fallo) {
+      setError(fallo.replace(/\+/g, ' '))
+      history.replaceState(null, '', window.location.pathname)
+    }
+
+    const supabase = createClient()
+    let vivo = true
+    async function comprobar(hay: boolean, email: string | null) {
+      if (!vivo) return
+      setCorreo(email)
+      if (!hay) { setAcceso('fuera'); return }
+      const { data, error: err } = await supabase.rpc('puede_ver_test')
+      if (vivo) setAcceso(!err && data === true ? 'dentro' : 'denegado')
+    }
+    supabase.auth.getSession().then(({ data: { session } }) => comprobar(!!session, session?.user.email ?? null))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((evento, session) => {
+      // Fuera del callback: supabase-js no deja llamar a la API desde dentro.
+      if (evento === 'SIGNED_IN' || evento === 'SIGNED_OUT') {
+        setTimeout(() => comprobar(!!session, session?.user.email ?? null), 0)
+      }
+    })
+    return () => { vivo = false; subscription.unsubscribe() }
   }, [])
 
-  if (!checked) return <div className="min-h-dvh bg-paper" />
-  if (!unlocked) return <Gate onUnlock={() => setUnlocked(true)} />
-  return <Sandbox />
-}
-
-function Gate({ onUnlock }: { onUnlock: () => void }) {
-  const [value, setValue] = useState('')
-  const [error, setError] = useState(false)
-
-  function submit(e: React.FormEvent) {
-    e.preventDefault()
-    if (value === TEST_PASSWORD) {
-      sessionStorage.setItem(STORAGE_KEY, '1')
-      onUnlock()
-    } else {
-      setError(true)
-    }
+  async function conGoogle() {
+    setError(null); setAbriendo(true)
+    const { error: err } = await createClient().auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/test/`, queryParams: { prompt: 'select_account' } },
+    })
+    if (err) { setError(err.message); setAbriendo(false) }
   }
+
+  if (acceso === 'cargando') return <div className="min-h-dvh bg-paper" />
+  if (acceso === 'dentro') return <Sandbox />
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-paper px-4">
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
+        <div className="text-center">
           <p className="font-brand text-3xl font-extrabold tracking-brand text-ink">lanedata</p>
           <p className="mt-1 label-mono text-ink/40">Sandbox · /test</p>
         </div>
-        <form onSubmit={submit} className="space-y-4">
-          <div>
-            <label htmlFor="pw" className="mb-1.5 block label-mono text-ink/60">Contraseña</label>
-            <input
-              id="pw"
-              type="password"
-              autoFocus
-              value={value}
-              onChange={(e) => { setValue(e.target.value); setError(false) }}
-              className="w-full rounded-xl border border-ink/[0.15] bg-cream/60 px-4 py-3 text-sm text-ink placeholder:text-ink/30 focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40 transition-colors"
-              placeholder="••••••••"
-            />
-          </div>
-          {error && (
-            <p className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-              Contraseña incorrecta.
+        {acceso === 'denegado' ? (
+          <div className="mt-7 text-center">
+            <p className="border border-ink/[0.14] bg-cream/60 px-4 py-3 text-sm leading-relaxed text-ink/75">
+              <strong className="font-semibold text-ink">{correo ?? 'Esta cuenta'}</strong> no tiene acceso a la zona de pruebas.
             </p>
-          )}
-          <button type="submit" className="w-full rounded-xl bg-ink py-3 text-sm font-semibold text-cream transition-opacity hover:opacity-90">
-            Entrar
-          </button>
-        </form>
+            <button type="button" onClick={() => createClient().auth.signOut()}
+              className="mt-4 border border-ink/25 px-4 py-2 label-mono text-ink/65 transition-colors hover:border-ink hover:text-ink">
+              entrar con otra cuenta
+            </button>
+          </div>
+        ) : (
+          <>
+            <BotonGoogle onClick={conGoogle} ocupado={abriendo} />
+            <p className="mt-5 text-center text-[0.78rem] leading-relaxed text-ink/45">
+              Solo entran los correos con acceso a la zona de pruebas.
+            </p>
+          </>
+        )}
+        {error && (
+          <p className="mt-4 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+        )}
       </div>
     </div>
   )

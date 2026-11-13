@@ -12,6 +12,7 @@ import {
 } from '@/lib/fichajes/types'
 import { activarPush, desactivarPush, estadoPush, probarPush, registrarSW, type EstadoPush } from '@/lib/fichajes/push'
 import { BloqueTablon } from './TablonAdmin'
+import { Pruebas } from '@/components/fichajes/Pruebas'
 
 type FichajeAdmin = Fichaje & { visible: boolean; colaborador_id: string | null }
 
@@ -92,6 +93,7 @@ export function PanelMovil() {
               <p className="mt-1 text-[0.95rem] text-ink/75">{p.club_origen ?? '¿?'} <span className="text-ink/35">→</span> <strong className="text-ink">{p.club_destino ?? '¿?'}</strong></p>
               {p.nota && <p className="mt-1 text-sm text-ink/55">{p.nota}</p>}
               {p.fuente && <p className="mt-1 text-sm text-ink/55">Fuente: {p.fuente}</p>}
+              <Pruebas enlace={p.enlace} adjunto={p.adjunto} />
               <p className="mt-2 bg-cream/70 px-2 py-1.5 text-sm text-ink/80">📇 {p.contacto || 'sin contacto'}</p>
               <div className="mt-3 flex gap-2">
                 <button disabled={ocupado === p.id} onClick={() => aprobar(p, 'confirmado')} className={`${grande} bg-ink text-mint`}>✓ Confirmado</button>

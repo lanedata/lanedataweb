@@ -22,6 +22,7 @@ import {
   type ChivatazoPendiente, type FichajeColab,
 } from '@/lib/fichajes/types'
 import { FormularioFichaje } from './FormularioFichaje'
+import { Pruebas } from './Pruebas'
 
 type Sesion = 'cargando' | 'fuera' | 'dentro'
 type Pestana = 'publicar' | 'chivatazos' | 'publicado'
@@ -300,6 +301,7 @@ function Chivatazos({ lista, ahora, onCambio }: { lista: ChivatazoPendiente[]; a
                   {c.nota && <p>{c.nota}</p>}
                 </div>
               )}
+              <Pruebas enlace={c.enlace} adjunto={c.adjunto} />
               <div className="mt-4 flex flex-wrap gap-2">
                 <button type="button" disabled={ocupado === c.id} onClick={() => resolver(c, 'confirmado')} className={botonFuerteCls}>publicar confirmado</button>
                 <button type="button" disabled={ocupado === c.id} onClick={() => resolver(c, 'rumor')} className={`${botonCls} border-dashed`}>publicar como rumor</button>

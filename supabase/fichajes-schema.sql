@@ -15,11 +15,11 @@
 --     iniciado sesión y si su correo está en `fichajes_colaboradores`. Además
 --     ven lo publicado (sin saber por quién), marcan incidencias y revisan
 --     los chivatazos.
---   · ATLETAS (/fichajes/mi-fichaje, sin clave): cualquiera puede escribir en
+--   · ATLETAS (/fichajes/chivatazo/#mio, sin clave): cualquiera puede escribir en
 --     ese formulario y decir que es cualquiera, así que NO se publica solo: va a
 --     `fichajes_propuestas` (tabla privada) y tú lo apruebas en /admin/fichajes.
 --     El contacto que dejen solo lo ves tú; nunca se copia al directo.
---   · CHIVATAZOS (/fichajes/mi-fichaje/#chivatazo, sin clave): cualquiera que se haya
+--   · CHIVATAZOS (/fichajes/chivatazo, sin clave): cualquiera que se haya
 --     enterado de un fichaje. Misma cola de revisión que los atletas, marcados
 --     con tipo = 'chivatazo'. Tampoco se publican solos.
 --   · TÚ, desde el panel: aprobar, cambiar rumor ⇄ confirmado, ocultar, borrar.
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS fichajes_propuestas (
 
 CREATE INDEX IF NOT EXISTS propuestas_creado_idx ON fichajes_propuestas (creado_en DESC);
 
--- v4 · CHIVATAZOS (/fichajes/mi-fichaje/#chivatazo): cualquiera que se haya enterado de un
+-- v4 · CHIVATAZOS (/fichajes/chivatazo): cualquiera que se haya enterado de un
 -- fichaje lo manda sin clave. Va a esta misma cola de revisión, marcado con
 -- `tipo`, y puede traer de dónde ha salido la noticia (`fuente`).
 ALTER TABLE fichajes_propuestas ADD COLUMN IF NOT EXISTS tipo TEXT NOT NULL DEFAULT 'atleta';
@@ -151,6 +151,23 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'propuestas_fuente_chk') THEN
     ALTER TABLE fichajes_propuestas ADD CONSTRAINT propuestas_fuente_chk
       CHECK (fuente IS NULL OR length(fuente) <= 200);
+  END IF;
+END $$;
+
+-- v6: pruebas de un chivatazo, para comprobarlo: un enlace (la publicación del
+-- club, una noticia…) y/o un archivo subido al bucket privado `chivatazos`
+-- (aquí se guarda solo su nombre). Nunca se publican: al aprobar no se copian.
+ALTER TABLE fichajes_propuestas ADD COLUMN IF NOT EXISTS enlace TEXT;
+ALTER TABLE fichajes_propuestas ADD COLUMN IF NOT EXISTS adjunto TEXT;
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'propuestas_enlace_chk') THEN
+    ALTER TABLE fichajes_propuestas ADD CONSTRAINT propuestas_enlace_chk
+      CHECK (enlace IS NULL OR (enlace ~ '^https?://' AND length(enlace) <= 500));
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'propuestas_adjunto_chk') THEN
+    ALTER TABLE fichajes_propuestas ADD CONSTRAINT propuestas_adjunto_chk
+      CHECK (adjunto IS NULL OR adjunto ~ '^[0-9a-f-]{36}\.(jpg|png|webp|pdf)$');
   END IF;
 END $$;
 
@@ -247,6 +264,7 @@ ALTER TABLE fichajes ADD COLUMN IF NOT EXISTS bomba BOOLEAN NOT NULL DEFAULT FAL
 -- La firma creció en la v4 (tipo y fuente, para los chivatazos): se borra la
 -- vieja para que no queden dos funciones con el mismo nombre.
 DROP FUNCTION IF EXISTS fichajes_proponer(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT);
+DROP FUNCTION IF EXISTS fichajes_proponer(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT);
 
 CREATE OR REPLACE FUNCTION fichajes_proponer(
   p_atleta           TEXT,
@@ -258,7 +276,9 @@ CREATE OR REPLACE FUNCTION fichajes_proponer(
   p_nota             TEXT DEFAULT NULL,
   p_contacto         TEXT DEFAULT NULL,
   p_tipo             TEXT DEFAULT 'atleta',
-  p_fuente           TEXT DEFAULT NULL
+  p_fuente           TEXT DEFAULT NULL,
+  p_enlace           TEXT DEFAULT NULL,
+  p_adjunto          TEXT DEFAULT NULL
 )
 RETURNS UUID
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
@@ -269,7 +289,15 @@ DECLARE
   v_origen    TEXT := NULLIF(btrim(COALESCE(p_club_origen, '')), '');
   v_destino   TEXT := NULLIF(btrim(COALESCE(p_club_destino, '')), '');
   v_tipo      TEXT := COALESCE(p_tipo, 'atleta');
+  v_enlace    TEXT := NULLIF(btrim(COALESCE(p_enlace, '')), '');
+  v_adjunto   TEXT := NULLIF(btrim(COALESCE(p_adjunto, '')), '');
 BEGIN
+  IF v_enlace IS NOT NULL AND (v_enlace !~ '^https?://' OR length(v_enlace) > 500) THEN
+    RAISE EXCEPTION 'El enlace no parece válido';
+  END IF;
+  IF v_adjunto IS NOT NULL AND v_adjunto !~ '^[0-9a-f-]{36}\.(jpg|png|webp|pdf)$' THEN
+    RAISE EXCEPTION 'El archivo adjunto no es válido';
+  END IF;
   IF v_tipo NOT IN ('atleta', 'chivatazo') THEN
     RAISE EXCEPTION 'Tipo de envío no válido';
   END IF;
@@ -301,7 +329,7 @@ BEGIN
 
   INSERT INTO fichajes_propuestas (
     atleta, genero, club_origen, club_destino,
-    division_origen, division_destino, nota, contacto, tipo, fuente
+    division_origen, division_destino, nota, contacto, tipo, fuente, enlace, adjunto
   ) VALUES (
     v_atleta, p_genero, v_origen, v_destino,
     NULLIF(btrim(COALESCE(p_division_origen, '')), ''),
@@ -309,7 +337,8 @@ BEGIN
     NULLIF(btrim(COALESCE(p_nota, '')), ''),
     NULLIF(btrim(COALESCE(p_contacto, '')), ''),
     v_tipo,
-    NULLIF(btrim(COALESCE(p_fuente, '')), '')
+    NULLIF(btrim(COALESCE(p_fuente, '')), ''),
+    v_enlace, v_adjunto
   )
   RETURNING id INTO v_id;
 
@@ -318,8 +347,61 @@ END;
 $fn$;
 
 GRANT EXECUTE ON FUNCTION fichajes_proponer(
-  TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT
+  TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT
 ) TO anon, authenticated;
+
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- 5b. ARCHIVOS DE LOS CHIVATAZOS (v6): bucket privado `chivatazos`
+-- ═════════════════════════════════════════════════════════════════════════════
+-- Quien manda un chivatazo puede adjuntar una prueba (captura o PDF). El bucket
+-- es PRIVADO: desde fuera solo se puede SUBIR, nunca leer ni listar. Lo ven tú
+-- y los colaboradores activos (para comprobar el chivatazo), con enlaces
+-- firmados que caducan. Límites: 5 MB por archivo, solo imagen o PDF, y un
+-- tope de subidas por hora y en total para que nadie lo use de vertedero.
+-- Los archivos no se borran solos al aprobar: vacía el bucket de vez en cuando
+-- (Dashboard > Storage > chivatazos).
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES ('chivatazos', 'chivatazos', FALSE, 5242880,
+        ARRAY['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
+ON CONFLICT (id) DO UPDATE
+  SET public = FALSE, file_size_limit = EXCLUDED.file_size_limit, allowed_mime_types = EXCLUDED.allowed_mime_types;
+
+-- ¿Cabe otra subida? Máximo 40 por hora y 3000 archivos guardados.
+CREATE OR REPLACE FUNCTION chivatazos_hueco()
+RETURNS BOOLEAN
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $fn$
+  SELECT (SELECT COUNT(*) FROM storage.objects
+           WHERE bucket_id = 'chivatazos' AND created_at > NOW() - INTERVAL '1 hour') < 40
+     AND (SELECT COUNT(*) FROM storage.objects WHERE bucket_id = 'chivatazos') < 3000;
+$fn$;
+GRANT EXECUTE ON FUNCTION chivatazos_hueco() TO anon, authenticated;
+
+-- ¿Quien llama es un colaborador activo? (Como colab_actual, pero sin errores.)
+CREATE OR REPLACE FUNCTION es_colaborador()
+RETURNS BOOLEAN
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $fn$
+  SELECT EXISTS (
+    SELECT 1 FROM auth.users u JOIN fichajes_colaboradores c ON c.email = lower(u.email)
+     WHERE u.id = auth.uid() AND u.email_confirmed_at IS NOT NULL AND c.activo
+  );
+$fn$;
+GRANT EXECUTE ON FUNCTION es_colaborador() TO anon, authenticated;
+
+DROP POLICY IF EXISTS "subir_chivatazos" ON storage.objects;
+CREATE POLICY "subir_chivatazos" ON storage.objects FOR INSERT TO anon, authenticated
+  WITH CHECK (
+    bucket_id = 'chivatazos'
+    AND name ~ '^[0-9a-f-]{36}\.(jpg|png|webp|pdf)$'
+    AND chivatazos_hueco()
+  );
+DROP POLICY IF EXISTS "leer_chivatazos" ON storage.objects;
+CREATE POLICY "leer_chivatazos" ON storage.objects FOR SELECT TO authenticated
+  USING (bucket_id = 'chivatazos' AND (es_admin() OR es_colaborador()));
+DROP POLICY IF EXISTS "borrar_chivatazos" ON storage.objects;
+CREATE POLICY "borrar_chivatazos" ON storage.objects FOR DELETE TO authenticated
+  USING (bucket_id = 'chivatazos' AND es_admin());
 
 
 -- ═════════════════════════════════════════════════════════════════════════════
@@ -616,11 +698,12 @@ END;
 $fn$;
 
 -- Chivatazos por revisar. Sin el contacto: eso solo lo ves tú.
+DROP FUNCTION IF EXISTS colab_chivatazos();   -- v6: devuelve también enlace y adjunto
 CREATE OR REPLACE FUNCTION colab_chivatazos()
 RETURNS TABLE (
   id UUID, creado_en TIMESTAMPTZ, atleta TEXT, genero TEXT,
   club_origen TEXT, club_destino TEXT, division_origen TEXT, division_destino TEXT,
-  nota TEXT, fuente TEXT
+  nota TEXT, fuente TEXT, enlace TEXT, adjunto TEXT
 )
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $fn$
 #variable_conflict use_column
@@ -628,7 +711,7 @@ BEGIN
   PERFORM colab_actual();
   RETURN QUERY
   SELECT p.id, p.creado_en, p.atleta, p.genero, p.club_origen, p.club_destino,
-         p.division_origen, p.division_destino, p.nota, p.fuente
+         p.division_origen, p.division_destino, p.nota, p.fuente, p.enlace, p.adjunto
     FROM fichajes_propuestas p
    WHERE p.tipo = 'chivatazo' AND p.descartada_en IS NULL
    ORDER BY p.creado_en ASC
@@ -699,8 +782,8 @@ GRANT EXECUTE ON FUNCTION colab_chivatazo_resolver(UUID, TEXT) TO authenticated;
 -- ═════════════════════════════════════════════════════════════════════════════
 -- Con Google, cualquiera podría crearse una cuenta (sin permisos, pero ahí
 -- estaría). Este hook lo corta de raíz: Supabase Auth lo llama ANTES de crear
--- una cuenta y solo deja pasar los correos de `admins` o de un colaborador
--- activo. Hay que activarlo a mano una vez:
+-- una cuenta y solo deja pasar los correos de `admins`, de `acceso_test` o de
+-- un colaborador activo. Hay que activarlo a mano una vez:
 --   Dashboard > Authentication > Hooks > Before User Created > Postgres >
 --   schema `public`, función `hook_lista_blanca`.
 -- Aunque no lo actives, una cuenta que no esté en las listas no puede hacer nada.
@@ -713,6 +796,7 @@ DECLARE
 BEGIN
   IF v_email <> '' AND (
        EXISTS (SELECT 1 FROM admins WHERE email = v_email)
+    OR EXISTS (SELECT 1 FROM acceso_test WHERE email = v_email)
     OR EXISTS (SELECT 1 FROM fichajes_colaboradores WHERE email = v_email AND activo)
   ) THEN
     RETURN '{}'::jsonb;
@@ -1028,7 +1112,8 @@ CREATE TRIGGER avisos_interesados AFTER INSERT ON mercado_interesados FOR EACH R
 -- ═════════════════════════════════════════════════════════════════════════════
 -- Cuando el mercado se cierre y quites la sección, para borrarlo todo:
 --     DROP FUNCTION IF EXISTS fichajes_aprobar(UUID, TEXT);
---     DROP FUNCTION IF EXISTS fichajes_proponer(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT);
+--     DROP FUNCTION IF EXISTS fichajes_proponer(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT);
+--     DROP FUNCTION IF EXISTS chivatazos_hueco(), es_colaborador();  -- y vacía y borra el bucket `chivatazos`
 --     DROP FUNCTION IF EXISTS colab_yo(), colab_actual(), colab_fichajes(INT), colab_chivatazos(),
 --       colab_incidencia(UUID,TEXT), colab_corregir(UUID,TEXT,BOOLEAN), colab_chivatazo_resolver(UUID,TEXT),
 --       colab_publicar(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TIMESTAMPTZ,TEXT,TEXT);

@@ -82,6 +82,9 @@ export interface ChivatazoPendiente {
   division_destino: string | null
   nota: string | null
   fuente: string | null
+  /** Pruebas para comprobarlo: un enlace y/o un archivo del bucket privado. */
+  enlace: string | null
+  adjunto: string | null
 }
 
 /** Incidencia tal como la ve el admin (con quién la marcó). */
@@ -191,6 +194,9 @@ export interface Propuesta {
   /** Faltan si el SQL v4 no está aplicado. */
   tipo?: 'atleta' | 'chivatazo'
   fuente?: string | null
+  /** Pruebas (SQL v6): un enlace y/o el nombre de un archivo del bucket privado. */
+  enlace?: string | null
+  adjunto?: string | null
   /** Un colaborador lo descartó: sigue aquí por si el admin quiere repescarlo. */
   descartada_en?: string | null
   descartada_por?: string | null

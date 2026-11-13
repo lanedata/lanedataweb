@@ -52,6 +52,30 @@ $fn$;
 
 GRANT EXECUTE ON FUNCTION es_admin() TO anon, authenticated;
 
+-- ── Lista blanca de /test (la zona de pruebas de la web) ──
+-- Entran los admins y los correos de esta tabla, con su cuenta de Google.
+--     INSERT INTO acceso_test (email) VALUES ('alguien@gmail.com') ON CONFLICT DO NOTHING;
+--     DELETE FROM acceso_test WHERE email = '…';
+-- OJO: la web es estática, así que esto decide a quién se le ENSEÑA /test; lo
+-- que /test pinta son datos que ya son públicos. No guardes ahí nada secreto.
+CREATE TABLE IF NOT EXISTS acceso_test (
+  email     TEXT PRIMARY KEY CHECK (email = lower(btrim(email)) AND email LIKE '%_@_%'),
+  creado_en TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE acceso_test ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE acceso_test FROM anon, authenticated;
+
+CREATE OR REPLACE FUNCTION puede_ver_test()
+RETURNS BOOLEAN
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $fn$
+  SELECT es_admin() OR EXISTS (
+    SELECT 1 FROM auth.users u JOIN acceso_test t ON t.email = lower(u.email)
+     WHERE u.id = auth.uid() AND u.email_confirmed_at IS NOT NULL
+  );
+$fn$;
+REVOKE ALL ON FUNCTION puede_ver_test() FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION puede_ver_test() TO authenticated;
+
 -- Para las funciones de admin: corta si quien llama desde la web no es admin.
 -- Desde el SQL Editor (sin sesión de la web) se deja pasar.
 CREATE OR REPLACE FUNCTION exigir_admin()
