@@ -97,6 +97,13 @@ export interface IncidenciaAdmin {
   resuelta_en: string | null
 }
 
+/**
+ * El tablón (atletas que buscan club / clubes que buscan atletas) está OCULTO
+ * en la web pública. El código y los datos siguen ahí: pon `true` para que
+ * vuelva a salir en /mercado, /test y la portada.
+ */
+export const TABLON_VISIBLE: boolean = false
+
 // ─── Tablón ──────────────────────────────────────────────────────────────────
 export type TipoAnuncio = 'atleta' | 'club'
 export interface Anuncio {

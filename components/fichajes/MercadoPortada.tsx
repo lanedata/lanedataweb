@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { FichajesEnVivo } from './FichajesEnVivo'
 import { Tablon } from './Tablon'
+import { TABLON_VISIBLE } from '@/lib/fichajes/types'
 import { posicionMercado, type BloqueMercado, type PosicionMercado } from '@/lib/fichajes/estilos'
 
 const enlaceCls =
@@ -21,6 +22,7 @@ export function MercadoPortada({ hueco, bloque = 'fichajes' }: {
   const [pos, setPos] = useState<PosicionMercado | null>(null)
   useEffect(() => { posicionMercado(bloque).then(setPos) }, [bloque])
   if (pos !== hueco) return null
+  if (bloque === 'tablon' && !TABLON_VISIBLE) return null
 
   if (bloque === 'tablon') {
     return (
@@ -44,7 +46,7 @@ export function MercadoPortada({ hueco, bloque = 'fichajes' }: {
       </p>
       <FichajesEnVivo limite={60} pagina={hueco === 'arriba' ? 6 : 4} />
       <Link href="/mercado/" className={enlaceCls}>
-        Todo el mercado y el tablón de atletas y clubes &rarr;
+        {TABLON_VISIBLE ? 'Todo el mercado y el tablón de atletas y clubes' : 'Todo el mercado de fichajes'} &rarr;
       </Link>
     </section>
   )

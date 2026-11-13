@@ -17,6 +17,7 @@ import { ArticleCard } from '@/components/ArticleCard'
 import { DatoSemanaColumn } from '@/components/datosemana/DatoSemanaColumn'
 import { FichajesEnVivo } from '@/components/fichajes/FichajesEnVivo'
 import { Tablon } from '@/components/fichajes/Tablon'
+import { TABLON_VISIBLE } from '@/lib/fichajes/types'
 import { createClient } from '@/lib/supabase/client'
 import type { ArticlePreview } from '@/types'
 
@@ -162,11 +163,13 @@ function Sandbox() {
           <FichajesEnVivo />
         </section>
 
+        {TABLON_VISIBLE && (
         <section id="tablon" className="mt-20">
           <div className="section-label">04 · mercado · tablón</div>
           <h2 className="section-title mb-8">Atletas que buscan club, clubes que buscan atletas</h2>
           <Tablon />
         </section>
+        )}
 
         {/* LaneGames (test y wordle semanales) ocultos por ahora. El código sigue en
             components/lanegames: para recuperarlos, vuelve a poner aquí <LaneGames navegable />. */}

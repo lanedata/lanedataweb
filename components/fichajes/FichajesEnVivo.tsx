@@ -27,7 +27,6 @@ const REFRESCO_MS = 30_000
 // el suyo personal desde /admin/fichajes.
 // Una sola página para avisar de un fichaje: un chivatazo o el tuyo propio.
 const CHIVATAZO_URL = '/fichajes/chivatazo/'
-const TABLON_URL = '/mercado/#tablon'
 
 type Estado = 'cargando' | 'listo' | 'sin-tabla' | 'error'
 type Filtro = 'todos' | 'confirmado' | 'rumor' | 'bomba'
@@ -399,8 +398,8 @@ function Pie() {
 
 /**
  * «¿Buscas club o atletas?»: primero se elige qué eres. El atleta va al
- * buscador de clubes de Mundo Atletismo; al club se le ofrece un dossier a
- * medida por correo.
+ * buscador de clubes de Mundo Atletismo; el club puede pedirles un dossier a
+ * medida por correo. Mundo Atletismo es otra entidad: se habla de «ellos».
  */
 function VentanaBusca({ onCerrar }: { onCerrar: () => void }) {
   const [soy, setSoy] = useState<'atleta' | 'club' | null>(null)
@@ -444,11 +443,11 @@ function VentanaBusca({ onCerrar }: { onCerrar: () => void }) {
         {soy === 'atleta' && (
           <div className="panel-enter mt-5 border-l-2 border-mint bg-mint/15 p-4">
             <p className="text-sm leading-relaxed text-ink/80">
-              En Mundo Atletismo tienes un buscador de clubes para atletas: mira cuáles encajan contigo.
+              Mundo Atletismo tiene un buscador de clubes para atletas: mira en su web cuáles encajan contigo.
             </p>
             <a href="https://mundoatletismo.es/atletas" target="_blank" rel="noopener noreferrer"
               className="mt-4 inline-block bg-ink px-4 py-3 font-brand text-[0.92rem] font-extrabold tracking-tight text-mint transition-colors hover:bg-mint hover:text-ink">
-              Ir al buscador de clubes &rarr;
+              Ir al buscador de Mundo Atletismo &rarr;
             </a>
             <p className="mt-2.5 label-mono text-[0.55rem] text-ink/45">mundoatletismo.es/atletas · se abre en otra pestaña</p>
           </div>
@@ -457,7 +456,8 @@ function VentanaBusca({ onCerrar }: { onCerrar: () => void }) {
         {soy === 'club' && (
           <div className="panel-enter mt-5 border-l-2 border-mint bg-mint/15 p-4">
             <p className="text-sm leading-relaxed text-ink/80">
-              ¿Quieres un dossier detallado de qué atletas puede fichar tu club? Escríbenos y te lo preparamos.
+              ¿Quieres un dossier detallado de qué atletas puede fichar tu club? Lo prepara Mundo Atletismo:
+              escríbeles y te lo hacen a medida.
             </p>
             <a href="mailto:info@mundoatletismo.es?subject=Dossier%20de%20fichajes%20para%20mi%20club"
               className="mt-4 inline-block bg-ink px-4 py-3 font-brand text-[0.92rem] font-extrabold tracking-tight text-mint transition-colors hover:bg-mint hover:text-ink">
@@ -467,12 +467,6 @@ function VentanaBusca({ onCerrar }: { onCerrar: () => void }) {
           </div>
         )}
 
-        <p className="mt-6 border-t border-ink/[0.1] pt-4 text-[0.78rem] text-ink/50">
-          También puedes{' '}
-          <a href={TABLON_URL} onClick={onCerrar} className="font-semibold text-ink/75 underline decoration-ink/25 underline-offset-4 hover:text-ink">
-            anunciarte en el tablón del mercado
-          </a>.
-        </p>
       </div>
     </div>
   )
