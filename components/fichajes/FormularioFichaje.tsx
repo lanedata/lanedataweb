@@ -22,6 +22,7 @@
 // supabase/fichajes-schema.sql); aquí no hay claves.
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import {
   buscarAtletas, buscarClubes, cargarDatos, clubPorNombre, divisionDe,
@@ -512,7 +513,7 @@ function CabeceraChivatazo() {
   return (
     <header className="mb-8 bg-ink px-5 py-7 sm:px-8 sm:py-9">
       <div className="flex items-center justify-between gap-4">
-        <a href="/" className="font-brand text-xl font-extrabold tracking-brand text-cream">lanedata</a>
+        <Link href="/" className="font-brand text-xl font-extrabold tracking-brand text-cream">lanedata</Link>
         <a href="/mercado/" className="flex items-center gap-2 label-mono text-[0.6rem] text-mint">
           <span aria-hidden="true" className="h-2 w-2 rounded-full bg-mint" />
           mercado en vivo
