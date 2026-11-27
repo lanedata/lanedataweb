@@ -21,6 +21,7 @@ import {
 import { BloqueColaboradores } from './Colaboradores'
 import { BloqueClubes, BloquePortada } from './ClubesYPortada'
 import { BloqueTablon } from './TablonAdmin'
+import { BloqueDetectados } from './DetectadosAdmin'
 
 const ENLACES = [
   { ruta: '/fichajes/mi-fichaje/', titulo: 'Atletas', texto: 'Sin clave. Llega aquí abajo para que lo apruebes.' },
@@ -77,6 +78,7 @@ export function FichajesPanel() {
   return (
     <div className="space-y-10">
       <BloqueEnlaces />
+      <BloqueDetectados onPublicado={cargar} />
       <BloquePropuestas propuestas={propuestas} onCambio={cargar} />
       <BloqueTablon />
       <BloqueDirecto fichajes={fichajes} colaboradores={colaboradores} onCambio={cargar} />

@@ -30,15 +30,36 @@ const URL_FN = `${process.env.NEXT_PUBLIC_SUPABASE_URL || ''}/functions/v1/ma-at
 const KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 const cache = new Map<string, Promise<Ficha | null>>()
 
+// Cada ficha se guarda también en el navegador 24 h: volver a abrirla (o
+// recargar la página) no vuelve a llamar a la función.
+const LS = 'ld-ficha:'
+const DIA = 24 * 60 * 60 * 1000
+
+function deLocal(k: string): Ficha | null {
+  try {
+    const v = JSON.parse(localStorage.getItem(LS + k) ?? 'null') as { t: number; f: Ficha } | null
+    return v && Date.now() - v.t < DIA ? v.f : null
+  } catch { return null }
+}
+function aLocal(k: string, f: Ficha) {
+  try { localStorage.setItem(LS + k, JSON.stringify({ t: Date.now(), f })) } catch { /* lleno o privado */ }
+}
+
 export function cargarFicha(nombre: string, club?: string | null): Promise<Ficha | null> {
-  const k = `${nombre}|${club ?? ''}`
+  const k = `${nombre}|${club ?? ''}`.toLowerCase()
   let p = cache.get(k)
   if (!p) {
-    const q = new URLSearchParams({ nombre })
-    if (club) q.set('club', club)
-    p = fetch(`${URL_FN}?${q}`, { headers: { Authorization: `Bearer ${KEY}`, apikey: KEY } })
-      .then((r) => (r.ok ? (r.json() as Promise<Ficha>) : null))
-      .catch(() => null)
+    const local = deLocal(k)
+    if (local) {
+      p = Promise.resolve(local)
+    } else {
+      const q = new URLSearchParams({ nombre })
+      if (club) q.set('club', club)
+      p = fetch(`${URL_FN}?${q}`, { headers: { Authorization: `Bearer ${KEY}`, apikey: KEY } })
+        .then((r) => (r.ok ? (r.json() as Promise<Ficha>) : null))
+        .then((f) => { if (f) aLocal(k, f); return f })
+        .catch(() => null)
+    }
     cache.set(k, p)
   }
   return p

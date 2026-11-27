@@ -1,0 +1,42 @@
+name: Detectar fichajes (Mundo Atletismo)
+
+# Cada día compara el club 2026 de cada atleta con el club con el que compite
+# ahora en mundoatletismo.es y deja los cambios en la cola privada
+# `fichajes_detectados` (se revisan en /admin/fichajes). No publica nada.
+#
+# Secretos necesarios (Settings → Secrets and variables → Actions):
+#   SUPABASE_URL               https://<ref>.supabase.co
+#   SUPABASE_SERVICE_ROLE_KEY  la clave service_role de Supabase (NUNCA en el código)
+
+on:
+  schedule:
+    - cron: '30 6 * * *'      # a diario 06:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: detectar-fichajes
+  cancel-in-progress: false
+
+jobs:
+  detectar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Detectar y subir a la cola
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::warning::Falta el secreto SUPABASE_SERVICE_ROLE_KEY: solo se listan los cambios"
+            python scripts/detectar_fichajes.py
+          else
+            python scripts/detectar_fichajes.py --subir
+          fi

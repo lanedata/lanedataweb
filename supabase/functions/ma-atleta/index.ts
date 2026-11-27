@@ -20,9 +20,38 @@ const cors = {
   'Access-Control-Allow-Headers': 'authorization, apikey, content-type, x-client-info',
 }
 
-// Caché en memoria de la instancia (los datos cambian como mucho una vez al día).
+// Cada llamada a la API de Mundo Atletismo cuenta. Tres niveles de caché:
+//   1. memoria de la instancia;
+//   2. tabla `ma_fichas` en Supabase (sobrevive a reinicios y es común a
+//      todas las instancias): 7 días, o 1 día si no se encontró al atleta;
+//   3. el slug exacto guardado allí: al refrescar, 1 sola llamada en vez de
+//      probar cortes de nombre (hasta 3).
+// Además el navegador guarda cada ficha 24 h (lib/fichajes/ficha.ts).
 const cache = new Map<string, { t: number; body: unknown }>()
-const TTL = 6 * 60 * 60 * 1000
+const TTL_OK = 7 * 24 * 60 * 60 * 1000
+const TTL_NO = 24 * 60 * 60 * 1000
+const SB_URL = Deno.env.get('SUPABASE_URL') ?? ''
+const SB_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+const ttlDe = (body: unknown) => ((body as { encontrado?: boolean })?.encontrado ? TTL_OK : TTL_NO)
+
+async function leerTabla(clave: string): Promise<{ body: unknown; slug: string | null; t: number } | null> {
+  if (!SB_URL || !SB_KEY) return null
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/ma_fichas?clave=eq.${encodeURIComponent(clave)}&select=body,slug,actualizado_en`,
+      { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } })
+    const [fila] = r.ok ? await r.json() : []
+    return fila ? { body: fila.body, slug: fila.slug, t: Date.parse(fila.actualizado_en) } : null
+  } catch { return null }
+}
+
+async function guardarTabla(clave: string, body: unknown, slug: string | null) {
+  if (!SB_URL || !SB_KEY) return
+  await fetch(`${SB_URL}/rest/v1/ma_fichas?on_conflict=clave`, {
+    method: 'POST',
+    headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates' },
+    body: JSON.stringify({ clave, body, slug, actualizado_en: new Date().toISOString() }),
+  }).catch(() => {})
+}
 
 const norm = (s: string) => (s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '')
   .toLowerCase().replace(/[^a-z0-9ñ]+/g, ' ').trim()
@@ -35,7 +64,11 @@ async function pedir(q: Record<string, string>) {
 }
 
 /** Prueba los cortes nombre/apellidos posibles (1 o 2 palabras de nombre). */
-async function buscar(completo: string, club: string | null) {
+async function buscar(completo: string, club: string | null, slug: string | null) {
+  if (slug) {
+    const r = await pedir({ slug })
+    if (r.status === 200 && r.data?.atleta) return r.data
+  }
   const p = completo.trim().split(/\s+/)
   const cortes = p.length >= 4 ? [2, 1] : [1, 2].filter((c) => c < p.length)
   for (const c of cortes) {
@@ -76,13 +109,21 @@ Deno.serve(async (req) => {
   if (nombre.split(/\s+/).length < 2) return Response.json({ error: 'nombre incompleto' }, { status: 400, headers: cors })
 
   const clave = `${norm(nombre)}|${norm(club ?? '')}`
-  const hit = cache.get(clave)
   const cabeceras = { ...cors, 'Cache-Control': 'public, max-age=3600, s-maxage=21600' }
-  if (hit && Date.now() - hit.t < TTL) return Response.json(hit.body, { headers: cabeceras })
+  const hit = cache.get(clave)
+  if (hit && Date.now() - hit.t < ttlDe(hit.body)) return Response.json(hit.body, { headers: cabeceras })
+
+  const guardada = await leerTabla(clave)
+  if (guardada && Date.now() - guardada.t < ttlDe(guardada.body)) {
+    cache.set(clave, { t: guardada.t, body: guardada.body })
+    return Response.json(guardada.body, { headers: cabeceras })
+  }
 
   let body: unknown
+  let slug: string | null = null
   try {
-    const d = await buscar(nombre, club)
+    const d = await buscar(nombre, club, guardada?.slug ?? null)
+    slug = d?.atleta?.slug ?? d?.atleta?.slugFull ?? guardada?.slug ?? null
     if (!d) {
       body = { encontrado: false }
     } else {
@@ -105,8 +146,11 @@ Deno.serve(async (req) => {
       }
     }
   } catch {
+    // Si la API falla pero hay una ficha vieja guardada, mejor eso que nada.
+    if (guardada) return Response.json(guardada.body, { headers: cabeceras })
     return Response.json({ error: 'Mundo Atletismo no responde' }, { status: 502, headers: cors })
   }
   cache.set(clave, { t: Date.now(), body })
+  await guardarTabla(clave, body, slug)
   return Response.json(body, { headers: cabeceras })
 })

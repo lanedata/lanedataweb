@@ -673,6 +673,53 @@ GRANT EXECUTE ON FUNCTION mercado_interes(UUID, TEXT, TEXT, TEXT) TO anon, authe
 
 
 -- ═════════════════════════════════════════════════════════════════════════════
+-- 6d. FICHAJES DETECTADOS AUTOMÁTICAMENTE (v6)
+-- ═════════════════════════════════════════════════════════════════════════════
+-- scripts/detectar_fichajes.py (GitHub Action diaria) compara el club 2026 de
+-- cada atleta con el club con el que compite ahora en Mundo Atletismo y deja
+-- aquí los cambios. Privada: solo la ves tú en /admin/fichajes, y nada se
+-- publica hasta que lo apruebas. `clave` evita repetir el mismo cambio.
+
+CREATE TABLE IF NOT EXISTS fichajes_detectados (
+  id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  creado_en     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  clave         TEXT NOT NULL UNIQUE,
+  atleta        TEXT NOT NULL CHECK (length(btrim(atleta)) BETWEEN 3 AND 120),
+  genero        TEXT CHECK (genero IS NULL OR genero IN ('H', 'M')),
+  club_origen   TEXT CHECK (club_origen  IS NULL OR length(club_origen)  <= 120),
+  club_destino  TEXT CHECK (club_destino IS NULL OR length(club_destino) <= 120),
+  fuente        TEXT NOT NULL DEFAULT 'mundoatletismo',
+  evidencia     JSONB,
+  estado        TEXT NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'publicado', 'descartado')),
+  fichaje_id    UUID
+);
+CREATE INDEX IF NOT EXISTS detectados_estado_idx ON fichajes_detectados (estado, creado_en DESC);
+
+ALTER TABLE fichajes_detectados ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "auth_full_detectados" ON fichajes_detectados;
+CREATE POLICY "auth_full_detectados" ON fichajes_detectados FOR ALL TO authenticated USING (TRUE) WITH CHECK (TRUE);
+REVOKE ALL ON TABLE fichajes_detectados FROM anon;
+
+
+-- ═════════════════════════════════════════════════════════════════════════════
+-- 6c. CACHÉ DE FICHAS DE MUNDO ATLETISMO (v6)
+-- ═════════════════════════════════════════════════════════════════════════════
+-- Cada consulta a la API de Mundo Atletismo cuenta. La Edge Function `ma-atleta`
+-- guarda aquí la respuesta (7 días; 1 día si no encontró al atleta) y el slug
+-- exacto, para que la siguiente vez sea 0 llamadas (o 1 al refrescar).
+-- Sin políticas: solo la lee y escribe la función (service_role).
+
+CREATE TABLE IF NOT EXISTS ma_fichas (
+  clave           TEXT PRIMARY KEY,
+  slug            TEXT,
+  body            JSONB NOT NULL,
+  actualizado_en  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+ALTER TABLE ma_fichas ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE ma_fichas FROM anon, authenticated;
+
+
+-- ═════════════════════════════════════════════════════════════════════════════
 -- 6e. NOTIFICACIONES PUSH AL MÓVIL (v3)
 -- ═════════════════════════════════════════════════════════════════════════════
 -- Cada vez que entra algo (fichaje de colaborador, propuesta de atleta,
@@ -771,7 +818,7 @@ CREATE TRIGGER avisos_interesados AFTER INSERT ON mercado_interesados FOR EACH R
 --     DROP FUNCTION IF EXISTS fichajes_set_clave(TEXT);
 --     DROP FUNCTION IF EXISTS fichajes_clave_estado();
 --     DROP TABLE IF EXISTS mercado_interesados, mercado_anuncios, push_suscripciones,
---       avisos_config, clubes_estilo, web_ajustes;
+--       avisos_config, clubes_estilo, web_ajustes, fichajes_detectados, ma_fichas;
 --     DROP FUNCTION IF EXISTS mercado_anunciar(TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT);
 --     DROP FUNCTION IF EXISTS mercado_interes(UUID,TEXT,TEXT,TEXT);
 --     DROP FUNCTION IF EXISTS avisos_disparar() CASCADE;
