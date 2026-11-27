@@ -1,47 +1,14 @@
-// GitHub Pages serves static files only — this middleware never runs in production.
-// Auth protection for /admin is handled client-side in app/admin/layout.tsx.
-// Kept here so `next dev` still redirects unauthenticated users during local development.
+// GitHub Pages sirve ficheros estáticos: este middleware nunca corre en producción.
+// La sesión vive en el navegador (localStorage), así que aquí no se puede saber
+// quién ha entrado: el acceso a /admin se comprueba en app/admin/layout.tsx y,
+// de verdad, en la base de datos (supabase/roles-schema.sql). Antes redirigía
+// /admin → /login mirando cookies que ya no existen, y en `next dev` eso hacía
+// un bucle con el inicio de sesión de Google.
 
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request })
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return request.cookies.getAll() },
-        setAll(cookiesToSet: { name: string; value: string; options: Record<string, unknown> }[]) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          response = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
-  const { data: { user } } = await supabase.auth.getUser()
-  const { pathname } = request.nextUrl
-
-  if (pathname.startsWith('/admin') && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    url.searchParams.set('next', pathname)
-    return NextResponse.redirect(url)
-  }
-
-  if (pathname === '/login' && user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/admin'
-    return NextResponse.redirect(url)
-  }
-
-  return response
+export function middleware() {
+  return NextResponse.next()
 }
 
 export const config = {

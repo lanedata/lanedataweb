@@ -1,36 +1,49 @@
 'use client'
 
-// TEMPORAL — Formulario del mercado de fichajes, en dos modos:
+// TEMPORAL — Formulario del mercado de fichajes, en tres modos:
 //
-//   · colaborador (/fichajes/enviar/): con la clave que pone el admin en
-//     /admin/fichajes. Elige rumor o confirmado y se publica AL MOMENTO.
-//   · atleta (/fichajes/mi-fichaje/): el propio atleta cuenta su fichaje, sin
+//   · colaborador (dentro de /fichajes/enviar/, ver PanelColaborador): ya ha
+//     iniciado sesión con su correo. Elige rumor o confirmado y se publica AL
+//     MOMENTO, a su nombre (función `colab_publicar`).
+//   · atleta (/fichajes/chivatazo/#mio): el propio atleta cuenta su fichaje, sin
 //     clave. Como cualquiera podría decir que es cualquiera, NO se publica: va a
 //     revisión y el admin lo aprueba. El contacto que deje solo lo ve el admin.
+//   · chivatazo (la MISMA página, /fichajes/chivatazo/, y su modo por defecto): cualquiera
+//     que se haya enterado de un fichaje, sin clave y sin dar su nombre. Es el
+//     formulario más corto a propósito (cuanta menos fricción, más avisos) y
+//     va a la misma revisión. En la página pública se cambia de uno a otro con
+//     un selector; el # decide con cuál se abre.
 //
 // Para rellenar rápido: al elegir al atleta en el buscador se ponen solos su
 // sexo y su club 2026; el destino tiene a mano los equipos de División de Honor
 // y Primera de ese sexo; y la división de cada club se resuelve sola.
 //
-// SOBRE LA CLAVE: no está en este código ni en el bundle. La valida Postgres
-// contra un hash bcrypt (función `fichajes_enviar`, ver supabase/fichajes-schema.sql).
+// Quién puede publicar lo decide Postgres mirando la sesión (ver
+// supabase/fichajes-schema.sql); aquí no hay claves.
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import {
   buscarAtletas, buscarClubes, cargarDatos, clubPorNombre, divisionDe,
   type Atleta, type Club,
 } from '@/lib/fichajes/datos'
 import {
-  DIVISIONES, DIVISION_NOMBRE, divisionCorta,
+  DIVISIONES, DIVISION_NOMBRE, MARCA_CHIVATAZO, divisionCorta,
   type EstadoFichaje, type Genero,
 } from '@/lib/fichajes/types'
 import { Autocompletar } from './Autocompletar'
 import { LectorCaptura } from './LectorCaptura'
+import { BUCKET_CHIVATAZOS } from './Pruebas'
 import type { Lectura } from '@/lib/fichajes/lector'
 
-type Modo = 'colaborador' | 'atleta'
-const CLAVE_KEY = 'lanedata-fichajes-clave'
+type Modo = 'colaborador' | 'atleta' | 'chivatazo'
+
+/** Archivos que se pueden adjuntar a un aviso → extensión con la que se guardan. */
+const TIPOS_ARCHIVO: Record<string, string> = {
+  'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'application/pdf': 'pdf',
+}
+const MAX_ARCHIVO = 5 * 1024 * 1024
 
 /** "2026-10-14T16:40" — valor que espera <input type="datetime-local">. */
 function ahoraLocal(): string {
@@ -47,14 +60,19 @@ interface Enviado {
   hora: string
 }
 
-export function FormularioFichaje({ modo }: { modo: Modo }) {
+export function FormularioFichaje({ modo: modoPagina, onPublicado }: {
+  modo: 'colaborador' | 'atleta'
+  /** Colaborador: avisa al panel de que hay un fichaje nuevo en el directo. */
+  onPublicado?: () => void
+}) {
+  // La página pública sirve para las dos cosas: mi fichaje o un chivatazo.
+  const [publico, setPublico] = useState<'atleta' | 'chivatazo'>('chivatazo')
+  const modo: Modo = modoPagina === 'colaborador' ? 'colaborador' : publico
   const esColab = modo === 'colaborador'
+  const esChiv = modo === 'chivatazo'
+  // Colaborador y chivatazo hablan de otra persona; el atleta, de sí mismo.
+  const deOtro = esColab || esChiv
 
-  const [clave, setClave] = useState('')
-  const [claveRecordada, setClaveRecordada] = useState(false)
-  // Nombre del colaborador si entra con su enlace personal (token).
-  const [soy, setSoy] = useState<string | null>(null)
-  const [errorToken, setErrorToken] = useState<string | null>(null)
   const [candidatos, setCandidatos] = useState<Atleta[]>([])
 
   const [atleta, setAtleta] = useState('')
@@ -75,34 +93,28 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
   const [nota, setNota] = useState('')
   const [contacto, setContacto] = useState('')
   const [trampa, setTrampa] = useState('') // honeypot: los bots lo rellenan
+  // Pruebas (solo formulario público): un enlace y/o un archivo. No se publican.
+  const [enlace, setEnlace] = useState('')
+  const [archivo, setArchivo] = useState<File | null>(null)
+  const [errorArchivo, setErrorArchivo] = useState<string | null>(null)
 
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [enviados, setEnviados] = useState<Enviado[]>([])
   const [clubesDivision, setClubesDivision] = useState<Club[]>([])
 
-  // Enlace personal (/fichajes/enviar/#t=TOKEN) o clave recordada. El token
-  // se guarda en este dispositivo para que el colaborador no tenga que volver
-  // a abrir el enlace; se quita de la barra de direcciones al momento.
   useEffect(() => {
-    if (!esColab) return
-    let token: string | null = null
-    const m = window.location.hash.match(/[#&]t=([A-Za-z0-9]+)/)
-    if (m) {
-      token = m[1]
-      history.replaceState(null, '', window.location.pathname)
-      try { localStorage.setItem(CLAVE_KEY, token) } catch { /* modo privado */ }
-    } else {
-      try { token = localStorage.getItem(CLAVE_KEY) ?? sessionStorage.getItem(CLAVE_KEY) } catch { /* */ }
-    }
-    if (!token) return
-    setClave(token); setClaveRecordada(true)
-    if (token.startsWith('ld') && token.length >= 16) {
-      createClient().rpc('fichajes_quien_soy', { p_token: token }).then(({ data, error: err }) => {
-        if (err) { setErrorToken(err.message); setSoy(null) } else setSoy(data as string)
-      })
-    }
-  }, [esColab])
+    if (modoPagina === 'colaborador') return
+    const leer = () => setPublico(window.location.hash === '#mio' ? 'atleta' : 'chivatazo')
+    leer()
+    window.addEventListener('hashchange', leer)
+    return () => window.removeEventListener('hashchange', leer)
+  }, [modoPagina])
+
+  function elegirPublico(v: 'atleta' | 'chivatazo') {
+    setPublico(v); setError(null)
+    history.replaceState(null, '', v === 'atleta' ? '#mio' : window.location.pathname)
+  }
 
   const aplicarLectura = useCallback((l: Lectura) => {
     setCandidatos(l.atletas)
@@ -158,8 +170,7 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
   }, [])
 
   const faltaClub = (sinOrigen || !origen.trim()) && (sinDestino || !destino.trim())
-  const puedeEnviar =
-    (!esColab || clave.trim().length > 0) && atleta.trim().length >= 3 && !faltaClub && !enviando
+  const puedeEnviar = atleta.trim().length >= 3 && !faltaClub && !enviando
 
   function limpiar() {
     setAtleta(''); setGenero(null)
@@ -167,6 +178,18 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
     setDivOrigen(''); setDivDestino(''); setDivOrigenManual(false); setDivDestinoManual(false)
     setEstado('rumor'); setInformado(ahoraLocal())
     setFuente(''); setNota(''); setContacto(''); setCandidatos([])
+    setEnlace(''); setArchivo(null); setErrorArchivo(null)
+  }
+
+  function elegirArchivo(f: File | null) {
+    setErrorArchivo(null)
+    if (f && !(f.type in TIPOS_ARCHIVO)) {
+      setArchivo(null); setErrorArchivo('Solo se admiten imágenes (JPG, PNG, WebP) o un PDF.'); return
+    }
+    if (f && f.size > MAX_ARCHIVO) {
+      setArchivo(null); setErrorArchivo(`Ese archivo pesa ${(f.size / 1048576).toFixed(1)} MB y el máximo son 5 MB. Prueba con una captura.`); return
+    }
+    setArchivo(f)
   }
 
   async function enviar(e: React.FormEvent) {
@@ -185,11 +208,48 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
     // Bot: se finge que ha ido bien y no se manda nada.
     if (!esColab && trampa) { registrarEnviado(base); limpiar(); return }
 
+    // El enlace se acepta sin «https://» delante; si no es una dirección, se avisa.
+    let enlaceOk: string | null = null
+    if (!esColab && enlace.trim()) {
+      try {
+        const u = new URL(/^https?:\/\//i.test(enlace.trim()) ? enlace.trim() : `https://${enlace.trim()}`)
+        if (!u.hostname.includes('.') || u.href.length > 500) throw new Error('enlace')
+        enlaceOk = u.href
+      } catch {
+        setError('El enlace no parece una dirección web. Revísalo o bórralo.')
+        return
+      }
+    }
+
     setEnviando(true)
     const supabase = createClient()
-    const { error: err } = esColab
-      ? await supabase.rpc('fichajes_enviar', {
-          p_clave: clave,
+
+    // El archivo se sube primero a un bucket privado (solo se puede subir, no leer).
+    let adjunto: string | null = null
+    if (!esColab && archivo) {
+      const nombre = `${crypto.randomUUID()}.${TIPOS_ARCHIVO[archivo.type]}`
+      const { error: errSubida } = await supabase.storage.from(BUCKET_CHIVATAZOS)
+        .upload(nombre, archivo, { contentType: archivo.type })
+      if (errSubida) {
+        setEnviando(false)
+        setError('No se ha podido subir el archivo. Prueba otra vez, o quítalo y pon un enlace.')
+        return
+      }
+      adjunto = nombre
+    }
+
+    const propuesta = {
+      p_atleta: base.atleta,
+      p_genero: genero,
+      p_club_origen: base.origen,
+      p_club_destino: base.destino,
+      p_division_origen: base.divOrigen,
+      p_division_destino: base.divDestino,
+      p_nota: nota.trim() || null,
+      p_contacto: contacto.trim() || null,
+    }
+    let { error: err } = esColab
+      ? await supabase.rpc('colab_publicar', {
           p_atleta: base.atleta,
           p_estado: estado,
           p_genero: genero,
@@ -202,24 +262,26 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
           p_nota: nota.trim() || null,
         })
       : await supabase.rpc('fichajes_proponer', {
-          p_atleta: base.atleta,
-          p_genero: genero,
-          p_club_origen: base.origen,
-          p_club_destino: base.destino,
-          p_division_origen: base.divOrigen,
-          p_division_destino: base.divDestino,
-          p_nota: nota.trim() || null,
-          p_contacto: contacto.trim() || null,
+          ...propuesta,
+          p_tipo: esChiv ? 'chivatazo' : 'atleta',
+          p_fuente: fuente.trim() || null,
+          p_enlace: enlaceOk,
+          p_adjunto: adjunto,
         })
+    // Base de datos sin el SQL nuevo (no conoce esos parámetros): se manda igual
+    // por la función antigua, con todo resumido en la nota para que el admin lo vea.
+    if (!esColab && err?.code === 'PGRST202') {
+      const partes = [esChiv && MARCA_CHIVATAZO, fuente.trim() && `Fuente: ${fuente.trim()}.`, enlaceOk, nota.trim()].filter(Boolean)
+      const antigua = await supabase.rpc('fichajes_proponer', { ...propuesta, p_nota: partes.join(' ').slice(0, 400) || null })
+      err = antigua.error
+    }
     setEnviando(false)
 
     if (err) {
       setError(err.message || 'No se ha podido enviar. Inténtalo de nuevo.')
       return
     }
-    if (esColab) {
-      try { localStorage.setItem(CLAVE_KEY, clave); setClaveRecordada(true) } catch { /* modo privado */ }
-    }
+    if (esColab) onPublicado?.()
     registrarEnviado(base)
     limpiar()
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -244,13 +306,16 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
   }, [clubesDivision, genero])
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-14">
-      <header className="mb-9">
-        <p className="font-brand text-2xl font-extrabold tracking-brand text-ink">lanedata</p>
-        <p className="mt-1 label-mono text-ink/40">
-          Mercado de fichajes · {esColab ? 'colaboradores' : 'atletas'}
-        </p>
-        <h1 className="mt-5 font-brand text-[clamp(28px,6vw,40px)] font-extrabold leading-[1.02] tracking-brand text-ink">
+    <div className={esColab ? '' : 'mx-auto max-w-2xl px-4 py-10 sm:px-6 sm:py-14'}>
+      {esChiv ? <CabeceraChivatazo /> : (
+      <header className={esColab ? 'mb-7' : 'mb-9'}>
+        {!esColab && (
+          <>
+            <p className="font-brand text-2xl font-extrabold tracking-brand text-ink">lanedata</p>
+            <p className="mt-1 label-mono text-ink/40">Mercado de fichajes · atletas</p>
+          </>
+        )}
+        <h1 className={`font-brand font-extrabold leading-[1.02] tracking-brand text-ink ${esColab ? 'text-[clamp(22px,5vw,28px)]' : 'mt-5 text-[clamp(28px,6vw,40px)]'}`}>
           {esColab ? 'Avisa de un fichaje' : '¿Cambias de club? Cuéntanoslo'}
         </h1>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink/60">
@@ -264,49 +329,32 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
           )}
         </p>
       </header>
-
-      {enviados.length > 0 && <Enviados lista={enviados} esColab={esColab} />}
-
-      {esColab && soy && (
-        <p className="mb-6 border-l-2 border-mint bg-mint/15 px-4 py-2.5 text-sm text-ink/80">
-          Hola, <strong className="font-semibold text-ink">{soy}</strong>. Entras con tu enlace personal: todo lo que publiques queda a tu nombre (solo lo ve lanedata).
-        </p>
       )}
-      {esColab && errorToken && (
-        <p className="mb-6 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{errorToken}</p>
+
+      {!esColab && (
+        <div className="mb-8">
+          <Etiqueta texto="¿De quién es el fichaje?" />
+          <div className="grid grid-cols-2 border border-ink/[0.15] bg-cream/60 p-1">
+            {([['chivatazo', 'Me he enterado de uno'], ['atleta', 'Es el mío']] as const).map(([v, l]) => (
+              <button key={v} type="button" onClick={() => elegirPublico(v)} aria-pressed={publico === v}
+                className={`px-3 py-2.5 font-brand text-[0.9rem] font-bold tracking-tight transition-colors ${
+                  publico === v ? 'bg-ink text-cream' : 'text-ink/55 hover:text-ink'}`}>
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
       )}
+
+      {enviados.length > 0 && <Enviados lista={enviados} modo={modo} />}
 
       {/* Solo para colaboradores: el público rellena a mano. */}
       {esColab && <LectorCaptura onLectura={aplicarLectura} />}
 
       <form onSubmit={enviar} className="space-y-8">
-        {/* ── Clave ── */}
-        {esColab && !soy && (
-          <Bloque titulo="Clave de colaborador">
-            {claveRecordada ? (
-              <div className="flex items-center gap-3 border border-ink/[0.14] bg-cream/40 px-4 py-3">
-                <span className="text-sm text-ink/60">Clave recordada en este dispositivo</span>
-                <button
-                  type="button"
-                  onClick={() => { setClaveRecordada(false); setClave(''); setErrorToken(null); try { localStorage.removeItem(CLAVE_KEY); sessionStorage.removeItem(CLAVE_KEY) } catch { /* */ } }}
-                  className="ml-auto label-mono text-ink/45 transition-colors hover:text-ink"
-                >
-                  cambiar
-                </button>
-              </div>
-            ) : (
-              <input
-                type="password" required autoComplete="current-password"
-                value={clave} onChange={(e) => { setClave(e.target.value); setError(null) }}
-                placeholder="La que te ha pasado lanedata" className={inputCls}
-              />
-            )}
-          </Bloque>
-        )}
-
         {/* ── Atleta ── */}
-        <Bloque titulo={esColab ? '¿Quién se mueve?' : '¿Quién eres?'}>
-          <Etiqueta texto={esColab ? 'Atleta' : 'Tu nombre y apellidos'} obligatorio />
+        <Bloque titulo={deOtro ? '¿Quién se mueve?' : '¿Quién eres?'} paso={esChiv ? 1 : undefined}>
+          <Etiqueta texto={deOtro ? 'Atleta' : 'Tu nombre y apellidos'} obligatorio />
           <Autocompletar<Atleta>
             value={atleta}
             onChange={setAtleta}
@@ -354,10 +402,11 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
         </Bloque>
 
         {/* ── Movimiento ── */}
-        <Bloque titulo="¿De dónde a dónde?">
+        <Bloque titulo="¿De dónde a dónde?" paso={esChiv ? 2 : undefined}>
           <div className="grid gap-6 sm:grid-cols-2">
             <ClubCampo
-              etiqueta={esColab ? 'Club que deja' : 'Tu club actual'}
+              etiqueta={deOtro ? 'Club que deja' : 'Tu club actual'}
+              simple={esChiv}
               valor={origen} onValor={setOrigen}
               sin={sinOrigen} onSin={setSinOrigen}
               division={divOrigen}
@@ -365,12 +414,13 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
               aviso="No se sabe de dónde viene"
             />
             <ClubCampo
-              etiqueta={esColab ? 'Club que lo ficha' : 'Tu club nuevo'}
+              etiqueta={deOtro ? 'Club que lo ficha' : 'Tu club nuevo'}
+              simple={esChiv}
               valor={destino} onValor={setDestino}
               sin={sinDestino} onSin={setSinDestino}
               division={divDestino}
               onDivision={(v) => { setDivDestino(v); setDivDestinoManual(true) }}
-              aviso={esColab ? 'Se va, pero no se sabe a dónde' : 'Aún no lo puedo decir'}
+              aviso={deOtro ? 'Se va, pero no se sabe a dónde' : 'Aún no lo puedo decir'}
             />
           </div>
 
@@ -424,7 +474,19 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
         )}
 
         {/* ── Detalles ── */}
-        <Bloque titulo="Detalles" opcional>
+        <Bloque titulo={esChiv ? '¿Cómo te has enterado?' : 'Detalles'} opcional paso={esChiv ? 3 : undefined}>
+          {esChiv && (
+            <div className="mb-5">
+              <Etiqueta texto="De dónde sale" />
+              <input
+                type="text" value={fuente} onChange={(e) => setFuente(e.target.value)} maxLength={200}
+                placeholder="Lo ha puesto el club en Instagram, me lo ha dicho un compañero…" className={inputCls}
+              />
+              <p className="mt-1.5 text-[0.75rem] text-ink/40">
+                Cuanto mejor sepamos de dónde viene, antes lo podemos comprobar y publicar.
+              </p>
+            </div>
+          )}
           {esColab && (
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
@@ -449,20 +511,54 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
             <Etiqueta texto="Nota" />
             <textarea
               value={nota} onChange={(e) => setNota(e.target.value)} rows={2}
-              placeholder={esColab ? 'Pendiente de firma, llega cedida hasta junio…' : 'Cualquier detalle que quieras contar'}
+              maxLength={esChiv ? 300 : 400}
+              placeholder={deOtro ? 'Pendiente de firma, llega cedida hasta junio…' : 'Cualquier detalle que quieras contar'}
               className={`${inputCls} resize-y`}
             />
           </div>
 
           {!esColab && (
             <div className="mt-5">
-              <Etiqueta texto="Cómo contactarte para confirmarlo" />
+              <Etiqueta texto={esChiv ? 'Tu Instagram o email, si quieres' : 'Cómo contactarte para confirmarlo'} />
               <input
-                type="text" value={contacto} onChange={(e) => setContacto(e.target.value)}
-                placeholder="Tu Instagram o tu email" className={inputCls}
+                type="text" value={contacto} onChange={(e) => setContacto(e.target.value)} maxLength={160}
+                placeholder={esChiv ? 'Déjalo vacío para mandarlo anónimo' : 'Tu Instagram o tu email'} className={inputCls}
               />
               <p className="mt-1.5 text-[0.75rem] text-ink/40">
-                Solo lo ve lanedata para comprobar que eres tú. No se publica nunca.
+                {esChiv
+                  ? 'Solo por si necesitamos preguntarte algo. Nunca publicamos quién nos avisa.'
+                  : 'Solo lo ve lanedata para comprobar que eres tú. No se publica nunca.'}
+              </p>
+            </div>
+          )}
+
+          {/* Pruebas: ayudan a comprobarlo antes. Nunca se publican. */}
+          {!esColab && (
+            <div className="mt-5 border-t border-ink/[0.1] pt-5">
+              <Etiqueta texto={esChiv ? '¿Tienes una prueba? Enlace o archivo' : 'Enlace o archivo que lo confirme'} />
+              <input
+                type="url" inputMode="url" value={enlace} onChange={(e) => { setEnlace(e.target.value); setError(null) }} maxLength={500}
+                placeholder="Pega el enlace: Instagram del club, noticia, comunicado…" className={inputCls}
+              />
+              <div className="mt-3">
+                {archivo ? (
+                  <div className="flex items-center gap-3 border border-ink/[0.14] bg-cream/40 px-4 py-3">
+                    <span aria-hidden="true">📎</span>
+                    <span className="min-w-0 flex-1 truncate text-sm text-ink/80">{archivo.name}</span>
+                    <span className="shrink-0 font-mono text-[0.72rem] text-ink/45">{(archivo.size / 1048576).toFixed(1)} MB</span>
+                    <button type="button" onClick={() => elegirArchivo(null)} className="shrink-0 label-mono text-[0.58rem] text-ink/50 hover:text-ink">quitar</button>
+                  </div>
+                ) : (
+                  <label className="flex cursor-pointer items-center justify-center gap-2 border border-dashed border-ink/30 bg-cream/30 px-4 py-3.5 text-sm text-ink/65 transition-colors hover:border-ink/55 hover:text-ink focus-within:ring-2 focus-within:ring-mint/40">
+                    <span aria-hidden="true">📎</span> O sube una captura o un PDF
+                    <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" className="sr-only"
+                      onChange={(e) => { elegirArchivo(e.target.files?.[0] ?? null); e.target.value = '' }} />
+                  </label>
+                )}
+              </div>
+              {errorArchivo && <p className="mt-2 text-[0.8rem] text-red-700">{errorArchivo}</p>}
+              <p className="mt-1.5 text-[0.75rem] text-ink/40">
+                Imagen o PDF, máximo 5 MB. Solo lo ve quien revisa el aviso; no se publica.
               </p>
             </div>
           )}
@@ -483,8 +579,13 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
           type="submit" disabled={!puedeEnviar}
           className="w-full bg-ink py-4 font-brand text-base font-bold tracking-tight text-cream transition-colors hover:bg-mint hover:text-ink disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:bg-ink disabled:hover:text-cream"
         >
-          {enviando ? 'Enviando…' : esColab ? `Publicar como ${estado}` : 'Enviar para revisión'}
+          {enviando ? 'Enviando…' : esColab ? `Publicar como ${estado}` : esChiv ? 'Enviar el chivatazo' : 'Enviar para revisión'}
         </button>
+        {esChiv && (
+          <p className="!mt-3 text-center text-[0.75rem] text-ink/45">
+            No se publica al momento: lo comprobamos primero. <a href="/mercado/" className="underline decoration-ink/25 underline-offset-4 hover:text-ink">Ver el mercado en vivo</a>
+          </p>
+        )}
       </form>
     </div>
   )
@@ -494,10 +595,49 @@ export function FormularioFichaje({ modo }: { modo: Modo }) {
 const inputCls =
   'w-full border border-ink/[0.15] bg-cream/60 px-4 py-3 text-sm text-ink placeholder:text-ink/30 transition-colors focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40 disabled:opacity-40'
 
-function Bloque({ titulo, opcional, children }: { titulo: string; opcional?: boolean; children: React.ReactNode }) {
+/** Cabecera del chivatazo: oscura y directa, con las tres dudas resueltas de un vistazo. */
+function CabeceraChivatazo() {
+  return (
+    <header className="mb-8 bg-ink px-5 py-7 sm:px-8 sm:py-9">
+      <div className="flex items-center justify-between gap-4">
+        <Link href="/" className="font-brand text-xl font-extrabold tracking-brand text-cream">lanedata</Link>
+        <a href="/mercado/" className="flex items-center gap-2 label-mono text-[0.6rem] text-mint">
+          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-mint" />
+          mercado en vivo
+        </a>
+      </div>
+      <p className="mt-7 label-mono text-[0.62rem] text-mint">🤫 Chivatazo</p>
+      <h1 className="mt-2 font-brand text-[clamp(30px,7.5vw,46px)] font-extrabold leading-[0.98] tracking-brand text-cream">
+        ¿Te has enterado de un fichaje?
+      </h1>
+      <p className="mt-3 max-w-md text-[0.92rem] leading-relaxed text-cream/65">
+        Cuéntanoslo y, en cuanto lo comprobemos, sale en el mercado de fichajes del atletismo español.
+      </p>
+      <ul className="mt-6 grid gap-px bg-cream/15 sm:grid-cols-3">
+        {[
+          ['Anónimo', 'No pedimos tu nombre'],
+          ['Medio minuto', 'Atleta y clubes, nada más'],
+          ['Comprobado', 'Lo revisamos antes de publicar'],
+        ].map(([t, d]) => (
+          <li key={t} className="bg-ink py-3 sm:pr-4 sm:first:pl-0 sm:[&:not(:first-child)]:pl-4">
+            <p className="font-brand text-[0.95rem] font-extrabold tracking-tight text-mint">{t}</p>
+            <p className="mt-0.5 text-[0.76rem] leading-snug text-cream/55">{d}</p>
+          </li>
+        ))}
+      </ul>
+    </header>
+  )
+}
+
+function Bloque({ titulo, opcional, paso, children }: { titulo: string; opcional?: boolean; paso?: number; children: React.ReactNode }) {
   return (
     <fieldset className="border border-ink/[0.14] bg-paper p-5 sm:p-6">
       <legend className="-ml-1 px-1 font-brand text-base font-extrabold tracking-tight text-ink">
+        {paso && (
+          <span className="mr-2 inline-flex h-6 w-6 -translate-y-px items-center justify-center rounded-full bg-ink align-middle font-mono text-[0.72rem] font-semibold text-mint">
+            {paso}
+          </span>
+        )}
         {titulo}{opcional && <span className="ml-2 label-mono text-[0.55rem] text-ink/35">opcional</span>}
       </legend>
       {children}
@@ -533,8 +673,10 @@ function Segmentado({
 }
 
 function ClubCampo({
-  etiqueta, valor, onValor, sin, onSin, division, onDivision, aviso,
+  etiqueta, valor, onValor, sin, onSin, division, onDivision, aviso, simple,
 }: {
+  /** Sin selector de división: se resuelve sola y solo se enseña la chapa. */
+  simple?: boolean
   etiqueta: string
   valor: string
   onValor: (v: string) => void
@@ -574,7 +716,13 @@ function ClubCampo({
         />
         {aviso} <span className="font-brand font-extrabold text-ink/45">?</span>
       </label>
-      {!sin && (
+      {!sin && simple && corta && (
+        <p className="mt-2.5 flex items-center gap-2">
+          <span className="bg-ink px-1.5 py-0.5 label-mono text-[0.55rem] text-mint">{corta}</span>
+          <span className="text-[0.75rem] text-ink/45">{division}</span>
+        </p>
+      )}
+      {!sin && !simple && (
         <div className="mt-2.5 flex items-center gap-2">
           <span className="label-mono text-[0.55rem] text-ink/40">División</span>
           <select
@@ -637,13 +785,16 @@ function OpcionEstado({
   )
 }
 
-function Enviados({ lista, esColab }: { lista: Enviado[]; esColab: boolean }) {
+function Enviados({ lista, modo }: { lista: Enviado[]; modo: Modo }) {
+  const esColab = modo === 'colaborador'
   return (
     <section className="mb-8 border border-mint bg-mint/15">
       <p className="border-b border-mint/60 px-4 py-2.5 text-sm font-semibold text-ink">
         {esColab
           ? `Publicado ✓ · llevas ${lista.length} desde esta pestaña`
-          : 'Recibido ✓ · lo revisamos y, si todo cuadra, sale publicado en breve'}
+          : modo === 'chivatazo'
+            ? '¡Gracias! Chivatazo recibido ✓ · lo comprobamos y, si cuadra, sale en el directo. ¿Sabes de alguno más? Mándalo aquí abajo.'
+            : 'Recibido ✓ · lo revisamos y, si todo cuadra, sale publicado en breve'}
       </p>
       <ul className="divide-y divide-mint/40">
         {lista.map((e, i) => (

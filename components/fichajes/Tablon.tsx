@@ -37,9 +37,13 @@ export function Tablon() {
   const [comp, setComp] = useState<Record<string, number | null>>({})
 
   const cargar = useCallback(async () => {
-    const { data, error } = await createClient().from('mercado_anuncios')
+    // La vista se ve igual con o sin sesión; si la base aún no la tiene (SQL v5
+    // sin aplicar), se lee la tabla como antes.
+    const leer = (de: string) => createClient().from(de)
       .select(ANUNCIO_COLUMNS_PUBLICAS).eq('estado', 'publicado')
       .order('publicado_en', { ascending: false }).limit(100)
+    let { data, error } = await leer('mercado_anuncios_publicos')
+    if (error) ({ data, error } = await leer('mercado_anuncios'))
     setAnuncios(error ? [] : (data as unknown as Anuncio[]))
   }, [])
   useEffect(() => { cargar() }, [cargar])

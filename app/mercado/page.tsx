@@ -3,13 +3,14 @@ import { NavBar } from '@/components/NavBar'
 import { Footer } from '@/components/Footer'
 import { FichajesEnVivo } from '@/components/fichajes/FichajesEnVivo'
 import { Tablon } from '@/components/fichajes/Tablon'
+import { TABLON_VISIBLE } from '@/lib/fichajes/types'
 
 // TEMPORAL — Página completa del mercado: el directo y el tablón de atletas y
 // clubes. noindex mientras el mercado esté en pruebas; al lanzarlo, quita
 // `robots` de aquí y '/mercado' del disallow de app/robots.ts.
 export const metadata: Metadata = {
   title: 'Mercado de fichajes',
-  description: 'Todos los fichajes del atletismo español en directo, y el tablón donde atletas y clubes se encuentran.',
+  description: 'Todos los fichajes del atletismo español en directo.',
   robots: { index: false, follow: false },
 }
 
@@ -28,6 +29,7 @@ export default function MercadoPage() {
           <FichajesEnVivo />
         </section>
 
+        {TABLON_VISIBLE && (
         <section id="tablon" className="mt-20 scroll-mt-20">
           <div className="section-label">mercado · tablón</div>
           <h2 className="section-title mb-3">Atletas que buscan club, clubes que buscan atletas</h2>
@@ -37,6 +39,7 @@ export default function MercadoPage() {
           </p>
           <Tablon />
         </section>
+        )}
       </main>
       <Footer />
     </>

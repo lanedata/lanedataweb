@@ -5,8 +5,8 @@ name: Scrape federaciones SPA (Playwright)
 # normal lo fusiona. Corre antes del deploy diario.
 
 on:
-  schedule:
-    - cron: '0 5 * * *'        # a diario 05:00 UTC (antes del deploy de las 07:00)
+ # schedule:
+ #   - cron: '0 5 * * *'        # a diario 05:00 UTC (antes del deploy de las 07:00)
   workflow_dispatch:
 
 permissions:
