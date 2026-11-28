@@ -13,7 +13,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
-  FICHAJE_COLUMNS, diaDe, divisionCorta, haceDe, horaDe, normalizar,
+  FICHAJE_COLUMNS, diaDe, divisionCorta, normalizar,
   type Fichaje,
 } from '@/lib/fichajes/types'
 import { cargarEstilos, estiloDe, tintaSobre, type EstiloClub } from '@/lib/fichajes/estilos'
@@ -494,13 +494,13 @@ function Fila({
       <article className={`grid gap-x-5 gap-y-2 border-l-4 px-4 py-4 transition-colors duration-1000 sm:grid-cols-[4.75rem_minmax(0,1fr)] sm:px-6 sm:py-5 ${
         rumor ? 'border-dashed border-l-ink/25' : 'border-l-mint'} ${
         bomba ? 'bg-mint/25' : nuevo ? 'bg-mint/20' : ''}`}>
-        {/* La hora: columna propia en pantallas anchas, línea suelta en móvil */}
-        <time dateTime={fichaje.informado_en} className="flex items-baseline gap-2 sm:block sm:pt-0.5">
+        {/* El día (sin hora): columna propia en pantallas anchas, línea suelta en móvil */}
+        <time dateTime={fichaje.informado_en.slice(0, 10)} className="flex items-baseline gap-2 sm:block sm:pt-0.5">
           <span className="font-mono text-[0.95rem] font-semibold tabular-nums leading-none text-ink sm:block sm:text-[1.05rem]">
-            {horaDe(fichaje.informado_en)}
+            {fechaCorta(fichaje.informado_en)}
           </span>
-          <span className="font-mono text-[0.68rem] tabular-nums leading-tight text-ink/45 sm:mt-1.5 sm:block">
-            {haceDe(fichaje.informado_en, ahora)}
+          <span className="font-mono text-[0.68rem] leading-tight text-ink/45 sm:mt-1.5 sm:block">
+            {diaRelativo(fichaje.informado_en, ahora)}
           </span>
         </time>
 
@@ -519,7 +519,7 @@ function Fila({
             {fichaje.origen_envio === 'atleta' && (
               <span className="border border-ink/20 px-1.5 py-0.5 label-mono text-[0.55rem] text-ink/50">lo cuenta el atleta</span>
             )}
-            <CompensacionRFEA nombre={fichaje.atleta} />
+            <CompensacionRFEA nombre={fichaje.atleta} club={fichaje.club_origen} />
             {nuevo && <span className="bg-mint px-1.5 py-0.5 label-mono text-[0.55rem] text-ink">nuevo</span>}
           </div>
 
@@ -541,7 +541,7 @@ function Fila({
             <span aria-hidden="true" className="justify-self-center font-brand text-lg leading-none text-ink/40">
               <span className="sm:hidden">&darr;</span><span className="hidden sm:inline">&rarr;</span>
             </span>
-            <Club nombre={fichaje.club_destino} division={fichaje.division_destino} rol="destino" estilo={estiloDe(estilos, fichaje.club_destino)} atleta={fichaje.atleta} />
+            <Club nombre={fichaje.club_destino} division={fichaje.division_destino} rol="destino" estilo={estiloDe(estilos, fichaje.club_destino)} atleta={fichaje.atleta} clubAtleta={fichaje.club_origen} />
           </div>
 
           {(fichaje.nota || fichaje.fuente) && (
@@ -562,11 +562,27 @@ function Fila({
   )
 }
 
+/** «28 nov» */
+function fechaCorta(iso: string): string {
+  return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '')
+}
+
+/** «hoy», «ayer», «hace 3 días»… o el día de la semana; nunca la hora. */
+function diaRelativo(iso: string, ahora: number): string {
+  const d = new Date(iso); d.setHours(0, 0, 0, 0)
+  const h = new Date(ahora); h.setHours(0, 0, 0, 0)
+  const dias = Math.round((h.getTime() - d.getTime()) / 86_400_000)
+  if (dias <= 0) return 'hoy'
+  if (dias === 1) return 'ayer'
+  if (dias < 7) return `hace ${dias} días`
+  return new Date(iso).toLocaleDateString('es-ES', { weekday: 'long' })
+}
+
 /** Un club con su división, o la incógnita cuando no se sabe. */
-function Club({ nombre, division, rol, estilo, atleta }: {
-  nombre: string | null; division: string | null; rol: 'origen' | 'destino'; estilo: EstiloClub | null; atleta?: string
+function Club({ nombre, division, rol, estilo, atleta, clubAtleta }: {
+  nombre: string | null; division: string | null; rol: 'origen' | 'destino'; estilo: EstiloClub | null; atleta?: string; clubAtleta?: string | null
 }) {
-  if (!nombre) return <Misterio rol={rol} atleta={atleta} />
+  if (!nombre) return <Misterio rol={rol} atleta={atleta} clubAtleta={clubAtleta} />
   const corta = divisionCorta(division)
   const color = estilo?.color ?? null
   const color2 = estilo?.color2 ?? null
@@ -608,14 +624,14 @@ function Club({ nombre, division, rol, estilo, atleta }: {
  * Club que aún no se sabe. Destino desconocido: «¿Quién lo ficha?» y, si el
  * atleta tiene compensación RFEA, lo que tendrá que pagar el club que lo fiche.
  */
-function Misterio({ rol, atleta }: { rol: 'origen' | 'destino'; atleta?: string }) {
+function Misterio({ rol, atleta, clubAtleta }: { rol: 'origen' | 'destino'; atleta?: string; clubAtleta?: string | null }) {
   const [comp, setComp] = useState<Compensacion | null>(null)
   useEffect(() => {
     if (rol !== 'destino' || !atleta) return
     let vivo = true
-    compensacionDe(atleta).then((c) => { if (vivo) setComp(c) })
+    compensacionDe(atleta, clubAtleta).then((c) => { if (vivo) setComp(c) })
     return () => { vivo = false }
-  }, [rol, atleta])
+  }, [rol, atleta, clubAtleta])
 
   const destino = rol === 'destino'
   return (

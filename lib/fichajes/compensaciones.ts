@@ -13,7 +13,10 @@ export interface Compensacion {
   circular: string
 }
 
-interface Archivo { circular: string; a: Record<string, [string, string, string, string, number]> }
+type Fila = [string, string, string, string, number]
+// Formato nuevo: lista por nombre (homónimos). El viejo: una fila suelta.
+interface Archivo { circular: string; a: Record<string, Fila[] | Fila> }
+const filas = (v: Fila[] | Fila | undefined): Fila[] => (!v ? [] : Array.isArray(v[0]) ? (v as Fila[]) : [v as Fila])
 
 let promesa: Promise<Archivo | null> | null = null
 
@@ -26,11 +29,22 @@ function cargar(): Promise<Archivo | null> {
 
 const clave = (nombre: string) => normalizar(nombre).split(' ').sort().join(' ')
 
-/** Compensación del atleta, o null si no figura en la circular. */
-export async function compensacionDe(nombre: string): Promise<Compensacion | null> {
+/**
+ * Compensación del atleta, o null si no figura en la circular. Si hay varios
+ * con el mismo nombre, se elige por club (el de origen del fichaje); si no se
+ * puede distinguir, no se muestra nada antes que arriesgar.
+ */
+export async function compensacionDe(nombre: string, club?: string | null): Promise<Compensacion | null> {
   const d = await cargar()
   if (!d) return null
-  let f = d.a[clave(nombre)]
+  const elegir = (lista: Fila[]): Fila | null => {
+    if (lista.length <= 1) return lista[0] ?? null
+    const c = club ? normalizar(club) : ''
+    const delClub = c ? lista.filter((x) => normalizar(x[1]) === c) : []
+    return delClub.length === 1 ? delClub[0] : null
+  }
+  let f = elegir(filas(d.a[clave(nombre)]))
+  if (!f && filas(d.a[clave(nombre)]).length > 1) return null
   if (!f) {
     // «Iker Arotzena» sin segundo apellido: vale si todas sus palabras están
     // en un único atleta de la lista (y son al menos dos).
@@ -40,8 +54,9 @@ export async function compensacionDe(nombre: string): Promise<Compensacion | nul
       const ks = k.split(' ')
       return palabras.every((p) => ks.includes(p))
     })
-    if (hits.length !== 1) return null
-    f = hits[0][1]
+    const todos = hits.flatMap(([, v]) => filas(v))
+    f = elegir(todos)
+    if (!f) return null
   }
   return { nombre: f[0], club: f[1], temporada: f[2], tipo: f[3], euros: f[4], circular: d.circular }
 }

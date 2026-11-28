@@ -42,9 +42,9 @@ export function MercadoPortada({ hueco, bloque = 'fichajes' }: {
       <div className="section-label">mercado · en vivo</div>
       <h2 className="section-title mb-3">Mercado de fichajes</h2>
       <p className="mb-8 max-w-2xl text-sm leading-relaxed text-ink/55">
-        Quién se mueve, de dónde a dónde y a qué hora se supo. Rumores y confirmados, al momento.
+        Los últimos movimientos: quién se mueve, de dónde a dónde y cuándo se supo.
       </p>
-      <FichajesEnVivo limite={60} pagina={hueco === 'arriba' ? 6 : 4} />
+      <FichajesEnVivo limite={5} pagina={5} />
       <Link href="/mercado/" className={enlaceCls}>
         {TABLON_VISIBLE ? 'Todo el mercado y el tablón de atletas y clubes' : 'Todo el mercado de fichajes'} &rarr;
       </Link>

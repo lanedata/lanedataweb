@@ -288,6 +288,7 @@ function BloqueDirecto({
 }: { fichajes: FichajeAdmin[]; colaboradores: Colaborador[]; onCambio: () => void }) {
   const [trabajando, setTrabajando] = useState<string | null>(null)
   const [quien, setQuien] = useState<string>('')
+  const [editando, setEditando] = useState<string | null>(null)
   const nombres: Record<string, string> = Object.fromEntries(colaboradores.map((c) => [c.id, c.nombre]))
   const lista = quien ? fichajes.filter((f) => (quien === '-' ? !f.colaborador_id : f.colaborador_id === quien)) : fichajes
   const visibles = fichajes.filter((f) => f.visible).length
@@ -333,7 +334,7 @@ function BloqueDirecto({
           {lista.map((f) => {
             const rumor = f.estado === 'rumor'
             return (
-              <li key={f.id} className={`flex flex-col gap-3 p-4 lg:flex-row lg:items-start lg:gap-5 ${f.visible ? '' : 'bg-cream/40 opacity-60'}`}>
+              <li key={f.id} className={`flex flex-col gap-3 p-4 lg:flex-row lg:flex-wrap lg:items-start lg:gap-5 ${f.visible ? '' : 'bg-cream/40 opacity-60'}`}>
                 <div className="shrink-0 lg:w-[5.5rem]">
                   <p className="font-mono text-sm tabular-nums text-ink">{horaDe(f.informado_en)}</p>
                   <p className="label-mono text-[0.58rem] text-ink/35">{diaDe(f.informado_en)}</p>
@@ -374,17 +375,96 @@ function BloqueDirecto({
                   <button type="button" disabled={trabajando === f.id} onClick={() => actualizar(f, { visible: !f.visible })} className={botonCls}>
                     {f.visible ? 'ocultar' : 'mostrar'}
                   </button>
+                  <button type="button" onClick={() => setEditando(editando === f.id ? null : f.id)} className={botonCls}>
+                    {editando === f.id ? 'cerrar' : 'editar'}
+                  </button>
                   <button type="button" disabled={trabajando === f.id} onClick={() => borrar(f)}
                     className="border border-red-300 px-2.5 py-1.5 label-mono text-red-700 transition-colors hover:bg-red-50 disabled:opacity-40">
                     borrar
                   </button>
                 </div>
+                {editando === f.id && (
+                  <EditorFichaje f={f} onHecho={() => { setEditando(null); onCambio() }} />
+                )}
               </li>
             )
           })}
         </ul>
       )}
     </section>
+  )
+}
+
+// ─── Editar un fichaje ───────────────────────────────────────────────────────
+const campoCls = 'w-full border border-ink/[0.15] bg-cream/50 px-2.5 py-1.5 text-[0.85rem] text-ink focus:border-ink/40 focus:outline-none'
+
+function EditorFichaje({ f, onHecho }: { f: FichajeAdmin; onHecho: () => void }) {
+  const [v, setV] = useState({
+    atleta: f.atleta,
+    genero: f.genero ?? '',
+    club_origen: f.club_origen ?? '',
+    division_origen: f.division_origen ?? '',
+    club_destino: f.club_destino ?? '',
+    division_destino: f.division_destino ?? '',
+    dia: f.informado_en.slice(0, 10),
+    fuente: f.fuente ?? '',
+    nota: f.nota ?? '',
+  })
+  const [guardando, setGuardando] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const cambia = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setV((x) => ({ ...x, [k]: e.target.value }))
+  const nulo = (t: string) => (t.trim() ? t.trim() : null)
+
+  async function guardar(e: React.FormEvent) {
+    e.preventDefault()
+    if (!v.club_origen.trim() && !v.club_destino.trim()) { setError('Hace falta al menos un club.'); return }
+    setGuardando(true); setError(null)
+    // Se cambia el día pero se conserva la hora original (orden dentro del día).
+    const informado = v.dia === f.informado_en.slice(0, 10) ? f.informado_en : `${v.dia}${f.informado_en.slice(10)}`
+    const { error: err } = await createClient().from('fichajes').update({
+      atleta: v.atleta.trim(),
+      genero: v.genero || null,
+      club_origen: nulo(v.club_origen), division_origen: nulo(v.division_origen),
+      club_destino: nulo(v.club_destino), division_destino: nulo(v.division_destino),
+      informado_en: informado,
+      fuente: nulo(v.fuente), nota: nulo(v.nota),
+    }).eq('id', f.id)
+    setGuardando(false)
+    if (err) { setError(err.message); return }
+    onHecho()
+  }
+
+  return (
+    <form onSubmit={guardar} className="grid w-full gap-2.5 border border-ink/[0.12] bg-cream/40 p-3 sm:grid-cols-2 lg:basis-full">
+      <label className="sm:col-span-2"><span className="label-mono text-[0.55rem] text-ink/50">Atleta</span>
+        <input required value={v.atleta} onChange={cambia('atleta')} className={campoCls} /></label>
+      <label><span className="label-mono text-[0.55rem] text-ink/50">Sale de (vacío = por confirmar)</span>
+        <input value={v.club_origen} onChange={cambia('club_origen')} className={campoCls} /></label>
+      <label><span className="label-mono text-[0.55rem] text-ink/50">División de origen</span>
+        <input value={v.division_origen} onChange={cambia('division_origen')} className={campoCls} /></label>
+      <label><span className="label-mono text-[0.55rem] text-ink/50">Ficha por (vacío = por confirmar)</span>
+        <input value={v.club_destino} onChange={cambia('club_destino')} className={campoCls} /></label>
+      <label><span className="label-mono text-[0.55rem] text-ink/50">División de destino</span>
+        <input value={v.division_destino} onChange={cambia('division_destino')} className={campoCls} /></label>
+      <label><span className="label-mono text-[0.55rem] text-ink/50">Día</span>
+        <input type="date" required value={v.dia} onChange={cambia('dia')} className={campoCls} /></label>
+      <label><span className="label-mono text-[0.55rem] text-ink/50">Compite en</span>
+        <select value={v.genero} onChange={cambia('genero')} className={campoCls}>
+          <option value="">—</option><option value="H">Hombres</option><option value="M">Mujeres</option>
+        </select></label>
+      <label><span className="label-mono text-[0.55rem] text-ink/50">Fuente</span>
+        <input value={v.fuente} onChange={cambia('fuente')} maxLength={200} className={campoCls} /></label>
+      <label><span className="label-mono text-[0.55rem] text-ink/50">Nota</span>
+        <input value={v.nota} onChange={cambia('nota')} maxLength={400} className={campoCls} /></label>
+      {error && <p className="text-sm text-red-700 sm:col-span-2">{error}</p>}
+      <div className="flex gap-2 sm:col-span-2">
+        <button type="submit" disabled={guardando}
+          className="bg-ink px-3 py-1.5 label-mono text-mint transition-colors hover:bg-mint hover:text-ink disabled:opacity-40">
+          {guardando ? 'guardando…' : 'guardar cambios'}
+        </button>
+        <button type="button" onClick={onHecho} className={botonCls}>cancelar</button>
+      </div>
+    </form>
   )
 }
 

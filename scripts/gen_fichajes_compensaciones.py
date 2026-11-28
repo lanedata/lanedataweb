@@ -4,7 +4,9 @@ Lee el PDF de la circular («Listado definitivo de atletas con compensación»)
 y escribe public/data/fichajes/compensaciones.json:
 
     {"circular": "202/2026", "temporada": 2027,
-     "a": {"<clave>": ["Nombre Apellidos", "Club", "Temporada", "Tipo", 1750.0]}}
+     "a": {"<clave>": [["Nombre Apellidos", "Club", "Temporada", "Tipo", 1750.0], ...]}}
+
+Cada clave es una lista: puede haber homónimos (mismo nombre, otro club).
 
 La clave son las palabras del nombre normalizadas y ordenadas, para que
 «Iker Arotzena Indo» y «AROTZENA INDO, IKER» coincidan.
@@ -38,7 +40,7 @@ def bonito(s: str) -> str:
 
 def main() -> None:
     pdf, circular = sys.argv[1], (sys.argv[2] if len(sys.argv) > 2 else '202/2026')
-    atletas: dict[str, list] = {}
+    atletas: dict[str, list[list]] = {}
     with pdfplumber.open(pdf) as doc:
         for pagina in doc.pages:
             for fila in pagina.extract_table() or []:
@@ -51,10 +53,11 @@ def main() -> None:
                 apellidos, nombre = (x.strip() for x in nombre_rfea.split(',', 1))
                 completo = bonito(f'{nombre} {apellidos}')
                 importe = float(m.group().replace('.', '').replace(',', '.'))
-                atletas[clave(completo)] = [completo, club, temporada, tipo, importe]
+                atletas.setdefault(clave(completo), []).append([completo, club, temporada, tipo, importe])
     SALIDA.write_text(json.dumps({'circular': circular, 'temporada': 2027, 'a': atletas},
                                  ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
-    print(f'{len(atletas)} atletas → {SALIDA}')
+    n = sum(len(v) for v in atletas.values())
+    print(f'{n} atletas ({sum(1 for v in atletas.values() if len(v) > 1)} nombres repetidos) → {SALIDA}')
 
 
 if __name__ == '__main__':

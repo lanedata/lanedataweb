@@ -6,14 +6,14 @@
 import { useEffect, useState } from 'react'
 import { compensacionDe, euros, type Compensacion } from '@/lib/fichajes/compensaciones'
 
-export function CompensacionRFEA({ nombre, detalle = false }: { nombre: string; detalle?: boolean }) {
+export function CompensacionRFEA({ nombre, club, detalle = false }: { nombre: string; club?: string | null; detalle?: boolean }) {
   const [c, setC] = useState<Compensacion | null>(null)
 
   useEffect(() => {
     let vivo = true
-    compensacionDe(nombre).then((r) => { if (vivo) setC(r) })
+    compensacionDe(nombre, club).then((r) => { if (vivo) setC(r) })
     return () => { vivo = false }
-  }, [nombre])
+  }, [nombre, club])
 
   if (!c) return null
   const titulo = `Compensación RFEA si cambia de club en 2027: ${euros(c.euros)} para ${c.club} · ${c.tipo}${c.temporada ? ` (${c.temporada})` : ''} · circular ${c.circular}`
