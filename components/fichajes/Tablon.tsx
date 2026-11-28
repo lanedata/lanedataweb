@@ -17,10 +17,9 @@ import { Autocompletar } from './Autocompletar'
 import { FichaAtleta } from './FichaAtleta'
 import { CompensacionRFEA } from './CompensacionRFEA'
 import { compensacionDe } from '@/lib/fichajes/compensaciones'
-import { GRUPOS_PRUEBAS, ZONAS, encajaPrueba, pruebaDesdeMA, separarPruebas } from '@/lib/fichajes/tablon'
+import { GRUPOS_PRUEBAS, ZONAS, pruebaDesdeMA, separarPruebas } from '@/lib/fichajes/tablon'
+import { BarraFiltros, FILTROS_VACIOS, hayFiltros as conFiltros, pasa, type Filtros } from './FiltrosTablon'
 
-type FiltroComp = 'todas' | 'sin' | '500' | '1000' | '2000'
-const selCls = 'border border-ink/25 bg-paper px-2.5 py-1.5 text-[0.8rem] text-ink focus:outline-none focus:ring-2 focus:ring-mint/40'
 
 const inputCls =
   'w-full border border-ink/[0.15] bg-cream/60 px-4 py-3 text-sm text-ink placeholder:text-ink/30 focus:border-ink/30 focus:bg-cream focus:outline-none focus:ring-2 focus:ring-mint/40'
@@ -29,10 +28,7 @@ export function Tablon() {
   const [anuncios, setAnuncios] = useState<Anuncio[] | null>(null)
   const [filtro, setFiltro] = useState<TipoAnuncio | 'todos'>('todos')
   const [formulario, setFormulario] = useState<TipoAnuncio | null>(null)
-  const [fPrueba, setFPrueba] = useState('')
-  const [fZona, setFZona] = useState('')
-  const [fGenero, setFGenero] = useState('')
-  const [fComp, setFComp] = useState<FiltroComp>('todas')
+  const [f, setF] = useState<Filtros>(FILTROS_VACIOS)
   // Compensación RFEA de cada atleta anunciado (null = no tiene).
   const [comp, setComp] = useState<Record<string, number | null>>({})
 
@@ -54,19 +50,9 @@ export function Tablon() {
       .then((pares) => setComp(Object.fromEntries(pares)))
   }, [anuncios])
 
-  const visibles = (anuncios ?? []).filter((a) => {
-    if (filtro !== 'todos' && a.tipo !== filtro) return false
-    if (fPrueba && !encajaPrueba(a.pruebas, fPrueba)) return false
-    if (fZona && a.zona !== fZona && a.zona !== 'Cualquier zona') return false
-    if (fGenero && a.genero && a.genero !== 'X' && a.genero !== fGenero) return false
-    if (fComp !== 'todas') {
-      if (a.tipo !== 'atleta') return false
-      const e = comp[a.id] ?? null
-      if (fComp === 'sin' ? e !== null : e !== null && e > Number(fComp)) return false
-    }
-    return true
-  })
-  const hayFiltros = Boolean(fPrueba || fZona || fGenero || fComp !== 'todas')
+  const delTipo = (anuncios ?? []).filter((a) => filtro === 'todos' || a.tipo === filtro)
+  const visibles = delTipo.filter((a) => pasa(a, f, comp))
+  const hayFiltros = conFiltros(f)
   const n = (t: TipoAnuncio) => (anuncios ?? []).filter((a) => a.tipo === t).length
 
   return (
@@ -95,37 +81,10 @@ export function Tablon() {
           </button>
         ))}
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <select aria-label="Filtrar por prueba" value={fPrueba} onChange={(e) => setFPrueba(e.target.value)} className={selCls}>
-          <option value="">Todas las pruebas</option>
-          {GRUPOS_PRUEBAS.map((g) => (
-            <optgroup key={g.grupo} label={g.grupo}>
-              {g.pruebas.length > 1 && <option value={g.grupo}>{g.grupo} (todas)</option>}
-              {g.pruebas.map((p) => <option key={p} value={p}>{p}</option>)}
-            </optgroup>
-          ))}
-        </select>
-        <select aria-label="Filtrar por zona" value={fZona} onChange={(e) => setFZona(e.target.value)} className={selCls}>
-          <option value="">Todas las zonas</option>
-          {ZONAS.filter((z) => z !== 'Cualquier zona').map((z) => <option key={z} value={z}>{z}</option>)}
-        </select>
-        <select aria-label="Filtrar por categoría" value={fGenero} onChange={(e) => setFGenero(e.target.value)} className={selCls}>
-          <option value="">Hombres y mujeres</option>
-          <option value="H">Hombres</option>
-          <option value="M">Mujeres</option>
-        </select>
-        {filtro !== 'club' && (
-          <select aria-label="Filtrar por compensación" value={fComp} onChange={(e) => setFComp(e.target.value as FiltroComp)} className={selCls}>
-            <option value="todas">Cualquier compensación</option>
-            <option value="sin">Sin compensación</option>
-            <option value="500">Hasta 500 €</option>
-            <option value="1000">Hasta 1.000 €</option>
-            <option value="2000">Hasta 2.000 €</option>
-          </select>
-        )}
-        {hayFiltros && (
-          <button type="button" onClick={() => { setFPrueba(''); setFZona(''); setFGenero(''); setFComp('todas') }}
-            className="label-mono text-[0.58rem] text-ink/50 underline hover:text-ink">quitar filtros</button>
+      <div className="mt-3">
+        <BarraFiltros anuncios={delTipo} f={f} onCambio={setF} conCompensacion={filtro !== 'club'} comp={comp} />
+        {anuncios !== null && (
+          <p className="mt-2 label-mono text-[0.56rem] text-ink/45">{visibles.length} de {delTipo.length} anuncios</p>
         )}
       </div>
 
@@ -424,10 +383,7 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
  */
 export function ClubesQueBuscan() {
   const [anuncios, setAnuncios] = useState<Anuncio[] | null>(null)
-  const [zona, setZona] = useState('')
-  const [familia, setFamilia] = useState('')
-  const [prueba, setPrueba] = useState('')
-  const [genero, setGenero] = useState('')
+  const [f, setF] = useState<Filtros>(FILTROS_VACIOS)
 
   useEffect(() => {
     const leer = (de: string) => createClient().from(de)
@@ -440,62 +396,22 @@ export function ClubesQueBuscan() {
     })()
   }, [])
 
-  const filtroPrueba = prueba || familia
-  const lista = (anuncios ?? []).filter((a) =>
-    (!filtroPrueba || encajaPrueba(a.pruebas, filtroPrueba))
-    && (!zona || !a.zona || a.zona === zona || a.zona === 'Cualquier zona')
-    && (!genero || !a.genero || a.genero === 'X' || a.genero === genero))
-  const hayFiltros = Boolean(zona || familia || prueba || genero)
-  const grupo = GRUPOS_PRUEBAS.find((g) => g.grupo === familia)
-
-  const chip = (activo: boolean) =>
-    `border px-2.5 py-1 text-[0.78rem] transition-colors ${activo ? 'border-ink bg-ink text-cream' : 'border-ink/20 bg-paper text-ink/70 hover:border-ink/50'}`
+  const lista = (anuncios ?? []).filter((a) => pasa(a, f))
+  const filtrando = conFiltros(f)
 
   return (
     <div>
-      <div className="space-y-3 border border-ink/[0.14] bg-cream/40 p-3">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="w-16 shrink-0 label-mono text-[0.52rem] text-ink/45">Prueba</span>
-          {GRUPOS_PRUEBAS.map((g) => (
-            <button key={g.grupo} type="button" aria-pressed={familia === g.grupo}
-              onClick={() => { setFamilia(familia === g.grupo ? '' : g.grupo); setPrueba('') }} className={chip(familia === g.grupo)}>
-              {g.grupo}
-            </button>
-          ))}
-        </div>
-        {grupo && grupo.pruebas.length > 1 && (
-          <div className="flex flex-wrap items-center gap-1.5 sm:pl-[4.375rem]">
-            {grupo.pruebas.map((p) => (
-              <button key={p} type="button" aria-pressed={prueba === p}
-                onClick={() => setPrueba(prueba === p ? '' : p)} className={chip(prueba === p)}>{p}</button>
-            ))}
-          </div>
-        )}
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="w-16 shrink-0 label-mono text-[0.52rem] text-ink/45">Equipo</span>
-          {([['', 'Todos'], ['H', 'Hombres'], ['M', 'Mujeres']] as const).map(([v, t]) => (
-            <button key={v || 'todos'} type="button" aria-pressed={genero === v} onClick={() => setGenero(v)} className={chip(genero === v)}>{t}</button>
-          ))}
-          <select aria-label="Zona" value={zona} onChange={(e) => setZona(e.target.value)} className={`sm:ml-auto ${selCls}`}>
-            <option value="">📍 Cualquier zona</option>
-            {ZONAS.filter((z) => z !== 'Cualquier zona').map((z) => <option key={z} value={z}>{z}</option>)}
-          </select>
-        </div>
-      </div>
+      <BarraFiltros anuncios={anuncios ?? []} f={f} onCambio={setF} />
 
-      <p className="mt-3 flex items-center gap-3 label-mono text-[0.58rem] text-ink/50">
+      <p className="mt-3 label-mono text-[0.58rem] text-ink/50">
         {anuncios === null ? 'cargando…' : `${lista.length} ${lista.length === 1 ? 'club busca' : 'clubes buscan'} atletas`}
-        {hayFiltros && (
-          <button type="button" onClick={() => { setZona(''); setFamilia(''); setPrueba(''); setGenero('') }}
-            className="underline hover:text-ink">quitar filtros</button>
-        )}
       </p>
 
       {anuncios === null ? (
         <div className="mt-3 h-32 animate-pulse border border-ink/[0.14] bg-cream/50" />
       ) : lista.length === 0 ? (
         <p className="mt-3 border border-ink/[0.14] bg-cream/40 p-5 text-sm text-ink/55">
-          {hayFiltros ? 'Ningún club encaja con estos filtros. Prueba a quitar alguno.' : 'Ahora mismo no hay clubes buscando atletas.'}
+          {filtrando ? 'Ningún club encaja con estos filtros. Prueba a quitar alguno.' : 'Ahora mismo no hay clubes buscando atletas.'}
         </p>
       ) : (
         <div className="mt-3 grid gap-3">

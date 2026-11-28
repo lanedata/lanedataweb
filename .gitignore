@@ -50,3 +50,6 @@ __pycache__/
 
 # Cache de agregados del CDN de atletismo-espana (scripts/gen_test_semanal.py)
 .cache-datos/
+
+# Supabase CLI y archivos locales con datos privados
+supabase/.temp/
