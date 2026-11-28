@@ -30,6 +30,14 @@ export default function PrivacidadPage() {
           </li>
           <li>Google Analytics solo se activa si lo aceptas, y puedes retirarlo cuando quieras.</li>
           <li>Los errores técnicos se registran sin datos personales, solo para poder arreglarlos.</li>
+          <li>
+            Si inicias sesión con Google (solo colaboradores), se usan únicamente tu nombre, tu
+            correo y tu foto de perfil para identificarte. Nada más de tu cuenta de Google.
+          </li>
+          <li>
+            En el mercado de fichajes, los datos de contacto que dejes en un formulario solo los
+            ve {LEGAL.marca}: nunca se publican.
+          </li>
           <li>Nunca se ceden ni se venden datos a terceros con fines comerciales.</li>
         </ul>
       </div>
@@ -149,6 +157,89 @@ export default function PrivacidadPage() {
         redacción, e interés legítimo en la seguridad del sistema (arts. 6.1.b y 6.1.f RGPD).
       </p>
 
+      <h3>2.7. Inicio de sesión con Google</h3>
+      <p>
+        Leer {LEGAL.marca} nunca requiere cuenta. Solo los colaboradores del mercado de
+        fichajes y la redacción pueden iniciar sesión, y lo hacen con su cuenta de Google
+        («Iniciar sesión con Google»). El acceso lo gestiona Supabase, nuestro proveedor de
+        autenticación, por eso la pantalla de Google muestra su dominio.
+      </p>
+      <p>Al iniciar sesión, Google nos facilita exclusivamente:</p>
+      <ul>
+        <li>tu nombre y tu foto de perfil;</li>
+        <li>tu dirección de correo electrónico;</li>
+        <li>un identificador interno de tu cuenta, para reconocerte la próxima vez.</li>
+      </ul>
+      <p>
+        Esos datos se usan <strong>solo</strong> para identificarte, saber qué permisos tienes
+        (colaborador o administración) y que conste quién ha publicado cada fichaje. No
+        pedimos acceso a tu Gmail, contactos, Drive, calendario ni a ningún otro servicio de
+        Google, y no publicamos tu correo en ningún sitio.
+      </p>
+      <p>
+        El uso que hace {LEGAL.marca} de la información recibida de las API de Google se
+        ajusta a la{' '}
+        <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer nofollow">
+          Política de datos de usuario de los servicios de API de Google
+        </a>
+        , incluidos sus requisitos de uso limitado: no se venden, no se usan para publicidad,
+        no se ceden a terceros y no se usan para entrenar modelos de inteligencia artificial.
+      </p>
+      <p>
+        Puedes retirar el acceso cuando quieras desde{' '}
+        <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer nofollow">
+          la configuración de seguridad de tu cuenta de Google
+        </a>{' '}
+        y pedirnos que borremos tu cuenta escribiendo a{' '}
+        <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a>.
+      </p>
+      <p>
+        <strong>Base jurídica:</strong> la relación de colaboración que aceptas al iniciar
+        sesión (art. 6.1.b RGPD) y el interés legítimo en la seguridad del sistema (art. 6.1.f).
+      </p>
+
+      <h3>2.8. Mercado de fichajes y tablón</h3>
+      <p>
+        En el mercado de fichajes puedes contarnos un fichaje, enviar un chivatazo, publicar un
+        anuncio en el tablón («atleta busca club» o «club busca atletas») o mostrar interés en
+        un anuncio. En esos formularios se tratan los datos que tú escribes:
+      </p>
+      <ul>
+        <li>nombre del atleta o del club, clubes, pruebas, zona y el texto del anuncio o la nota;</li>
+        <li>
+          un dato de contacto (correo, teléfono o usuario de redes sociales) para que podamos
+          verificar la información antes de publicarla o poneros en contacto.
+        </li>
+      </ul>
+      <p>
+        Nada se publica sin revisarlo antes. El dato de contacto <strong>nunca se publica</strong>:
+        solo lo ve la administración de {LEGAL.marca}, y si alguien se interesa por un anuncio
+        somos nosotros quienes ponemos a las dos partes en contacto.
+      </p>
+      <p>
+        Los fichajes publicados muestran el nombre del atleta y sus clubes, que son información
+        deportiva de interés público. Junto a ellos pueden mostrarse datos ya publicados por la
+        Real Federación Española de Atletismo (la compensación por cambio de club que figura en
+        sus circulares) y las marcas públicas del atleta en Mundo Atletismo. Nunca se muestran
+        fechas de nacimiento, y de los menores de edad no se muestran marcas.
+      </p>
+      <p>
+        Si eres el atleta y quieres corregir o retirar un fichaje, un anuncio o tu ficha,
+        escríbenos a <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a> y lo atendemos.
+      </p>
+      <p>
+        <strong>Base jurídica:</strong> tu consentimiento al enviar el formulario (art. 6.1.a
+        RGPD) y el interés legítimo en informar sobre la actualidad deportiva (art. 6.1.f RGPD).
+      </p>
+
+      <h3>2.9. Avisos al móvil</h3>
+      <p>
+        La administración puede activar avisos en su propio móvil para enterarse de los
+        envíos. Para ello se guarda la dirección técnica de suscripción que genera el navegador,
+        que no identifica a la persona y se borra al desactivar los avisos. Los lectores de la
+        web no reciben notificaciones ni se les pide permiso para ello.
+      </p>
+
       <h2>3. Cuánto tiempo se conservan</h2>
       <table>
         <thead>
@@ -173,6 +264,18 @@ export default function PrivacidadPage() {
           <tr>
             <td>Consentimiento de cookies</td>
             <td>24 meses, tras los cuales se vuelve a preguntar</td>
+          </tr>
+          <tr>
+            <td>Cuenta de colaborador (inicio de sesión con Google)</td>
+            <td>Mientras colabores; se borra cuando lo pides o tras 12 meses sin uso</td>
+          </tr>
+          <tr>
+            <td>Datos de contacto de los formularios del mercado</td>
+            <td>Hasta resolver el envío o cerrar el anuncio, y como máximo 12 meses</td>
+          </tr>
+          <tr>
+            <td>Fichajes y anuncios publicados</td>
+            <td>Mientras sigan teniendo interés informativo; se retiran si el atleta lo pide</td>
           </tr>
           <tr>
             <td>Correos recibidos</td>
@@ -263,13 +366,20 @@ export default function PrivacidadPage() {
         automático al cumplirse los plazos.
       </p>
 
-      <h2>9. Cambios en esta política</h2>
+      <h2>9. Contacto</h2>
+      <p>
+        Para cualquier duda sobre esta política o sobre tus datos, escribe a{' '}
+        <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a>.
+      </p>
+
+      <h2>10. Cambios en esta política</h2>
       <p>
         Esta política puede actualizarse para reflejar cambios legales o técnicos. La versión
         vigente es la publicada en esta página, con su fecha de actualización. Si el cambio
         afecta de forma sustancial a un tratamiento basado en tu consentimiento, se te volverá
         a preguntar.
       </p>
+      <p>Última actualización: 28 de noviembre de 2026.</p>
     </LegalPage>
   )
 }

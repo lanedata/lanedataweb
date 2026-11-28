@@ -415,3 +415,93 @@ function FormularioAnuncio({ tipo, onCerrar }: { tipo: TipoAnuncio; onCerrar: ()
     </form>
   )
 }
+
+// ─── Solo los clubes que buscan atletas ──────────────────────────────────────
+/**
+ * Vista aislada del tablón para el atleta que solo quiere mirar: únicamente
+ * anuncios de clubes, con filtros a un toque (familia de pruebas, prueba
+ * concreta, hombres/mujeres y zona). Se abre desde «¿Eres atleta o club?».
+ */
+export function ClubesQueBuscan() {
+  const [anuncios, setAnuncios] = useState<Anuncio[] | null>(null)
+  const [zona, setZona] = useState('')
+  const [familia, setFamilia] = useState('')
+  const [prueba, setPrueba] = useState('')
+  const [genero, setGenero] = useState('')
+
+  useEffect(() => {
+    const leer = (de: string) => createClient().from(de)
+      .select(ANUNCIO_COLUMNS_PUBLICAS).eq('estado', 'publicado').eq('tipo', 'club')
+      .order('publicado_en', { ascending: false }).limit(200)
+    ;(async () => {
+      let { data, error } = await leer('mercado_anuncios_publicos')
+      if (error) ({ data, error } = await leer('mercado_anuncios'))
+      setAnuncios(error ? [] : (data as unknown as Anuncio[]))
+    })()
+  }, [])
+
+  const filtroPrueba = prueba || familia
+  const lista = (anuncios ?? []).filter((a) =>
+    (!filtroPrueba || encajaPrueba(a.pruebas, filtroPrueba))
+    && (!zona || !a.zona || a.zona === zona || a.zona === 'Cualquier zona')
+    && (!genero || !a.genero || a.genero === 'X' || a.genero === genero))
+  const hayFiltros = Boolean(zona || familia || prueba || genero)
+  const grupo = GRUPOS_PRUEBAS.find((g) => g.grupo === familia)
+
+  const chip = (activo: boolean) =>
+    `border px-2.5 py-1 text-[0.78rem] transition-colors ${activo ? 'border-ink bg-ink text-cream' : 'border-ink/20 bg-paper text-ink/70 hover:border-ink/50'}`
+
+  return (
+    <div>
+      <div className="space-y-3 border border-ink/[0.14] bg-cream/40 p-3">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="w-16 shrink-0 label-mono text-[0.52rem] text-ink/45">Prueba</span>
+          {GRUPOS_PRUEBAS.map((g) => (
+            <button key={g.grupo} type="button" aria-pressed={familia === g.grupo}
+              onClick={() => { setFamilia(familia === g.grupo ? '' : g.grupo); setPrueba('') }} className={chip(familia === g.grupo)}>
+              {g.grupo}
+            </button>
+          ))}
+        </div>
+        {grupo && grupo.pruebas.length > 1 && (
+          <div className="flex flex-wrap items-center gap-1.5 sm:pl-[4.375rem]">
+            {grupo.pruebas.map((p) => (
+              <button key={p} type="button" aria-pressed={prueba === p}
+                onClick={() => setPrueba(prueba === p ? '' : p)} className={chip(prueba === p)}>{p}</button>
+            ))}
+          </div>
+        )}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="w-16 shrink-0 label-mono text-[0.52rem] text-ink/45">Equipo</span>
+          {([['', 'Todos'], ['H', 'Hombres'], ['M', 'Mujeres']] as const).map(([v, t]) => (
+            <button key={v || 'todos'} type="button" aria-pressed={genero === v} onClick={() => setGenero(v)} className={chip(genero === v)}>{t}</button>
+          ))}
+          <select aria-label="Zona" value={zona} onChange={(e) => setZona(e.target.value)} className={`sm:ml-auto ${selCls}`}>
+            <option value="">📍 Cualquier zona</option>
+            {ZONAS.filter((z) => z !== 'Cualquier zona').map((z) => <option key={z} value={z}>{z}</option>)}
+          </select>
+        </div>
+      </div>
+
+      <p className="mt-3 flex items-center gap-3 label-mono text-[0.58rem] text-ink/50">
+        {anuncios === null ? 'cargando…' : `${lista.length} ${lista.length === 1 ? 'club busca' : 'clubes buscan'} atletas`}
+        {hayFiltros && (
+          <button type="button" onClick={() => { setZona(''); setFamilia(''); setPrueba(''); setGenero('') }}
+            className="underline hover:text-ink">quitar filtros</button>
+        )}
+      </p>
+
+      {anuncios === null ? (
+        <div className="mt-3 h-32 animate-pulse border border-ink/[0.14] bg-cream/50" />
+      ) : lista.length === 0 ? (
+        <p className="mt-3 border border-ink/[0.14] bg-cream/40 p-5 text-sm text-ink/55">
+          {hayFiltros ? 'Ningún club encaja con estos filtros. Prueba a quitar alguno.' : 'Ahora mismo no hay clubes buscando atletas.'}
+        </p>
+      ) : (
+        <div className="mt-3 grid gap-3">
+          {lista.map((a) => <TarjetaAnuncio key={a.id} a={a} />)}
+        </div>
+      )}
+    </div>
+  )
+}

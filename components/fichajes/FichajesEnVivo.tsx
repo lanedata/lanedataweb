@@ -20,6 +20,7 @@ import { cargarEstilos, estiloDe, tintaSobre, type EstiloClub } from '@/lib/fich
 import { tratarLogo, type LogoTratado } from '@/lib/fichajes/logo'
 import { compensacionDe, euros, type Compensacion } from '@/lib/fichajes/compensaciones'
 import { FichaAtleta } from './FichaAtleta'
+import { ClubesQueBuscan } from './Tablon'
 import { CompensacionRFEA } from './CompensacionRFEA'
 
 const REFRESCO_MS = 30_000
@@ -403,6 +404,9 @@ function Pie() {
  */
 function VentanaBusca({ onCerrar }: { onCerrar: () => void }) {
   const [soy, setSoy] = useState<'atleta' | 'club' | null>(null)
+  // «Solo quiero ver qué clubes buscan atletas»: la ventana se ensancha y
+  // enseña solo esos anuncios del tablón, con filtros.
+  const [verClubes, setVerClubes] = useState(false)
 
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => { if (e.key === 'Escape') onCerrar() }
@@ -424,10 +428,10 @@ function VentanaBusca({ onCerrar }: { onCerrar: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/60 p-0 sm:items-center sm:p-6" onClick={onCerrar}>
       <div role="dialog" aria-modal="true" aria-labelledby="busca-titulo" onClick={(e) => e.stopPropagation()}
-        className="panel-enter max-h-[90dvh] w-full max-w-md overflow-y-auto border border-ink/[0.14] bg-paper p-5 sm:p-7">
+        className={`panel-enter max-h-[90dvh] w-full overflow-y-auto border border-ink/[0.14] bg-paper p-5 sm:p-7 ${verClubes ? 'max-w-2xl' : 'max-w-md'}`}>
         <div className="flex items-start justify-between gap-4">
           <h3 id="busca-titulo" className="font-brand text-[1.4rem] font-extrabold leading-tight tracking-tight text-ink">
-            ¿Eres atleta o club?
+            {verClubes ? 'Clubes que buscan atletas' : '¿Eres atleta o club?'}
           </h3>
           <button type="button" onClick={onCerrar} aria-label="Cerrar"
             className="-mr-1 -mt-1 flex h-9 w-9 shrink-0 items-center justify-center text-xl text-ink/45 transition-colors hover:text-ink">
@@ -435,6 +439,14 @@ function VentanaBusca({ onCerrar }: { onCerrar: () => void }) {
           </button>
         </div>
 
+        {verClubes ? (
+          <div className="mt-4">
+            <button type="button" onClick={() => setVerClubes(false)} className="mb-4 label-mono text-[0.58rem] text-ink/50 underline hover:text-ink">
+              &larr; volver
+            </button>
+            <ClubesQueBuscan />
+          </div>
+        ) : (<>
         <div className="mt-5 grid grid-cols-2 gap-3">
           {opcion('atleta', 'Soy atleta', 'Busco club para competir')}
           {opcion('club', 'Soy un club', 'Busco atletas que fichar')}
@@ -450,6 +462,11 @@ function VentanaBusca({ onCerrar }: { onCerrar: () => void }) {
               Ir al buscador de Mundo Atletismo &rarr;
             </a>
             <p className="mt-2.5 label-mono text-[0.55rem] text-ink/45">mundoatletismo.es/atletas · se abre en otra pestaña</p>
+            <button type="button" onClick={() => setVerClubes(true)}
+              className="mt-4 block w-full border-2 border-ink/25 bg-paper px-4 py-3 text-left transition-colors hover:border-ink">
+              <span className="block font-brand text-[0.95rem] font-extrabold tracking-tight text-ink">Solo quiero ver qué clubes buscan atletas &rarr;</span>
+              <span className="mt-0.5 block text-[0.78rem] text-ink/55">Sus anuncios, filtrados por zona y prueba.</span>
+            </button>
           </div>
         )}
 
@@ -466,6 +483,7 @@ function VentanaBusca({ onCerrar }: { onCerrar: () => void }) {
             <p className="mt-2.5 select-all font-mono text-[0.8rem] text-ink/60">info@mundoatletismo.es</p>
           </div>
         )}
+        </>)}
 
       </div>
     </div>
